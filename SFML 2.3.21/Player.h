@@ -9,6 +9,7 @@ class Player: public GameObject{
 
 	Player(const Resources& res, float mAcceleration=20.f, float mAngularAcc=1.f, float mRopeLength=10.f, float mMaxFuel=20.f, float mFuel=20.f);
 	void accelerate(sf::Time dt);
+	void decelerate();
 	void rotateLeft(sf::Time dt);
 	void rotateRight(sf::Time dt);
 	void throwHook(float x, float y);
@@ -19,6 +20,7 @@ class Player: public GameObject{
 	
 	private:
 	sf::Sprite		mSprite;
+	sf::Sprite		mFire;
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 	
 	
@@ -28,6 +30,7 @@ class Player: public GameObject{
 	float		mAcceleration;
 	float		mSpeed;
 	float		mAngularAcc;
-	bool		mHooked;
+	bool		mIsHooked;
+	bool		mIsAccelerating;
 	b2RopeJoint* mHook;
 };

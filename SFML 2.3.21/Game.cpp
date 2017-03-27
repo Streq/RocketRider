@@ -60,6 +60,7 @@ void Game::update(sf::Time dt){
 		mPlayer->rotateRight(dt);
 	if(mController.input[Input::Accelerate])
 		mPlayer->accelerate(dt);
+	else mPlayer->decelerate();
 	if(mController.input[Input::Hook]){
 		//printf("mouse:%d,%d\n",mController.lastMouseClick.x,mController.lastMouseClick.y);
 		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
@@ -81,8 +82,9 @@ void Game::update(sf::Time dt){
 	const auto& camara_pos = mView.getCenter();
 	const auto& background_pos = mBackground.getPosition();
 	sf::Vector2i distance((camara_pos-background_pos));
-	distance.x -= distance.x%(INIT_VIEW_SIZE.x/2);
-	distance.y -= distance.y%(INIT_VIEW_SIZE.y/2);
+	auto bounds = mBackground.getGlobalBounds();
+	distance.x -= sign(distance.x)*abs(distance.x)%(int(bounds.width/3));
+	distance.y -= sign(distance.y)*abs(distance.y)%(int(bounds.height/3));
 	mBackground.move(sf::Vector2f(distance));
 }
 
@@ -99,10 +101,10 @@ void Game::draw(){
 
 void Game::init(){
 	mBackground.setTexture(mContext.resources->textures.get(Texture::SPRITE_TILE));
-	mBackground.setTextureRect(sf::IntRect(0, 0, INIT_VIEW_SIZE.x*2, INIT_VIEW_SIZE.y*2));
+	mBackground.setTextureRect(sf::IntRect(0, 0, INIT_VIEW_SIZE.x*3, INIT_VIEW_SIZE.y*3));
 	auto bounds=mBackground.getLocalBounds();
 	mBackground.setOrigin(bounds.width/2.f,bounds.height/2.f);
-	//mBackground.setScale(sf::Vector2f(1.f,1.f)*4.f);
+	mBackground.setScale(sf::Vector2f(1.f,1.f)*4.f);
 
 	mPlayer.reset(new Player(*mContext.resources));
 	mPlayer->initBody(mWorld,b2Vec2(0.f,2.f));

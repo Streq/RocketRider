@@ -19,6 +19,7 @@ Application::Application():
 	mResources.textures.get(Texture::SPRITE_BLOCK).setRepeated(true);
 	mResources.textures.load(Texture::SPRITE_TILE,"Assets/Textures/tile.png");
 	mResources.textures.get(Texture::SPRITE_TILE).setRepeated(true);
+	mResources.textures.load(Texture::SPRITE_FIRE,"Assets/Textures/fire.png");
 	mGame.init();
 }
 void Application::run(){

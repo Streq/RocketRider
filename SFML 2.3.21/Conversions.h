@@ -38,3 +38,15 @@ inline sf::Vector2f rad_to_sfVec(float rad, float mag = 1.f){
 inline sf::Vector2f deg_to_sfVec(float deg, float mag = 1.f){
 	return rad_to_sfVec(deg_to_rad(deg), mag);
 }
+
+inline int sign(float val){
+	return (0 < val) - (val < 0);
+}
+
+inline int sign(int val){
+	return (0 < val) - (val < 0);
+}
+
+inline int sign(double val){
+	return (0 < val) - (val < 0);
+}

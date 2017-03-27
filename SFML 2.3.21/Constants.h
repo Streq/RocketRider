@@ -4,8 +4,8 @@
 
 const sf::Vector2u	ASPECT_RATIO = sf::Vector2u(4,3);
 
-const sf::Vector2u	INIT_WINDOW_SIZE = ASPECT_RATIO * 16u * 10u;
-const sf::Vector2u	INIT_VIEW_SIZE = ASPECT_RATIO * 16u * 20u;
+const sf::Vector2u	INIT_WINDOW_SIZE = ASPECT_RATIO * 16u * 12u;
+const sf::Vector2u	INIT_VIEW_SIZE = ASPECT_RATIO * 16u * 24u;
 
 const size_t		FPS = 60;
 const unsigned		PIXELS_PER_METER = 32;

@@ -8,6 +8,7 @@ namespace Texture {
 		SPRITE_PLAYER_3,
 		SPRITE_BLOCK,
 		SPRITE_TILE,
+		SPRITE_FIRE,
 	};
 }
 

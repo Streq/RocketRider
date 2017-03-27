@@ -8,12 +8,19 @@ Player::Player(const Resources& res,float mAcceleration, float mAngularAcc, floa
 	mAngularAcc(mAngularAcc),
 	mRopeLength(mRopeLength),
 	mMaxFuel(mMaxFuel), 
-	mFuel(mFuel)
+	mFuel(mFuel),
+	mIsAccelerating(false),
+	mIsHooked(false)
 {
-	mSprite.setTexture(res.textures.get(Texture::SPRITE_PLAYER_3));	
+	mSprite.setTexture(res.textures.get(Texture::SPRITE_PLAYER_1));	
 	auto bounds=mSprite.getLocalBounds();
 	mSprite.setOrigin(bounds.width/2.f,bounds.height/2.f);
-	mHooked=false;
+	
+	mFire.setTexture(res.textures.get(Texture::SPRITE_FIRE));	
+	bounds=mFire.getLocalBounds();
+	mFire.setOrigin(bounds.width/2.f,bounds.height/2.f);
+	mFire.setPosition(-bounds.width,0);
+	
 }
 void Player::initBody(b2World & world, const b2Vec2& position){
 	//body definition
@@ -47,6 +54,11 @@ void Player::initBody(b2World & world, const b2Vec2& position){
 void Player::accelerate(sf::Time dt){
 	b2Vec2 vector(rad_to_b2Vec(mBody->GetAngle(), mAcceleration * dt.asSeconds()));
 	mBody->ApplyLinearImpulseToCenter(vector,true);
+	mIsAccelerating=true;
+}
+
+void Player::decelerate(){
+	mIsAccelerating=false;
 }
 
 void Player::rotateLeft(sf::Time dt){
@@ -58,7 +70,7 @@ void Player::rotateRight(sf::Time dt){
 }
 
 void Player::throwHook(float x, float y){
-	if(mHooked) return;
+	if(mIsHooked) return;
 
 	b2Vec2 pos(mBody->GetPosition());
 	b2Vec2 targetPoint(x,y);
@@ -76,7 +88,7 @@ void Player::throwHook(float x, float y){
 	mWorld->RayCast(&callback,pos,targetPoint);
 	targetBody=callback.getTargetBody();
 	if(targetBody){
-		mHooked=true;
+		mIsHooked=true;
 		b2RopeJointDef jdef;
 
 		jdef.maxLength=mRopeLength;
@@ -94,19 +106,19 @@ void Player::throwHook(float x, float y){
 }
 
 void Player::releaseHook(){
-	if(mHooked){
+	if(mIsHooked){
 		mWorld->DestroyJoint(mHook);
-		mHooked=false;
+		mIsHooked=false;
 	}
 }
 
 bool Player::isHooked() const{
-	return mHooked;
+	return mIsHooked;
 }
 
 
 void Player::draw(sf::RenderTarget & target, sf::RenderStates states)const{
-	if(mHooked){
+	if(mIsHooked){
 		sf::Vector2f pa(b2_to_sf_pos(mHook->GetAnchorA()));
 		sf::Vector2f pb(b2_to_sf_pos(mHook->GetAnchorB()));
 		auto line = sf::VertexArray(sf::PrimitiveType::Lines,2);
@@ -116,8 +128,12 @@ void Player::draw(sf::RenderTarget & target, sf::RenderStates states)const{
 		line[1].position=pb;
 		target.draw(line,states);
 	}
+	if(mIsAccelerating){
+
+	}
 	states.transform.translate(b2_to_sf_pos(getb2Position()));
 	states.transform.rotate(-rad_to_deg(getb2Rotation()));
+	if(mIsAccelerating)target.draw(mFire,states);
 	target.draw(mSprite,states);
 	
 }
