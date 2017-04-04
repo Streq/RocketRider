@@ -2,13 +2,13 @@
 #include "GameObject.h"
 #include "Resources.h"
 #include "Constants.h"
-class Block: public GameObject{
+class Goal : public GameObject {
 	public:
-	Block(const Resources& res,const b2Vec2& size=b2Vec2(1.f,1.f), const b2Vec2& position=b2Vec2(0.f,0.f));
+	Goal(const Resources& res, const b2Vec2& size = b2Vec2(1.f, 1.f), const b2Vec2& position = b2Vec2(0.f, 0.f));
 	virtual void		initBody(b2World& world);
 	virtual Type		getType()const;
-	
-	
+
+
 	private:
 	virtual void		draw(sf::RenderTarget& target, sf::RenderStates states)const;
 	sf::Sprite			mSprite;

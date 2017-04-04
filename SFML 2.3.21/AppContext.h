@@ -3,9 +3,11 @@
 #include "Resources.h"
 
 struct AppContext{
-	AppContext(sf::RenderWindow& window, Resources& resources):window(&window),resources(&resources){};
-	AppContext(const AppContext& r): window(r.window), resources(r.resources){};
-	AppContext(AppContext&& r): window(std::move(r.window)),resources(std::move(r.resources)){};
+	AppContext(sf::RenderTarget& screen, sf::RenderWindow& window, sf::Sprite& displaySprite, Resources& resources):screen(&screen),window(&window),displaySprite(&displaySprite), resources(&resources){};
+	//AppContext(const AppContext& r): screen(r.screen), resources(r.resources){};
+	//AppContext(AppContext&& r): screen(std::move(r.screen)),resources(std::move(r.resources)){};
+	sf::RenderTarget* screen;
 	sf::RenderWindow* window;
+	sf::Sprite*		  displaySprite;
 	Resources*		  resources;
 };

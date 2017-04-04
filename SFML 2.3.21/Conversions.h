@@ -3,6 +3,10 @@
 #include "SFML/Graphics.hpp"
 #include "Constants.h"
 
+inline sf::Vector2f floor(const sf::Vector2f& vec) {
+	return sf::Vector2f(floor(vec.x), floor(vec.y));
+}
+
 inline sf::Vector2f b2_to_sf_pos(const b2Vec2& b2v){
 	return sf::Vector2f(b2v.x*PIXELS_PER_METER, -b2v.y*PIXELS_PER_METER);
 }
@@ -49,4 +53,38 @@ inline int sign(int val){
 
 inline int sign(double val){
 	return (0 < val) - (val < 0);
+}
+
+inline float vec_length_squared(const sf::Vector2f& vec) {
+	return vec.x*vec.x + vec.y*vec.y;
+}
+
+inline float vec_length(const sf::Vector2f& vec) {
+	return sqrtf(vec.x*vec.x + vec.y*vec.y);
+}
+
+inline float normalize(sf::Vector2f& vec){
+	float length = vec_length(vec);
+	
+	if (length < FLT_EPSILON) return 0.f;
+	
+	float inverse_length = 1.f / length;
+	vec *= inverse_length;
+	return length;
+}
+
+inline sf::Vector2i GlobalToLocalPixel(sf::RenderWindow& win, sf::Sprite& sprite, const sf::Vector2i& pixel) {
+	sf::Vector2f rawclick(
+		win.mapPixelToCoords(
+			pixel
+		)
+	);
+
+	auto globalRect = sprite.getGlobalBounds();
+	auto scale = sprite.getScale();
+	
+	sf::Vector2f localCoord((rawclick.x - globalRect.left) / scale.x, (rawclick.y - globalRect.top) / scale.y);
+	return win.mapCoordsToPixel(localCoord);
+
+	
 }

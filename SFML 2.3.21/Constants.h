@@ -2,14 +2,19 @@
 #include <SFML/System/Time.hpp>
 #include <Box2D/Box2D.h>
 
-const sf::Vector2u	ASPECT_RATIO = sf::Vector2u(4,3);
+const sf::Vector2u	ASPECT_RATIO_VEC = sf::Vector2u(10,9);
+const float			ASPECT_RATIO = ASPECT_RATIO_VEC.x / (float)ASPECT_RATIO_VEC.y;
 
-const sf::Vector2u	INIT_WINDOW_SIZE = ASPECT_RATIO * 16u * 12u;
-const sf::Vector2u	INIT_VIEW_SIZE = ASPECT_RATIO * 16u * 24u;
+const sf::Vector2u	INIT_WINDOW_SIZE = ASPECT_RATIO_VEC * 16u * 4u;
+const sf::Vector2u	INIT_VIEW_SIZE = ASPECT_RATIO_VEC * 16u * 4u;
+const sf::Vector2u	MIN_VIEW_SIZE = ASPECT_RATIO_VEC * 16u * 1u;
+
 
 const size_t		FPS = 60;
 const unsigned		PIXELS_PER_METER = 32;
 const float			METERS_PER_PIXEL = 1.f/PIXELS_PER_METER;		
+
+const float			MOUSE_SCROLL_ZOOM = 0.05f;
 
 namespace B2{
 

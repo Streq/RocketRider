@@ -29,4 +29,5 @@ class Game{
 	b2World								mWorld;
 	sf::View							mView;
 	sf::Sprite							mBackground;
+	std::unique_ptr<b2ContactListener>	mContactListener;
 };

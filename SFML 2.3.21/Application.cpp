@@ -6,12 +6,21 @@ Application::Application():
 		sf::VideoMode(INIT_WINDOW_SIZE.x,INIT_WINDOW_SIZE.y),
 		"Rocket Rider",
 		sf::Style::Default),
-	mGame(AppContext(mWindow,mResources))
+	mScreen(),
+	mGame(AppContext(mScreen, mWindow,mDisplaySprite, mResources))
 {
+	mScreen.setSmooth(false);
+	mScreen.create(INIT_VIEW_SIZE.x, INIT_VIEW_SIZE.y);
+
+	mDisplaySprite.setTexture(mScreen.getTexture());
+	mDisplaySprite.setOrigin(sf::Vector2f(mScreen.getSize()) * 0.5f);
+	
 	mWindow.setKeyRepeatEnabled(false);
+	
 	mResources.fonts.load(Font::arial,"Assets/Fonts/arial.ttf");
 	mResources.fonts.load(Font::consola,"Assets/Fonts/consola.ttf");
 	mFPSText.setFont(mResources.fonts.get(Font::consola));
+	
 	mResources.textures.load(Texture::SPRITE_PLAYER_1,"Assets/Textures/player.png");
 	mResources.textures.load(Texture::SPRITE_PLAYER_2,"Assets/Textures/player2.png");
 	mResources.textures.load(Texture::SPRITE_PLAYER_3,"Assets/Textures/player3.png");
@@ -20,6 +29,9 @@ Application::Application():
 	mResources.textures.load(Texture::SPRITE_TILE,"Assets/Textures/tile.png");
 	mResources.textures.get(Texture::SPRITE_TILE).setRepeated(true);
 	mResources.textures.load(Texture::SPRITE_FIRE,"Assets/Textures/fire.png");
+	mResources.textures.load(Texture::SPRITE_BOX, "Assets/Textures/box.png");
+	mResources.textures.load(Texture::SPRITE_EXPLOSION, "Assets/Textures/explosion.png");
+	mResources.textures.load(Texture::SPRITE_GOAL, "Assets/Textures/goal.png");
 	mGame.init();
 }
 void Application::run(){
@@ -75,21 +87,37 @@ void Application::handleEvents(){
 			case sf::Event::Closed:
 				mWindow.close();
 				break;
-			case sf::Event::Resized:
+			case sf::Event::Resized:{
+				//get new window size
 				sf::Vector2u size=mWindow.getSize();
+				//get limiting factor
+				float current_aspect_ratio = size.x / (float)size.y;
+				float xfact = 1.f, yfact = 1.f;
+				//greater aspect_ratio means y is the limiting factor
+				if (current_aspect_ratio > ASPECT_RATIO) {
+					/*
+					example:
+					ideal = 5/3
+					current = 10/3 -> (10/3)/(5/3) = 2/1 -> x is twice as big as it should be
+					*/
+					xfact *= ASPECT_RATIO / current_aspect_ratio ;
+					
+				}
+				//lesser aspect_ratio means x is the limiting factor
+				else if (current_aspect_ratio < ASPECT_RATIO) {
+					/*
+					example:
+					ideal = 5/3
+					current = 4/7 -> (4/7)/(5/3) = 12/35 -> y is 35/12 times bigger than it should be
+					*/
+					yfact *= current_aspect_ratio / ASPECT_RATIO;
+					
+				}
+				mDisplaySprite.setScale(xfact, yfact);
+			}
+			break;
+			
 
-				auto desk=sf::VideoMode::getDesktopMode();
-				sf::Vector2u screensize(desk.width,desk.height);
-				//get max_factor
-				unsigned max_x_factor = screensize.x/ASPECT_RATIO.x;
-				unsigned max_y_factor = screensize.y/ASPECT_RATIO.y;
-				unsigned max_factor = max_x_factor<max_y_factor?max_x_factor:max_y_factor;
-				//get current factor
-				unsigned current_factor = sqrt(size.x*size.y/(ASPECT_RATIO.x*ASPECT_RATIO.y));
-				if(current_factor>max_factor)current_factor=max_factor;
-				mWindow.setSize(ASPECT_RATIO*current_factor);
-				
-				break;
 		}
 		mGame.handle_event(e);
 	}
@@ -101,8 +129,18 @@ void Application::update(sf::Time time){
 
 void Application::render(){
 	mWindow.clear();
+	mScreen.clear();
 	mGame.draw();
-	mWindow.setView(mWindow.getDefaultView());
-	mWindow.draw(mFPSText);
+	mScreen.setView(mScreen.getDefaultView());
+	mScreen.draw(mFPSText);
+	mScreen.display();
+
+	//center the sprite
+	sf::Vector2f screen_center (mScreen.getSize());
+	screen_center *= 0.5f;
+
+	mDisplaySprite.setPosition(screen_center);
+
+	mWindow.draw(mDisplaySprite);
 	mWindow.display();
 }

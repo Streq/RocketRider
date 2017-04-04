@@ -1,12 +1,14 @@
 #include "Game.h"
 #include "Conversions.h"
 #include "Block.h"
-
-
+#include "Box.h"
+#include "PlayerContactListener.h"
+#include "Goal.h"
 Game::Game(const AppContext & context):
 	mWorld(b2Vec2(0,-10.f)),
 	mContext(context),
-	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(INIT_VIEW_SIZE))
+	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(INIT_VIEW_SIZE)),
+	mContactListener(new GameContactListener())
 {
 	
 
@@ -31,8 +33,17 @@ void Game::handle_event(const sf::Event & e){
 		}break;
 		case sf::Event::MouseButtonPressed:{
 			if(e.mouseButton.button==sf::Mouse::Button::Left){
-				mController.input[Input::Hook] = true;
-				mController.lastMouseClick = sf::Vector2i(e.mouseButton.x,e.mouseButton.y);
+				auto& mWindow = *mContext.window;
+				mWindow.setView(mWindow.getDefaultView());
+				auto& mSprite = *mContext.displaySprite;
+				//Transform to local click
+				auto localClick=GlobalToLocalPixel(mWindow,mSprite,sf::Vector2i(e.mouseButton.x, e.mouseButton.y));
+				if (mSprite.getLocalBounds().contains(mWindow.mapPixelToCoords(localClick))) {
+					mController.input[Input::Hook] = true;
+
+					mController.lastMouseClick = localClick;
+					
+				}
 			}
 			if(e.mouseButton.button==sf::Mouse::Button::Right){
 				mController.input[Input::ReleaseHook] = true;
@@ -48,6 +59,16 @@ void Game::handle_event(const sf::Event & e){
 
 			}
 		}break;
+		case sf::Event::MouseWheelScrolled:{
+			float delta = e.mouseWheelScroll.delta * MOUSE_SCROLL_ZOOM;
+			mView.setSize(floor(mView.getSize()*(1.f - delta)));
+			
+
+			if (mView.getSize().x > INIT_VIEW_SIZE.x)
+				mView.setSize((sf::Vector2f)INIT_VIEW_SIZE);
+			if (mView.getSize().x < MIN_VIEW_SIZE.x)
+				mView.setSize((sf::Vector2f)MIN_VIEW_SIZE);
+		}
 
 
 	}
@@ -78,6 +99,7 @@ void Game::update(sf::Time dt){
 	
 
 	mWorld.Step(dt.asSeconds(),B2::VELOCITY_ITERATIONS,B2::POSITION_ITERATIONS);
+	mPlayer->Step();
 	mView.setCenter(b2_to_sf_pos(mPlayer->getb2Position()));
 	const auto& camara_pos = mView.getCenter();
 	const auto& background_pos = mBackground.getPosition();
@@ -89,13 +111,13 @@ void Game::update(sf::Time dt){
 }
 
 void Game::draw(){
-	mContext.window->setView(mView);
-	mContext.window->draw(mBackground);
+	mContext.screen->setView(mView);
+	mContext.screen->draw(mBackground);
 	for(const auto& object:mObjects){
-		mContext.window->draw(*object);
+		mContext.screen->draw(*object);
 	}
 
-	mContext.window->draw(*mPlayer);
+	mContext.screen->draw(*mPlayer);
 	
 }
 
@@ -106,25 +128,31 @@ void Game::init(){
 	mBackground.setOrigin(bounds.width/2.f,bounds.height/2.f);
 	mBackground.setScale(sf::Vector2f(1.f,1.f)*4.f);
 
-	mPlayer.reset(new Player(*mContext.resources));
-	mPlayer->initBody(mWorld,b2Vec2(0.f,2.f));
+	mPlayer.reset(new Player(*mContext.resources, b2Vec2(0.f, 2.f)));
+	mPlayer->initBody(mWorld);
 	
-	GameObject* floor(new Block(*mContext.resources,b2Vec2(40.f,1.f)));
-	floor->initBody(mWorld,b2Vec2(0.f,-4.f));
-	mObjects.push_back(std::unique_ptr<GameObject>(floor));
+	GameObject* floor(new Block(*mContext.resources,b2Vec2(40.f,1.f), b2Vec2(0.f, -4.f)));
+	floor->initBody(mWorld);
+	mObjects.push_back(GameObject::Ptr(floor));
 
 
-	GameObject* left_wall(new Block(*mContext.resources,b2Vec2(1.f,40.f)));
-	left_wall->initBody(mWorld,b2Vec2(-24.f,0.f));
-	mObjects.push_back(std::unique_ptr<GameObject>(left_wall));
+	GameObject* left_wall(new Block(*mContext.resources,b2Vec2(1.f,40.f), b2Vec2(-24.f, 0.f)));
+	left_wall->initBody(mWorld);
+	mObjects.push_back(GameObject::Ptr(left_wall));
 
 
-	GameObject* right_wall(new Block(*mContext.resources,b2Vec2(1.f,40.f)));
-	right_wall->initBody(mWorld,b2Vec2(24.f,0.f));
-	mObjects.push_back(std::unique_ptr<GameObject>(right_wall));
+	GameObject* right_wall(new Block(*mContext.resources,b2Vec2(1.f,1.f), b2Vec2(24.f, 10.f)));
+	right_wall->initBody(mWorld);
+	mObjects.push_back(GameObject::Ptr(right_wall));
 
 
-	GameObject* top_wall(new Block(*mContext.resources,b2Vec2(40.f,1.f)));
-	top_wall->initBody(mWorld,b2Vec2(0.f,24.f));
-	mObjects.push_back(std::unique_ptr<GameObject>(top_wall));
+	GameObject* top_wall(new Block(*mContext.resources,b2Vec2(40.f,1.f), b2Vec2(0.f, 24.f)));
+	top_wall->initBody(mWorld);
+	mObjects.push_back(GameObject::Ptr(top_wall));
+
+	GameObject* goal(new Goal(*mContext.resources, b2Vec2(1.f, 1.f), b2Vec2(0.f, 10.f)));
+	goal->initBody(mWorld);
+	mObjects.push_back(GameObject::Ptr(goal));
+
+	mWorld.SetContactListener(mContactListener.get());
 }

@@ -45,6 +45,15 @@
     <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Hook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Goal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -97,6 +106,24 @@
     </ClInclude>
     <ClInclude Include="HookCallback.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Hook.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerContactListener.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleOut.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Goal.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
