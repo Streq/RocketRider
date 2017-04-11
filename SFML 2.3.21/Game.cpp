@@ -1,18 +1,78 @@
 #include "Game.h"
 #include "Conversions.h"
-#include "Block.h"
-#include "Box.h"
+
+#include "GameObjectDefinition.h"
 #include "PlayerContactListener.h"
+#include "PlayerDefinition.h"
+#include "BoxDefinition.h"
+#include "BlockDefinition.h"
+#include "GoalDefinition.h"
+#include "Box.h"
+#include "Block.h"
+#include "Player.h"
 #include "Goal.h"
+#include "rapidxml.hpp"
+#include "rapidxml_print.hpp"
 Game::Game(const AppContext & context):
 	mWorld(b2Vec2(0,-10.f)),
 	mContext(context),
-	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(INIT_VIEW_SIZE)),
-	mContactListener(new GameContactListener())
+	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(INIT_VIEW_SIZE,INIT_VIEW_SIZE*ASPECT_RATIO)),
+	mContactListener(new GameContactListener()),
+	mLevels(3),
+	m_level_index(0)
 {
 	
+	
+
+	BlockDefinition* b1;
+	PlayerDefinition* pdef;
+	GoalDefinition* gdef;
+	
+	
+	//initialize levels
+	auto& lv2 = mLevels[1];
+	b1 = new BlockDefinition();
+	b1->pos = b2Vec2(4.f, 1.f);
+	b1->size = b2Vec2(1.f, 10.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
+
+	b1 = new BlockDefinition();
+	b1->pos = b2Vec2(2.f, 0.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
+
+	b1 = new BlockDefinition();
+	b1->pos = b2Vec2(20.f, 10.f);
+	b1->size = b2Vec2(1.f, 100.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
+
+	b1 = new BlockDefinition();
+	b1->pos = b2Vec2(12.f, -12.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
+
+	b1 = new BlockDefinition();
+	b1->pos = b2Vec2(15.f, 0.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
+
+	b1 = new BlockDefinition();
+	b1->pos = b2Vec2(-5.f, 10.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
+
+	b1 = new BlockDefinition();
+	b1->pos = b2Vec2(-5.f, -5.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
+
+	pdef = new PlayerDefinition();
+	pdef->pos = b2Vec2(0.f, 4.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(pdef));
+
+	gdef = new GoalDefinition();
+	gdef->pos = b2Vec2(0.f, 20.f);
+	lv2.mObjects.push_back(GameObjectDefinition::ptr(gdef));
+
 
 }
+
+
 
 void Game::handle_event(const sf::Event & e){
 	switch (e.type){
@@ -61,13 +121,13 @@ void Game::handle_event(const sf::Event & e){
 		}break;
 		case sf::Event::MouseWheelScrolled:{
 			float delta = e.mouseWheelScroll.delta * MOUSE_SCROLL_ZOOM;
-			mView.setSize(floor(mView.getSize()*(1.f - delta)));
+			mView.zoom(1.f-delta);
 			
 
-			if (mView.getSize().x > INIT_VIEW_SIZE.x)
-				mView.setSize((sf::Vector2f)INIT_VIEW_SIZE);
-			if (mView.getSize().x < MIN_VIEW_SIZE.x)
-				mView.setSize((sf::Vector2f)MIN_VIEW_SIZE);
+			if (mView.getSize().x > MAX_VIEW_SIZE)
+				mView.setSize(sf::Vector2f(1.f,ASPECT_RATIO)*(float)MAX_VIEW_SIZE);
+			if (mView.getSize().x < MIN_VIEW_SIZE)
+				mView.setSize(sf::Vector2f(1.f, ASPECT_RATIO)*(float)MIN_VIEW_SIZE);
 		}
 
 
@@ -100,6 +160,16 @@ void Game::update(sf::Time dt){
 
 	mWorld.Step(dt.asSeconds(),B2::VELOCITY_ITERATIONS,B2::POSITION_ITERATIONS);
 	mPlayer->Step();
+
+	std::for_each(mObjects.begin(), mObjects.end(), [](GameObject::Ptr& ptr) {ptr->Step();});
+
+	if (m_goto_next_level) {
+		clear();
+		loadLevel(mLevels[++m_level_index]);
+		m_goto_next_level = false;
+	}
+
+
 	mView.setCenter(b2_to_sf_pos(mPlayer->getb2Position()));
 	const auto& camara_pos = mView.getCenter();
 	const auto& background_pos = mBackground.getPosition();
@@ -123,36 +193,64 @@ void Game::draw(){
 
 void Game::init(){
 	mBackground.setTexture(mContext.resources->textures.get(Texture::SPRITE_TILE));
-	mBackground.setTextureRect(sf::IntRect(0, 0, INIT_VIEW_SIZE.x*3, INIT_VIEW_SIZE.y*3));
+	mBackground.setTextureRect(sf::IntRect(0, 0, MAX_VIEW_SIZE*3, ASPECT_RATIO*MAX_VIEW_SIZE*3));
 	auto bounds=mBackground.getLocalBounds();
 	mBackground.setOrigin(bounds.width/2.f,bounds.height/2.f);
 	mBackground.setScale(sf::Vector2f(1.f,1.f)*4.f);
 
-	mPlayer.reset(new Player(*mContext.resources, b2Vec2(0.f, 2.f)));
-	mPlayer->initBody(mWorld);
-	
-	GameObject* floor(new Block(*mContext.resources,b2Vec2(40.f,1.f), b2Vec2(0.f, -4.f)));
-	floor->initBody(mWorld);
-	mObjects.push_back(GameObject::Ptr(floor));
+	//initialize levels
+	sf::Image tmap;
+	tmap.loadFromFile("Assets/Textures/testmap.png");
+	rapidxml::xml_document<> doc;
+	auto str = doc.allocate_string(mContext.resources->texts.get(TextFile::MAP_DEF).c_str());
+	mLevels[0].load(&tmap, str);
 
 
-	GameObject* left_wall(new Block(*mContext.resources,b2Vec2(1.f,40.f), b2Vec2(-24.f, 0.f)));
-	left_wall->initBody(mWorld);
-	mObjects.push_back(GameObject::Ptr(left_wall));
 
 
-	GameObject* right_wall(new Block(*mContext.resources,b2Vec2(1.f,1.f), b2Vec2(24.f, 10.f)));
-	right_wall->initBody(mWorld);
-	mObjects.push_back(GameObject::Ptr(right_wall));
-
-
-	GameObject* top_wall(new Block(*mContext.resources,b2Vec2(40.f,1.f), b2Vec2(0.f, 24.f)));
-	top_wall->initBody(mWorld);
-	mObjects.push_back(GameObject::Ptr(top_wall));
-
-	GameObject* goal(new Goal(*mContext.resources, b2Vec2(1.f, 1.f), b2Vec2(0.f, 10.f)));
-	goal->initBody(mWorld);
-	mObjects.push_back(GameObject::Ptr(goal));
 
 	mWorld.SetContactListener(mContactListener.get());
+	loadLevel(mLevels[0]);
+
+}
+
+void Game::clear(){
+	mObjects.clear();
+	mPlayer.reset();
+	
+}
+
+void Game::loadLevel(const Level & level)
+{
+	for (auto& ptr : level.mObjects) {
+		createObject(ptr.get());
+		
+	}
+	for(auto& ptr : mObjects){
+		ptr->initBody(mWorld);
+	}
+	mPlayer->initBody(mWorld);
+}
+
+void Game::createObject(GameObjectDefinition *def)
+{
+	GameObject* obj = NULL;
+	switch (def->type) {
+		case ObjectType::Block: {
+			obj = new Block(*mContext.resources, static_cast<BlockDefinition*>(def));
+		}break;
+		case ObjectType::Box: {
+			obj = new Box(*mContext.resources, static_cast<BoxDefinition*>(def));
+		}break;
+		case ObjectType::Player: {
+			mPlayer.reset(new Player(*mContext.resources, static_cast<PlayerDefinition*>(def)));
+			return;
+		}break;
+		case ObjectType::Goal: {
+			obj = new Goal(*mContext.resources, [this](Player*) {this->m_goto_next_level = true; }, static_cast<GoalDefinition*>(def));
+		}break;
+	}
+	mObjects.push_back(std::unique_ptr<GameObject>(obj));
+
+
 }

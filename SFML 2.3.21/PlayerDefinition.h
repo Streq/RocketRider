@@ -1,0 +1,48 @@
+#pragma once
+#include "GameObjectDefinition.h"
+#include <iostream>
+
+struct PlayerDefinition : public GameObjectDefinition{
+	PlayerDefinition():
+		acceleration(30.f),
+		angular_acceleration(1.f),
+		rope_length(15.f),
+		max_fuel(20.f),
+		fuel(20.f),
+		max_speed(20.f),
+		explosion_impulse(20.f)
+	{
+		type = ObjectType::Player;
+	}
+
+	virtual rapidxml::xml_document<char>* to_xml() {
+		auto* doc = GameObjectDefinition::to_xml();
+		//xml_document<char>* doc = new xml_document<char>();
+		auto* obj = doc->first_node("GameObject");
+		
+		append_field_node(doc, fuel, obj);
+		append_field_node(doc, max_fuel, obj);
+		append_field_node(doc, rope_length, obj);
+		append_field_node(doc, acceleration, obj);
+		append_field_node(doc, max_speed, obj);
+		append_field_node(doc, angular_acceleration, obj);
+		append_field_node(doc, explosion_impulse, obj);
+
+		
+		return doc;
+	}
+
+
+	inline virtual PlayerDefinition* copy() { return new PlayerDefinition(*this); }
+
+
+	//virtual void* to_xml();
+
+	float		fuel;
+	float		max_fuel;
+	float		rope_length;
+	float		acceleration;
+	float		max_speed;
+	float		angular_acceleration;
+	float		explosion_impulse;
+};

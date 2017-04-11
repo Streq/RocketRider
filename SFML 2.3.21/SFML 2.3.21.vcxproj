@@ -90,7 +90,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Box2D\Box2D;C:\SFML-2.4.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Box2D\Box2D;C:\SFML-2.4.1\include;C:\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,7 +123,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Box2D\Box2D;C:\SFML-2.4.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Box2D\Box2D;C:\SFML-2.4.1\include;C:\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,25 +158,37 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectDefinition.cpp" />
+    <ClCompile Include="GameObjectDefinition.h" />
+    <ClCompile Include="GameStack.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Goal.cpp" />
     <ClCompile Include="Hook.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerDefinition.cpp" />
     <ClCompile Include="TextHolder.cpp" />
+    <ClCompile Include="xml_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppContext.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Block.h" />
+    <ClInclude Include="BlockDefinition.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="BoxDefinition.h" />
     <ClInclude Include="ConsoleOut.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="FontHolder.h" />
     <ClInclude Include="Goal.h" />
+    <ClInclude Include="GoalDefinition.h" />
     <ClInclude Include="Hook.h" />
     <ClInclude Include="HookCallback.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="ObjectDefinitions.h" />
     <ClInclude Include="PlayerContactListener.h" />
+    <ClInclude Include="PlayerDefinition.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="GameStack.h" />
     <ClInclude Include="Constants.h" />
@@ -188,6 +200,7 @@
     <ClInclude Include="ResourceHolder.h" />
     <ClInclude Include="TextHolder.h" />
     <ClInclude Include="TextureHolder.h" />
+    <ClInclude Include="xml_utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

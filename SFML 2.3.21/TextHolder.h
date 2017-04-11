@@ -4,6 +4,7 @@
 #include <fstream>
 namespace TextFile{
 enum ID{
+	MAP_DEF
 };
 }
 

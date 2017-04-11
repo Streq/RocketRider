@@ -7,10 +7,11 @@ Application::Application():
 		"Rocket Rider",
 		sf::Style::Default),
 	mScreen(),
-	mGame(AppContext(mScreen, mWindow,mDisplaySprite, mResources))
+	mGame(AppContext(mScreen, mWindow,mDisplaySprite, mResources)),
+	mStack(AppContext(mScreen, mWindow, mDisplaySprite, mResources))
 {
 	mScreen.setSmooth(false);
-	mScreen.create(INIT_VIEW_SIZE.x, INIT_VIEW_SIZE.y);
+	mScreen.create(INIT_VIEW_SIZE, INIT_VIEW_SIZE*ASPECT_RATIO);
 
 	mDisplaySprite.setTexture(mScreen.getTexture());
 	mDisplaySprite.setOrigin(sf::Vector2f(mScreen.getSize()) * 0.5f);
@@ -32,6 +33,8 @@ Application::Application():
 	mResources.textures.load(Texture::SPRITE_BOX, "Assets/Textures/box.png");
 	mResources.textures.load(Texture::SPRITE_EXPLOSION, "Assets/Textures/explosion.png");
 	mResources.textures.load(Texture::SPRITE_GOAL, "Assets/Textures/goal.png");
+	
+	mResources.texts.load(TextFile::MAP_DEF, "Assets/Maps/map.xml");
 	mGame.init();
 }
 void Application::run(){
@@ -91,26 +94,27 @@ void Application::handleEvents(){
 				//get new window size
 				sf::Vector2u size=mWindow.getSize();
 				//get limiting factor
-				float current_aspect_ratio = size.x / (float)size.y;
+				float current_aspect_ratio = size.y / (float)size.x;
 				float xfact = 1.f, yfact = 1.f;
-				//greater aspect_ratio means y is the limiting factor
+				//greater aspect_ratio means x is the limiting factor
 				if (current_aspect_ratio > ASPECT_RATIO) {
 					/*
 					example:
-					ideal = 5/3
-					current = 10/3 -> (10/3)/(5/3) = 2/1 -> x is twice as big as it should be
+					ideal = 5:3
+					current = 4:7 -> (7/4)/(3/5) = 35/12 -> y is 35/12 times bigger than it should be
 					*/
-					xfact *= ASPECT_RATIO / current_aspect_ratio ;
+					yfact *=  ASPECT_RATIO / current_aspect_ratio;
 					
 				}
 				//lesser aspect_ratio means x is the limiting factor
 				else if (current_aspect_ratio < ASPECT_RATIO) {
+					
 					/*
 					example:
-					ideal = 5/3
-					current = 4/7 -> (4/7)/(5/3) = 12/35 -> y is 35/12 times bigger than it should be
+					ideal = 5:3
+					current = 10:3 -> (3/10)/(3/5) = 1/2 -> x is twice as big as it should be
 					*/
-					yfact *= current_aspect_ratio / ASPECT_RATIO;
+					xfact *= current_aspect_ratio / ASPECT_RATIO ;
 					
 				}
 				mDisplaySprite.setScale(xfact, yfact);

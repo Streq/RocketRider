@@ -1,4 +1,5 @@
 #include "Block.h"
+#include "BlockDefinition.h"
 #include "Conversions.h"
 Block::Block(const Resources& res, const b2Vec2& size, const b2Vec2& position):
 	mSize(size),
@@ -26,6 +27,10 @@ Block::Block(const Resources& res, const b2Vec2& size, const b2Vec2& position):
 
 }
 
+Block::Block(const Resources & res, BlockDefinition * def): Block(res,def->size, def->pos)
+{
+}
+
 void Block::initBody(b2World & world){
 	//body definition
 	
@@ -37,9 +42,9 @@ void Block::initBody(b2World & world){
 	mBody->CreateFixture(&mFixtureDef);
 }
 
-GameObject::Type Block::getType() const
+ObjectType Block::getType() const
 {
-	return Type::Wall;
+	return ObjectType::Block;
 }
 
 void Block::draw(sf::RenderTarget & target, sf::RenderStates states) const{

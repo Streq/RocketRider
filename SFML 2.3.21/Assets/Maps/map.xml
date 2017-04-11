@@ -1,0 +1,26 @@
+<config>
+	<equivalence>	
+		<color>
+			<code>000000</code>
+		</color>
+		<GameObject>
+			<type>Block</type>
+		</GameObject>
+	</equivalence>
+	<equivalence>	
+		<color>
+			<code>00FF00</code>
+		</color>
+		<GameObject>
+			<type>Player</type>
+		</GameObject>
+	</equivalence>
+	<equivalence>	
+		<color>
+			<code>0000FF</code>
+		</color>
+		<GameObject>
+			<type>Goal</type>
+		</GameObject>
+	</equivalence>
+</config>

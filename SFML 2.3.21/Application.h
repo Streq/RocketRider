@@ -15,8 +15,7 @@ class Application{
 	sf::RenderWindow	mWindow;
 	sf::RenderTexture	mScreen;
 	sf::Sprite			mDisplaySprite;
-	//sf::Vector2f		mResize_Factor;
-
+	
 	Game				mGame;
 	//a futuro
 	GameStack			mStack;

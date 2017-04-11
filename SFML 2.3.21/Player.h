@@ -4,13 +4,16 @@
 #include "GameObject.h"
 #include "Resources.h"
 #include "Hook.h"
+#include "PlayerDefinition.h"
 class Player: public GameObject{
 	public:
 	typedef	std::unique_ptr<Player> Ptr;
+	
+	virtual ObjectType		getType()const;
 
-	virtual Type		getType()const;
-
-	Player(const Resources& res, const b2Vec2& position = b2Vec2(0.f, 0.f), float mAcceleration=30.f, float mAngularAcc=1.f, float mRopeLength=15.f, float mMaxFuel=20.f, float mFuel=20.f, float mExplosionImpulse=20.f);
+	Player(const Resources& res, const b2Vec2& position = b2Vec2(0.f, 0.f), float mAcceleration=30.f, float mAngularAcc=1.f, float mRopeLength=15.f, float mMaxFuel=20.f, float mFuel=20.f, float mExplosionImpulse=20.f, float mMaxSpeed = 200.f);
+	Player(const Resources& res, PlayerDefinition* def);
+	
 	void accelerate(sf::Time dt);
 	void decelerate();
 	void rotateLeft(sf::Time dt);
@@ -18,7 +21,8 @@ class Player: public GameObject{
 	void throwHook(float x, float y);
 	void releaseHook();
 	void explode();
-
+	void setGoalCompleted(bool=true);
+	bool goalCompleted();
 
 	bool isHooked()const;
 	virtual void initBody(b2World& world);
@@ -40,7 +44,7 @@ class Player: public GameObject{
 	float		mMaxFuel;
 	float		mRopeLength;
 	float		mAcceleration;
-	float		mSpeed;
+	float		mMaxSpeed;
 	float		mAngularAcc;
 	float		mExplosionImpulse;
 	

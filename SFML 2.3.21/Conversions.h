@@ -2,7 +2,7 @@
 #include "Box2D/Box2D.h"
 #include "SFML/Graphics.hpp"
 #include "Constants.h"
-
+#include <sstream>
 inline sf::Vector2f floor(const sf::Vector2f& vec) {
 	return sf::Vector2f(floor(vec.x), floor(vec.y));
 }
@@ -87,4 +87,40 @@ inline sf::Vector2i GlobalToLocalPixel(sf::RenderWindow& win, sf::Sprite& sprite
 	return win.mapCoordsToPixel(localCoord);
 
 	
+}
+
+inline std::string u32_to_hex_string(uint32 i)
+{
+	std::stringstream stream;
+	stream << std::hex << i;
+	return stream.str();
+}
+
+inline ObjectType type_from_string(const std::string& obj) {
+	if (obj.compare("Player") == 0) {
+		return ObjectType::Player;
+	}if (obj.compare("Box") == 0) {
+		return ObjectType::Box;
+	}if (obj.compare("Block") == 0) {
+		return ObjectType::Block;
+	}if (obj.compare("Goal") == 0) {
+		return ObjectType::Goal;
+	} 
+	return ObjectType(-1);
+
+};
+
+inline std::string type_to_string(ObjectType type) {
+	switch (type) {
+		case ObjectType::Player:
+			return "Player";
+		case ObjectType::Box:
+			return "Box";
+		case ObjectType::Block:
+			return "Block";
+		case ObjectType::Goal:
+			return "Goal";
+	}
+
+	return "";
 }

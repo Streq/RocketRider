@@ -1,14 +1,16 @@
 #pragma once
 #include <SFML/System/Time.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <Box2D/Box2D.h>
 
-const sf::Vector2u	ASPECT_RATIO_VEC = sf::Vector2u(10,9);
-const float			ASPECT_RATIO = ASPECT_RATIO_VEC.x / (float)ASPECT_RATIO_VEC.y;
+const sf::Vector2u	ASPECT_RATIO_VEC = sf::Vector2u(10,7);
+const float			ASPECT_RATIO = ASPECT_RATIO_VEC.y / (float)ASPECT_RATIO_VEC.x;
 
 const sf::Vector2u	INIT_WINDOW_SIZE = ASPECT_RATIO_VEC * 16u * 4u;
-const sf::Vector2u	INIT_VIEW_SIZE = ASPECT_RATIO_VEC * 16u * 4u;
-const sf::Vector2u	MIN_VIEW_SIZE = ASPECT_RATIO_VEC * 16u * 1u;
-
+const unsigned		INIT_VIEW_SIZE = ASPECT_RATIO_VEC.x * 16u * 4u;
+const unsigned		MIN_VIEW_SIZE = ASPECT_RATIO_VEC.x * 16u * 1u;
+const unsigned		MAX_VIEW_SIZE = ASPECT_RATIO_VEC.x * 16u * 12u;
 
 const size_t		FPS = 60;
 const unsigned		PIXELS_PER_METER = 32;
@@ -24,7 +26,6 @@ const b2BodyDef		PLAYER_BODY_DEF;
 const unsigned		VELOCITY_ITERATIONS=8;
 const unsigned		POSITION_ITERATIONS=3;
 }
-
 
 namespace SF{
 
@@ -42,5 +43,6 @@ namespace Color{
 	const sf::Color Grey = sf::Color(128,128,128);
 	const sf::Color Orange = sf::Color(255,165,0);
 	const sf::Color Golden = sf::Color(218,165,32);
-
 }
+
+enum class ObjectType { Player, Box, Block, Goal, size };

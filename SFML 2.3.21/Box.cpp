@@ -1,8 +1,8 @@
 #include "Box.h"
 #include "Conversions.h"
-GameObject::Type Box::getType() const
+ObjectType Box::getType() const
 {
-	return Type::Box;
+	return ObjectType::Box;
 }
 Box::Box(const Resources& res, const b2Vec2& size, const b2Vec2& position) :
 	mSize(size),
@@ -31,6 +31,10 @@ Box::Box(const Resources& res, const b2Vec2& size, const b2Vec2& position) :
 	mFixtureDef.shape = bodyShape;
 
 
+}
+
+Box::Box(const Resources & res, BoxDefinition * def):Box(res,def->size, def->pos)
+{
 }
 
 void Box::initBody(b2World & world) {

@@ -11,8 +11,8 @@
 
 #define printObjectType(a) \
 		switch (a) {\
-			printCase(GameObject::Type::Box);\
-			printCase(GameObject::Type::Wall);\
-			printCase(GameObject::Type::Player);\
+			printCase(ObjectType::Box);\
+			printCase(ObjectType::Block);\
+			printCase(ObjectType::Player);\
 		}
 

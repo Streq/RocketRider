@@ -2,12 +2,16 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <memory>
+#include "Resources.h"
+#include "Constants.h"
+
 class GameObject: public sf::Drawable{
 
 	public:
-
-	enum class Type { Player, Box, Wall, Goal };
+	~GameObject();
+	
 	typedef	std::unique_ptr<GameObject> Ptr;
+
 
 	const b2Vec2& getb2Position()const;
 	//in radians
@@ -16,7 +20,7 @@ class GameObject: public sf::Drawable{
 	virtual void		initBody(b2World& world)=0;
 	b2Body*				getBody()const;
 	b2World*			getWorld()const;
-	virtual Type		getType()const=0;
+	virtual ObjectType	getType()const=0;
 
 	public:
 	//contact handling (cool stuff!!)
@@ -31,9 +35,9 @@ class GameObject: public sf::Drawable{
 
 	protected:
 	
-	b2Body*				mBody;
-	b2World*			mWorld;
-	b2BodyDef			mBodyDef;
-	b2FixtureDef		mFixtureDef;
+	b2Body*					 mBody;
+	b2World*				 mWorld;
+	b2BodyDef				 mBodyDef;
+	b2FixtureDef			 mFixtureDef;
 	std::unique_ptr<b2Shape> mShape;
 };

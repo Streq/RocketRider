@@ -1,12 +1,14 @@
 #include "Goal.h"
 
 #include "Conversions.h"
-Goal::Goal(const Resources & res, const b2Vec2 & size, const b2Vec2& position):
+Goal::Goal(const Resources & res, Goal::Callback callback, const b2Vec2 & size, const b2Vec2& position):
 	mSize(size),
+	mCallback(callback),
 	mSprite(
 		res.textures.get(Texture::SPRITE_GOAL),
-		sf::IntRect(0, 0, size.x*PIXELS_PER_METER, size.y*PIXELS_PER_METER)
-	)
+		sf::IntRect(0.f, 0.f, size.x*PIXELS_PER_METER, size.y*PIXELS_PER_METER)
+	),
+	m_activate(false)
 {
 	auto bounds = mSprite.getLocalBounds();
 	sf::Vector2f center(bounds.width / 2.f, bounds.height / 2.f);
@@ -28,7 +30,11 @@ Goal::Goal(const Resources & res, const b2Vec2 & size, const b2Vec2& position):
 
 	mFixtureDef.shape = bodyShape;
 
+}
 
+Goal::Goal(const Resources & res,const Goal::Callback callback, GoalDefinition *def):
+	Goal(res,callback,def->size,def->pos)
+{
 }
 
 
@@ -41,9 +47,29 @@ void Goal::initBody(b2World & world) {
 	mBody->CreateFixture(&mFixtureDef);
 }
 
-GameObject::Type Goal::getType() const
+ObjectType Goal::getType() const
 {
-	return Type::Goal;
+	return ObjectType::Goal;
+}
+
+void Goal::Step()
+{
+	if (m_activate)mCallback(nullptr);
+	m_activate = false;
+	
+}
+
+void Goal::BeginContact(b2Contact * contact, bool id)
+{
+	b2Fixture* fix = id ? contact->GetFixtureA() : contact->GetFixtureB();
+	GameObject* obj = static_cast<GameObject*>(fix->GetBody()->GetUserData());
+	ObjectType type = obj->getType();
+	switch (type) {
+		case ObjectType::Player: {
+			//mCallback(static_cast<Player*>(obj));
+			m_activate = true;
+		}break;
+	}
 }
 
 void Goal::draw(sf::RenderTarget & target, sf::RenderStates states) const {

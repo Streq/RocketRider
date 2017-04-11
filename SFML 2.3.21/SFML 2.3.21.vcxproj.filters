@@ -22,6 +22,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="GameObject\Definition">
+      <UniqueIdentifier>{a259ddf6-7d50-46cc-a209-f9f19303c6b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -52,6 +55,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Goal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectDefinition.h">
+      <Filter>GameObject\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectDefinition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerDefinition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xml_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -124,6 +148,24 @@
     </ClInclude>
     <ClInclude Include="Level.h">
       <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDefinition.h">
+      <Filter>GameObject\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockDefinition.h">
+      <Filter>GameObject\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="GoalDefinition.h">
+      <Filter>GameObject\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxDefinition.h">
+      <Filter>GameObject\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="xml_utils.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectDefinitions.h">
+      <Filter>GameObject\Definition</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,4 +1,13 @@
 #include "GameObject.h"
+#include "GameObjectDefinition.h"
+#include "Conversions.h"
+GameObject::~GameObject()
+{
+	if (mBody && mWorld)
+		mWorld->DestroyBody(mBody);
+}
+
+
 
 const b2Vec2& GameObject::getb2Position()const{
 	return mBody->GetPosition();

@@ -3,17 +3,18 @@
 #include "Conversions.h"
 #include <SFML/Graphics.hpp>
 #include "HookCallback.h"
-GameObject::Type Player::getType() const
+ObjectType Player::getType() const
 {
-	return Type::Player;
+	return ObjectType::Player;
 }
 
-Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration, float mAngularAcc, float mRopeLength, float mMaxFuel, float mFuel, float mExplosionImpulse):
+Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration, float mAngularAcc, float mRopeLength, float mMaxFuel, float mFuel, float mExplosionImpulse, float mMaxSpeed):
 	mAcceleration(mAcceleration),
 	mAngularAcc(mAngularAcc),
 	mRopeLength(mRopeLength),
 	mMaxFuel(mMaxFuel), 
 	mFuel(mFuel),
+	mMaxSpeed(mMaxSpeed),
 	m_accelerating(false),
 	m_hooked(false),
 	mHook(*this),
@@ -24,7 +25,7 @@ Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration,
 	mBodyDef.position = position;
 	mBodyDef.allowSleep = false;
 	mBodyDef.type = b2BodyType::b2_dynamicBody;
-	mBodyDef.angularDamping = 0.5f;
+	mBodyDef.angularDamping = 1.5f;
 	mBodyDef.linearDamping = 0.1f;
 	mBodyDef.userData = this;
 
@@ -56,6 +57,19 @@ Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration,
 	mExplosionSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 	mExplosionSprite.setPosition(0.f, 0.f);
 }
+Player::Player(const Resources & res, PlayerDefinition * def):Player(
+	res,
+	def->pos,
+	def->acceleration,
+	def->angular_acceleration,
+	def->rope_length,
+	def->max_fuel,
+	def->fuel,
+	def->explosion_impulse,
+	def->max_speed
+)
+{
+}
 void Player::initBody(b2World & world){
 	//body definition
 	GameObject::initBody(world);
@@ -75,12 +89,12 @@ void Player::PostSolve(b2Contact * contact, const b2ContactImpulse * impulse, bo
 
 void Player::BeginContact(b2Contact * contact, bool id)
 {
-	GameObject::Type type;
-	type = id ? 
-		static_cast<GameObject*>(contact->GetFixtureA()->GetBody()->GetUserData())->getType():
-		static_cast<GameObject*>(contact->GetFixtureB()->GetBody()->GetUserData())->getType();
-	if (type == GameObject::Type::Goal)
-		m_goal = true;
+	
+	b2Fixture* fix=id? contact->GetFixtureA(): contact->GetFixtureB();
+	ObjectType type = static_cast<GameObject*>(fix->GetBody()->GetUserData())->getType();
+	
+	//if (type == ObjectType::Goal)
+	//	m_goal = true;
 }
 
 void Player::Step()
@@ -144,7 +158,17 @@ void Player::releaseHook(){
 
 void Player::explode()
 {
-	printf("espelote");
+	//printf("espelote");
+}
+
+void Player::setGoalCompleted(bool flag)
+{
+	m_goal = flag;
+}
+
+bool Player::goalCompleted()
+{
+	return m_goal;
 }
 
 bool Player::isHooked() const{
