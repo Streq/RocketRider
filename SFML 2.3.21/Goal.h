@@ -12,16 +12,16 @@ class Goal : public GameObject {
 	Goal(const Resources& res, Callback callback, GoalDefinition*);
 	
 	
-	virtual void		initBody(b2World& world);
-	virtual ObjectType	getType()const;
+	virtual void		initBody(b2World& world) final;
+	virtual ObjectType	getType()const final;
 
-	virtual void Step() override;
+	virtual void Step() override final;
 
-	virtual void BeginContact(b2Contact* contact, bool id);
+	virtual void BeginContact(b2Contact* contact, bool id) final;
 
 
 	private:
-	virtual void		draw(sf::RenderTarget& target, sf::RenderStates states)const;
+	virtual void		draw(sf::RenderTarget& target, sf::RenderStates states)const final;
 	sf::Sprite			mSprite;
 	b2Vec2				mSize;
 	Callback			mCallback;

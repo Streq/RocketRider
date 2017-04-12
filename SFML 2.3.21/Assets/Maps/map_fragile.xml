@@ -1,4 +1,5 @@
 <config>
+	<info>NO TOQUES NADA</info>
 	<equivalence>	
 		<color>
 			<code>000000</code>
@@ -13,7 +14,7 @@
 		</color>
 		<GameObject>
 			<type>Player</type>
-			
+			<explosion_impulse>0.f</explosion_impulse>
 		</GameObject>
 	</equivalence>
 	<equivalence>	

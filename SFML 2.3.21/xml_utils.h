@@ -3,8 +3,11 @@
 #include <string>
 #include <rapidxml.hpp>
 #include <rapidxml_print.hpp>
+#include <rapidxml_utils.hpp>
 #include <rapidxml_iterators.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <fstream>
+
 
 #define append_field_named_node(ALLOC,FIELD,NAME,APPEND)						\
 do{																				\
@@ -36,3 +39,4 @@ GameObjectDefinition* def_from_xml(rapidxml::xml_node<>* node);
 sf::Color parse_color_from_xml(rapidxml::xml_node<>*node);
 
 rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool);
+

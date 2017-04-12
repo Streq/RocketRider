@@ -13,6 +13,7 @@
 #define rightKey sf::Keyboard::D
 #define leftKey sf::Keyboard::A
 #define accelerateKey sf::Keyboard::W
+#define dieKey sf::Keyboard::R
 class Game{
 	public:	
 	
@@ -29,8 +30,8 @@ class Game{
 
 	private:
 	void createObject(GameObjectDefinition* def);
-
-	
+	void goto_level(unsigned level);
+	void load_levels(const std::string& path);
 
 	Controller							mController;
 	AppContext							mContext;
@@ -45,7 +46,9 @@ class Game{
 
 	std::vector<Level>					mLevels;
 	unsigned							m_level_index;
-
+	unsigned							m_level_amount;
 
 	bool								m_goto_next_level;
+	bool								m_restart_level;
+	bool								m_won;
 };

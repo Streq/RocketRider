@@ -1,0 +1,31 @@
+<config>
+	<levels>
+		<amount>6</amount>
+		<files>
+			<level>
+				<map>0.png</map>
+				<levelconfig>map.xml</levelconfig>
+			</level>
+			<level>
+				<map>1.png</map>
+				<levelconfig>map.xml</levelconfig>
+			</level>
+			<level>
+				<map>2.png</map>
+				<levelconfig>map.xml</levelconfig>
+			</level>
+			<level>
+				<map>3.png</map>
+				<levelconfig>map_no_wheel.xml</levelconfig>
+			</level>
+			<level>
+				<map>4.png</map>
+				<levelconfig>map.xml</levelconfig>
+			</level>
+			<level>
+				<map>5.png</map>
+				<levelconfig>map_fragile.xml</levelconfig>
+			</level>
+		</files>
+	</levels>
+</config>

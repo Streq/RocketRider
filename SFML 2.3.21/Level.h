@@ -8,4 +8,5 @@ struct Level {
 	std::vector<GameObjectDefinition::ptr> mObjects;
 
 	void load(sf::Image* tilemap, char* configuration);
+	void loadFromFiles(const std::string& pathtilemap, const std::string& pathconfig);
 };

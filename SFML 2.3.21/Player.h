@@ -9,7 +9,7 @@ class Player: public GameObject{
 	public:
 	typedef	std::unique_ptr<Player> Ptr;
 	
-	virtual ObjectType		getType()const;
+	virtual ObjectType		getType()const final;
 
 	Player(const Resources& res, const b2Vec2& position = b2Vec2(0.f, 0.f), float mAcceleration=30.f, float mAngularAcc=1.f, float mRopeLength=15.f, float mMaxFuel=20.f, float mFuel=20.f, float mExplosionImpulse=20.f, float mMaxSpeed = 200.f);
 	Player(const Resources& res, PlayerDefinition* def);
@@ -23,21 +23,21 @@ class Player: public GameObject{
 	void explode();
 	void setGoalCompleted(bool=true);
 	bool goalCompleted();
-
+	bool isDead()const;
 	bool isHooked()const;
-	virtual void initBody(b2World& world);
+	virtual void initBody(b2World& world) final;
 
 
-	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse, bool id);
-	virtual void BeginContact(b2Contact* contact, bool id);
-	virtual void Step();
+	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse, bool id)final;
+	virtual void BeginContact(b2Contact* contact, bool id)final;
+	virtual void Step() final;
 
 
 	private:
 	sf::Sprite		mSprite;
 	sf::Sprite		mExplosionSprite;
 	sf::Sprite		mFire;
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const final;
 	
 	Hook		mHook;
 	float		mFuel;
@@ -52,5 +52,6 @@ class Player: public GameObject{
 	bool		m_accelerating;
 	bool		m_explode;
 	bool		m_goal;
+	bool		m_dead;
 	//b2RopeJoint* mHook;
 };

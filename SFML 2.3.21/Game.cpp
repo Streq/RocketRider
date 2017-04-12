@@ -11,64 +11,16 @@
 #include "Block.h"
 #include "Player.h"
 #include "Goal.h"
-#include "rapidxml.hpp"
-#include "rapidxml_print.hpp"
+#include "xml_utils.h"
 Game::Game(const AppContext & context):
 	mWorld(b2Vec2(0,-10.f)),
 	mContext(context),
 	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(INIT_VIEW_SIZE,INIT_VIEW_SIZE*ASPECT_RATIO)),
 	mContactListener(new GameContactListener()),
-	mLevels(3),
+	mLevels(),
 	m_level_index(0)
 {
 	
-	
-
-	BlockDefinition* b1;
-	PlayerDefinition* pdef;
-	GoalDefinition* gdef;
-	
-	
-	//initialize levels
-	auto& lv2 = mLevels[1];
-	b1 = new BlockDefinition();
-	b1->pos = b2Vec2(4.f, 1.f);
-	b1->size = b2Vec2(1.f, 10.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
-
-	b1 = new BlockDefinition();
-	b1->pos = b2Vec2(2.f, 0.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
-
-	b1 = new BlockDefinition();
-	b1->pos = b2Vec2(20.f, 10.f);
-	b1->size = b2Vec2(1.f, 100.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
-
-	b1 = new BlockDefinition();
-	b1->pos = b2Vec2(12.f, -12.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
-
-	b1 = new BlockDefinition();
-	b1->pos = b2Vec2(15.f, 0.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
-
-	b1 = new BlockDefinition();
-	b1->pos = b2Vec2(-5.f, 10.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
-
-	b1 = new BlockDefinition();
-	b1->pos = b2Vec2(-5.f, -5.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(b1));
-
-	pdef = new PlayerDefinition();
-	pdef->pos = b2Vec2(0.f, 4.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(pdef));
-
-	gdef = new GoalDefinition();
-	gdef->pos = b2Vec2(0.f, 20.f);
-	lv2.mObjects.push_back(GameObjectDefinition::ptr(gdef));
-
 
 }
 
@@ -81,14 +33,17 @@ void Game::handle_event(const sf::Event & e){
 			bool pressed = e.type==sf::Event::KeyPressed;
 			switch(e.key.code){
 				case leftKey:{
-					mController.input[Input::Left]=pressed;
+					mController.input[Input::Left] = pressed;
 				}break;
 				case rightKey:{
-					mController.input[Input::Right]=pressed;
+					mController.input[Input::Right] = pressed;
 				}break;
 				case accelerateKey:{
-					mController.input[Input::Accelerate]=pressed;
+					mController.input[Input::Accelerate] = pressed;
 				}break;
+				case dieKey: {
+					mController.input[Input::Die] = pressed;
+				}
 			}
 		}break;
 		case sf::Event::MouseButtonPressed:{
@@ -142,6 +97,9 @@ void Game::update(sf::Time dt){
 	if(mController.input[Input::Accelerate])
 		mPlayer->accelerate(dt);
 	else mPlayer->decelerate();
+	if (mController.input[Input::Die]) {
+		mPlayer->explode();
+	}
 	if(mController.input[Input::Hook]){
 		//printf("mouse:%d,%d\n",mController.lastMouseClick.x,mController.lastMouseClick.y);
 		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
@@ -164,11 +122,18 @@ void Game::update(sf::Time dt){
 	std::for_each(mObjects.begin(), mObjects.end(), [](GameObject::Ptr& ptr) {ptr->Step();});
 
 	if (m_goto_next_level) {
-		clear();
-		loadLevel(mLevels[++m_level_index]);
-		m_goto_next_level = false;
-	}
+		if (++m_level_index < m_level_amount) {
+			goto_level(m_level_index);
+			m_goto_next_level = false;
+		}
+		else {
+			m_won = true;
+		}
 
+		
+	}
+	if (mPlayer->isDead())
+		goto_level(m_level_index);
 
 	mView.setCenter(b2_to_sf_pos(mPlayer->getb2Position()));
 	const auto& camara_pos = mView.getCenter();
@@ -191,26 +156,17 @@ void Game::draw(){
 	
 }
 
-void Game::init(){
+void Game::init() {
 	mBackground.setTexture(mContext.resources->textures.get(Texture::SPRITE_TILE));
-	mBackground.setTextureRect(sf::IntRect(0, 0, MAX_VIEW_SIZE*3, ASPECT_RATIO*MAX_VIEW_SIZE*3));
-	auto bounds=mBackground.getLocalBounds();
-	mBackground.setOrigin(bounds.width/2.f,bounds.height/2.f);
-	mBackground.setScale(sf::Vector2f(1.f,1.f)*4.f);
+	mBackground.setTextureRect(sf::IntRect(0, 0, MAX_VIEW_SIZE * 3, ASPECT_RATIO*MAX_VIEW_SIZE * 3));
+	auto bounds = mBackground.getLocalBounds();
+	mBackground.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+	mBackground.setScale(sf::Vector2f(1.f, 1.f)*4.f);
 
-	//initialize levels
-	sf::Image tmap;
-	tmap.loadFromFile("Assets/Textures/testmap.png");
-	rapidxml::xml_document<> doc;
-	auto str = doc.allocate_string(mContext.resources->texts.get(TextFile::MAP_DEF).c_str());
-	mLevels[0].load(&tmap, str);
-
-
-
-
-
+	load_levels("Assets/Config/config.xml");
 	mWorld.SetContactListener(mContactListener.get());
 	loadLevel(mLevels[0]);
+
 
 }
 
@@ -253,4 +209,54 @@ void Game::createObject(GameObjectDefinition *def)
 	mObjects.push_back(std::unique_ptr<GameObject>(obj));
 
 
+}
+
+void Game::goto_level(unsigned level)
+{
+	clear();
+	loadLevel(mLevels[m_level_index=level]);
+}
+
+void Game::load_levels(const std::string& path)
+{
+	rapidxml::file<>file(&path[0]);
+	
+	rapidxml::xml_document<> doc;
+	doc.parse<rapidxml::parse_default>(file.data());
+
+	auto* config = doc.first_node("config");
+	if (!config) { throw std::runtime_error("Game config invalid, <config> not found: " + path); }
+
+	auto* levels = config->first_node("levels");
+
+	{
+		auto* amount = levels->first_node("amount");
+		if (!amount) { throw std::runtime_error("Game config invalid, <amount> not found: " + path); }
+		m_level_amount = std::stoul(amount->value());
+		mLevels.resize(m_level_amount);
+	}
+	{
+		auto* files = levels->first_node("files");
+		if (!files) { throw std::runtime_error("Game config invalid, <files> not found: " + path); }
+		for (unsigned i = 0; i < m_level_amount; i++) {
+			
+			auto* level = files->first_node("level");
+			if (!level) { throw std::runtime_error("Game config invalid, <level> not found: " + path); }
+			{
+				auto* map = level->first_node("map");
+				if (!map) { throw std::runtime_error("Game config invalid, <map> not found: " + path); }
+				
+				auto* levelconfig = level->first_node("levelconfig");
+				if (!levelconfig) { throw std::runtime_error("Game config invalid, <levelconfig> not found: " + path); }
+
+				const std::string path = "Assets/Maps/";
+
+				mLevels[i].loadFromFiles(path + map->value(),path + levelconfig->value());
+
+			
+			}
+			files->remove_node(level);
+		}
+		
+	}
 }

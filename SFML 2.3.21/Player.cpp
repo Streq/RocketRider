@@ -82,9 +82,17 @@ void Player::initBody(b2World & world){
 }
 
 void Player::PostSolve(b2Contact * contact, const b2ContactImpulse * impulse, bool id){
-	if(impulse->normalImpulses[id] > mExplosionImpulse)m_explode = true;
-	//printf("%f\n", impulse->normalImpulses[id]);
-	//printf("%f\n", impulse->tangentImpulses[id]);
+	
+
+	int32 count = contact->GetManifold()->pointCount;
+
+	float32 maxImpulse = 0.0f;
+	for (int32 i = 0; i < count; ++i)
+	{
+		maxImpulse = b2Max(maxImpulse, impulse->normalImpulses[i]);
+	}
+	if (maxImpulse > mExplosionImpulse)m_explode = true;
+
 }
 
 void Player::BeginContact(b2Contact * contact, bool id)
@@ -99,8 +107,10 @@ void Player::BeginContact(b2Contact * contact, bool id)
 
 void Player::Step()
 {
-	if (m_explode)explode();
+	if (m_explode)
+		explode();
 	m_explode = false;
+	
 }
 
 void Player::accelerate(sf::Time dt){
@@ -158,7 +168,7 @@ void Player::releaseHook(){
 
 void Player::explode()
 {
-	//printf("espelote");
+	m_dead = true;
 }
 
 void Player::setGoalCompleted(bool flag)
@@ -169,6 +179,11 @@ void Player::setGoalCompleted(bool flag)
 bool Player::goalCompleted()
 {
 	return m_goal;
+}
+
+bool Player::isDead()const
+{
+	return m_dead;
 }
 
 bool Player::isHooked() const{

@@ -35,6 +35,7 @@ Application::Application():
 	mResources.textures.load(Texture::SPRITE_GOAL, "Assets/Textures/goal.png");
 	
 	mResources.texts.load(TextFile::MAP_DEF, "Assets/Maps/map.xml");
+	mResources.texts.load(TextFile::CONFIG, "Assets/Config/config.xml");
 	mGame.init();
 }
 void Application::run(){

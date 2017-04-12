@@ -63,7 +63,7 @@ sf::Color parse_color_from_xml(rapidxml::xml_node<>* node)
 	//	<code>FFFFFF</code>
 	//	<alpha>255</alpha>
 	//</color>
-	std::cout << *node << '\n';
+	//std::cout << *node << '\n';
 	auto color_node = node->first_node("color");
 	auto code = color_node->first_node("code");
 	auto alpha = color_node->first_node("alpha");
@@ -97,3 +97,4 @@ rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool)
 	colornode->append_node(alphanode);
 	return colornode;
 }
+

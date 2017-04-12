@@ -1,4 +1,5 @@
 <config>
+	<info>Se jodio el volante, arreglate con la soga</info>
 	<equivalence>	
 		<color>
 			<code>000000</code>
@@ -13,7 +14,7 @@
 		</color>
 		<GameObject>
 			<type>Player</type>
-			
+			<angular_acceleration>0.f</angular_acceleration>
 		</GameObject>
 	</equivalence>
 	<equivalence>	

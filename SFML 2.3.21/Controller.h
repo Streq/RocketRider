@@ -8,6 +8,7 @@ enum ID{
 	Accelerate,
 	Hook,
 	ReleaseHook,
+	Die,
 	size
 };
 }

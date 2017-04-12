@@ -10,7 +10,7 @@ struct PlayerDefinition : public GameObjectDefinition{
 		max_fuel(20.f),
 		fuel(20.f),
 		max_speed(20.f),
-		explosion_impulse(20.f)
+		explosion_impulse(10.f)
 	{
 		type = ObjectType::Player;
 	}

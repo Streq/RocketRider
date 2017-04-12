@@ -33,3 +33,13 @@ void Level::load(sf::Image * tilemap, char* configuration)
 		}
 	}
 }
+
+void Level::loadFromFiles(const std::string & pathtilemap, const std::string & pathconfig)
+{
+	sf::Image tilemap;
+	tilemap.loadFromFile(pathtilemap);
+	
+	rapidxml::file<> file(&pathconfig[0]);
+	
+	load(&tilemap,file.data());
+}
