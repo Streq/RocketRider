@@ -1,0 +1,35 @@
+<config>
+	<equivalence>	
+		<color>
+			<code>000000</code>
+		</color>
+		<GameObject>
+			<type>Block</type>
+		</GameObject>
+	</equivalence>
+	<equivalence>	
+		<color>
+			<code>00FF00</code>
+		</color>
+		<GameObject>
+			<type>Player</type>
+			<always_accelerating>true</always_accelerating>
+		</GameObject>
+	</equivalence>
+	<equivalence>	
+		<color>
+			<code>0000FF</code>
+		</color>
+		<GameObject>
+			<type>Goal</type>
+		</GameObject>
+	</equivalence>
+	<equivalence>	
+		<color>
+			<code>FF0000</code>
+		</color>
+		<GameObject>
+			<type>DeathBlock</type>
+		</GameObject>
+	</equivalence>
+</config>

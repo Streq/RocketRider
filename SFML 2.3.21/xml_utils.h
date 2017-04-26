@@ -36,7 +36,7 @@ do{																					\
 class GameObjectDefinition;
 GameObjectDefinition* def_from_xml(rapidxml::xml_node<>* node);
 
-sf::Color parse_color_from_xml(rapidxml::xml_node<>*node);
+sf::Color parse_color_from_xml(rapidxml::xml_node<>*node, bool maxed_alpha = false);
 
-rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool);
+rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool, bool include_alpha = false);
 

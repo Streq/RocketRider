@@ -52,7 +52,7 @@ ObjectType Goal::getType() const
 	return ObjectType::Goal;
 }
 
-void Goal::Step()
+void Goal::Step(sf::Time dt)
 {
 	if (m_activate)mCallback(nullptr);
 	m_activate = false;

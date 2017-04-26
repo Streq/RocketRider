@@ -8,7 +8,7 @@ ObjectType Player::getType() const
 	return ObjectType::Player;
 }
 
-Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration, float mAngularAcc, float mRopeLength, float mMaxFuel, float mFuel, float mExplosionImpulse, float mMaxSpeed):
+Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration, float mAngularAcc, float mRopeLength, float mMaxFuel, float mFuel, float mExplosionImpulse, float mMaxSpeed, bool m_always_accelerating):
 	mAcceleration(mAcceleration),
 	mAngularAcc(mAngularAcc),
 	mRopeLength(mRopeLength),
@@ -66,7 +66,8 @@ Player::Player(const Resources & res, PlayerDefinition * def):Player(
 	def->max_fuel,
 	def->fuel,
 	def->explosion_impulse,
-	def->max_speed
+	def->max_speed,
+	def->always_accelerating
 )
 {
 }
@@ -105,8 +106,12 @@ void Player::BeginContact(b2Contact * contact, bool id)
 	//	m_goal = true;
 }
 
-void Player::Step()
+void Player::Step(sf::Time dt)
 {
+	if(m_accelerating){
+		b2Vec2 vector(rad_to_b2Vec(mBody->GetAngle(), mAcceleration * dt.asSeconds()));
+		mBody->ApplyLinearImpulseToCenter(vector, true);
+	}
 	if (m_explode)
 		explode();
 	m_explode = false;
@@ -114,13 +119,11 @@ void Player::Step()
 }
 
 void Player::accelerate(sf::Time dt){
-	b2Vec2 vector(rad_to_b2Vec(mBody->GetAngle(), mAcceleration * dt.asSeconds()));
-	mBody->ApplyLinearImpulseToCenter(vector,true);
 	m_accelerating=true;
 }
 
 void Player::decelerate(){
-	m_accelerating=false;
+		m_accelerating = m_always_accelerating;
 }
 
 void Player::rotateLeft(sf::Time dt){
@@ -207,6 +210,6 @@ void Player::draw(sf::RenderTarget & target, sf::RenderStates states)const{
 	}
 	states.transform.translate(b2_to_sf_pos(getb2Position()));
 	states.transform.rotate(-rad_to_deg(getb2Rotation()));
-	if(m_accelerating)target.draw(mFire,states);
+	if(m_accelerating&&mAcceleration>b2_epsilon)target.draw(mFire,states);
 	target.draw(mSprite,states);
 }

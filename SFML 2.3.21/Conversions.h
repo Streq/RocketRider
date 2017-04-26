@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "Constants.h"
 #include <sstream>
+#include <math.h>
 inline sf::Vector2f floor(const sf::Vector2f& vec) {
 	return sf::Vector2f(floor(vec.x), floor(vec.y));
 }
@@ -105,8 +106,10 @@ inline ObjectType type_from_string(const std::string& obj) {
 		return ObjectType::Block;
 	}if (obj.compare("Goal") == 0) {
 		return ObjectType::Goal;
-	} 
-	return ObjectType(-1);
+	}if (obj.compare("DeathBlock") == 0) {
+		return ObjectType::DeathBlock;
+	}
+	return ObjectType::size;
 
 };
 
@@ -120,7 +123,19 @@ inline std::string type_to_string(ObjectType type) {
 			return "Block";
 		case ObjectType::Goal:
 			return "Goal";
+		case ObjectType::DeathBlock:
+			return "DeathBlock";
 	}
 
 	return "";
 }
+
+inline sf::FloatRect viewRect(const sf::View& view) { return sf::FloatRect(view.getCenter() - view.getSize()*0.5f, view.getSize()); }
+
+inline sf::FloatRect getIntersection(const sf::FloatRect& rect1, const sf::FloatRect& rect2) {
+	float left = std::max(rect1.left, rect2.left);
+	float top = std::max(rect1.top, rect2.top);
+	float width = std::min(rect1.left + rect1.width, rect2.left + rect2.width) - left;
+	float height = std::min(rect1.top + rect1.height, rect2.top + rect2.height) - top;
+	return sf::FloatRect(left, top, width, height);
+};

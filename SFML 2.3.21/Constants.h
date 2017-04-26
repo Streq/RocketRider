@@ -3,6 +3,10 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <Box2D/Box2D.h>
+//#define NO_FPS_LIMIT
+
+
+
 
 const sf::Vector2u	ASPECT_RATIO_VEC = sf::Vector2u(10,7);
 const float			ASPECT_RATIO = ASPECT_RATIO_VEC.y / (float)ASPECT_RATIO_VEC.x;
@@ -10,13 +14,13 @@ const float			ASPECT_RATIO = ASPECT_RATIO_VEC.y / (float)ASPECT_RATIO_VEC.x;
 const sf::Vector2u	INIT_WINDOW_SIZE = ASPECT_RATIO_VEC * 16u * 4u;
 const unsigned		INIT_VIEW_SIZE = ASPECT_RATIO_VEC.x * 16u * 4u;
 const unsigned		MIN_VIEW_SIZE = ASPECT_RATIO_VEC.x * 16u * 1u;
-const unsigned		MAX_VIEW_SIZE = ASPECT_RATIO_VEC.x * 16u * 12u;
+const unsigned		MAX_VIEW_SIZE = ASPECT_RATIO_VEC.x * 16u * 24u;
 
 const size_t		FPS = 60;
 const unsigned		PIXELS_PER_METER = 32;
 const float			METERS_PER_PIXEL = 1.f/PIXELS_PER_METER;		
 
-const float			MOUSE_SCROLL_ZOOM = 0.05f;
+const int			MOUSE_SCROLL_ZOOM = 1;
 
 namespace B2{
 
@@ -32,6 +36,8 @@ namespace SF{
 const sf::Time		TIME_STEP = sf::seconds(B2::TIME_STEP); 
 const sf::Time		RENDER_FRAME_TIME = sf::seconds(1.f/FPS);
 const sf::Time		FPS_UPDATE_TIME = sf::seconds(1.f);
+const sf::Time		LEVEL_TITLE_TIME = sf::seconds(4.f);
+
 
 }
 
@@ -45,4 +51,4 @@ namespace Color{
 	const sf::Color Golden = sf::Color(218,165,32);
 }
 
-enum class ObjectType { Player, Box, Block, Goal, size };
+enum class ObjectType { Player, Box, Block, Goal, DeathBlock, size };

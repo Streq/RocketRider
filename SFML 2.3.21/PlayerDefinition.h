@@ -10,7 +10,8 @@ struct PlayerDefinition : public GameObjectDefinition{
 		max_fuel(20.f),
 		fuel(20.f),
 		max_speed(20.f),
-		explosion_impulse(10.f)
+		explosion_impulse(10.f),
+		always_accelerating(false)
 	{
 		type = ObjectType::Player;
 	}
@@ -27,7 +28,7 @@ struct PlayerDefinition : public GameObjectDefinition{
 		append_field_node(doc, max_speed, obj);
 		append_field_node(doc, angular_acceleration, obj);
 		append_field_node(doc, explosion_impulse, obj);
-
+		append_field_node(doc, always_accelerating, obj);
 		
 		return doc;
 	}
@@ -45,4 +46,5 @@ struct PlayerDefinition : public GameObjectDefinition{
 	float		max_speed;
 	float		angular_acceleration;
 	float		explosion_impulse;
+	bool		always_accelerating;
 };

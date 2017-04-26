@@ -25,4 +25,12 @@
 			<type>Goal</type>
 		</GameObject>
 	</equivalence>
+	<equivalence>	
+		<color>
+			<code>FF0000</code>
+		</color>
+		<GameObject>
+			<type>DeathBlock</type>
+		</GameObject>
+	</equivalence>
 </config>

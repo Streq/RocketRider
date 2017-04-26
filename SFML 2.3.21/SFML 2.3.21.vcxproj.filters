@@ -25,6 +25,9 @@
     <Filter Include="GameObject\Definition">
       <UniqueIdentifier>{a259ddf6-7d50-46cc-a209-f9f19303c6b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TextRender">
+      <UniqueIdentifier>{a5de7f36-05ee-4cd9-b407-65005227df53}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -76,6 +79,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeathBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenMessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TileTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tilemap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -166,6 +181,27 @@
     </ClInclude>
     <ClInclude Include="ObjectDefinitions.h">
       <Filter>GameObject\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="DeathBlock.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenMessage.h">
+      <Filter>TextRender</Filter>
+    </ClInclude>
+    <ClInclude Include="text_utils.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="TileTexture.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgroundLayer.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Tilemap.h">
+      <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

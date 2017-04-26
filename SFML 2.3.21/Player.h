@@ -11,7 +11,7 @@ class Player: public GameObject{
 	
 	virtual ObjectType		getType()const final;
 
-	Player(const Resources& res, const b2Vec2& position = b2Vec2(0.f, 0.f), float mAcceleration=30.f, float mAngularAcc=1.f, float mRopeLength=15.f, float mMaxFuel=20.f, float mFuel=20.f, float mExplosionImpulse=20.f, float mMaxSpeed = 200.f);
+	Player(const Resources& res, const b2Vec2& position = b2Vec2(0.f, 0.f), float mAcceleration=30.f, float mAngularAcc=1.f, float mRopeLength=15.f, float mMaxFuel=20.f, float mFuel=20.f, float mExplosionImpulse=20.f, float mMaxSpeed = 200.f, bool m_always_accelerating = false);
 	Player(const Resources& res, PlayerDefinition* def);
 	
 	void accelerate(sf::Time dt);
@@ -30,7 +30,7 @@ class Player: public GameObject{
 
 	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse, bool id)final;
 	virtual void BeginContact(b2Contact* contact, bool id)final;
-	virtual void Step() final;
+	virtual void Step(sf::Time dt) final override;
 
 
 	private:
@@ -50,6 +50,7 @@ class Player: public GameObject{
 	
 	bool		m_hooked;
 	bool		m_accelerating;
+	bool		m_always_accelerating;
 	bool		m_explode;
 	bool		m_goal;
 	bool		m_dead;

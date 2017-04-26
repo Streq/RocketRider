@@ -27,13 +27,23 @@ Application::Application():
 	mResources.textures.load(Texture::SPRITE_PLAYER_3,"Assets/Textures/player3.png");
 	mResources.textures.load(Texture::SPRITE_BLOCK,"Assets/Textures/wall.png");
 	mResources.textures.get(Texture::SPRITE_BLOCK).setRepeated(true);
-	mResources.textures.load(Texture::SPRITE_TILE,"Assets/Textures/tile.png");
+	mResources.textures.load(Texture::SPRITE_TILE, "Assets/Textures/tile.png");
 	mResources.textures.get(Texture::SPRITE_TILE).setRepeated(true);
+	mResources.textures.load(Texture::SPRITE_BACKGROUND, "Assets/Textures/background.png");
+	mResources.textures.get(Texture::SPRITE_BACKGROUND).setRepeated(true);
 	mResources.textures.load(Texture::SPRITE_FIRE,"Assets/Textures/fire.png");
 	mResources.textures.load(Texture::SPRITE_BOX, "Assets/Textures/box.png");
 	mResources.textures.load(Texture::SPRITE_EXPLOSION, "Assets/Textures/explosion.png");
 	mResources.textures.load(Texture::SPRITE_GOAL, "Assets/Textures/goal.png");
-	
+	mResources.textures.load(Texture::SPRITE_LAVA, "Assets/Textures/lava.png");
+	mResources.textures.load(Texture::TILESET, "Assets/Textures/tileset.png");
+	mResources.textures.load(Texture::STARS, "Assets/Textures/stars.png");
+	mResources.textures.get(Texture::STARS).setRepeated(true);
+	mResources.textures.load(Texture::STARS1, "Assets/Textures/stars1.png");
+	mResources.textures.get(Texture::STARS1).setRepeated(true);
+	mResources.textures.load(Texture::STARS2, "Assets/Textures/stars2.png");
+	mResources.textures.get(Texture::STARS2).setRepeated(true);
+
 	mResources.texts.load(TextFile::MAP_DEF, "Assets/Maps/map.xml");
 	mResources.texts.load(TextFile::CONFIG, "Assets/Config/config.xml");
 	mGame.init();
@@ -57,10 +67,11 @@ void Application::run(){
 		sf::Clock mClock;
 		mClock.restart();
 		while (mWindow.isOpen()){
-			delta_time += mClock.restart();
+			auto clocktime = mClock.restart();
+			delta_time += clocktime;
 			frame_updated = (delta_time >= SF::TIME_STEP);
 			real_frames += frame_updated;
-
+		#ifndef NO_FPS_LIMIT
 			while(delta_time >= SF::TIME_STEP){
 				ideal_frames++;
 				if(ideal_frames == FPS){
@@ -71,15 +82,29 @@ void Application::run(){
 				delta_time -= SF::TIME_STEP;
 				elapsed_time += SF::TIME_STEP;
 				handleEvents();
-
 				update(SF::TIME_STEP);
 
-				
+
 			}
 			if(frame_updated){
 				render();
 			}
+
+		#endif
+		#ifdef NO_FPS_LIMIT
+			handleEvents();
+			update(clocktime);
+			if (delta_time >= SF::FPS_UPDATE_TIME) {
+				mFPSText.setString("fps:" + std::to_string(real_frames));
+				delta_time -= SF::FPS_UPDATE_TIME;
+				real_frames = 0;
+			};
+
+			real_frames++;
+			render();
+		#endif
 		}
+
 		
 	}
 }

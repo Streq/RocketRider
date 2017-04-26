@@ -2,6 +2,7 @@
 #include "ObjectDefinitions.h"
 #include "Constants.h"
 #include "Conversions.h"
+#include <ios>
 GameObjectDefinition * def_from_xml(rapidxml::xml_node<>* node)
 {
 	GameObjectDefinition* obj = NULL;
@@ -14,22 +15,48 @@ GameObjectDefinition * def_from_xml(rapidxml::xml_node<>* node)
 		case ObjectType::Block: {
 			obj = new BlockDefinition;
 		}break;
+		case ObjectType::DeathBlock: {
+			obj = new BlockDefinition;
+			obj->type = ObjectType::DeathBlock;
+		}break;
 		case ObjectType::Player: {
 			PlayerDefinition* play = new PlayerDefinition;
 			
 			auto* fuel_node = node->first_node("fuel");
-			if (fuel_node) { play->fuel = std::stof(fuel_node->value()); }
+			if (fuel_node) {
+				play->fuel = std::stof(fuel_node->value()); 
+			}
 			auto* max_fuel_node = node->first_node("max_fuel");
-			if (max_fuel_node) { play->max_fuel = std::stof(max_fuel_node->value()); }
+			if (max_fuel_node) {
+				play->max_fuel = std::stof(max_fuel_node->value());
+			}
 			auto* rope_length_node = node->first_node("rope_length");
-			if (rope_length_node) { play->rope_length = std::stof(rope_length_node->value()); }
+			if (rope_length_node) { 
+				play->rope_length = std::stof(rope_length_node->value());
+			}
 			auto* max_speed_node = node->first_node("max_speed");
-			if (max_speed_node) { play->max_speed = std::stof(max_speed_node->value()); }
+			if (max_speed_node) { 
+				play->max_speed = std::stof(max_speed_node->value());
+			}
 			auto* angular_acceleration_node = node->first_node("angular_acceleration");
-			if (angular_acceleration_node) { play->angular_acceleration = std::stof(angular_acceleration_node->value()); }
+			if (angular_acceleration_node) { 
+				play->angular_acceleration = std::stof(angular_acceleration_node->value()); 
+			}
 			auto* explosion_impulse_node = node->first_node("explosion_impulse");
-			if (explosion_impulse_node) { play->explosion_impulse = std::stof(explosion_impulse_node->value()); }
+			if (explosion_impulse_node) {
+				play->explosion_impulse = std::stof(explosion_impulse_node->value()); 
+			}
+			auto* acceleration_node = node->first_node("acceleration");
+			if (acceleration_node) { 
+				play->acceleration = std::stof(acceleration_node->value()); 
+			}
 			
+			auto* always_accelerating_node = node->first_node("always_accelerating");
+			if (always_accelerating_node) {
+				std::istringstream(always_accelerating_node->value()) >> std::boolalpha >> play->always_accelerating; 
+			}
+
+
 			obj = play;
 
 
@@ -54,7 +81,7 @@ GameObjectDefinition * def_from_xml(rapidxml::xml_node<>* node)
 	return obj;
 }
 
-sf::Color parse_color_from_xml(rapidxml::xml_node<>* node)
+sf::Color parse_color_from_xml(rapidxml::xml_node<>* node, bool maxed_alpha)
 {
 	//ej <color>FFFFFF</color>
 
@@ -68,7 +95,7 @@ sf::Color parse_color_from_xml(rapidxml::xml_node<>* node)
 	auto code = color_node->first_node("code");
 	auto alpha = color_node->first_node("alpha");
 	const unsigned long code_val = code ? std::stoul(code->value(), NULL, 16) << 8 : 0;
-	const unsigned long alpha_val = alpha ? std::stoul(alpha->value(), NULL, 10) : 255;
+	const unsigned long alpha_val = (alpha && !maxed_alpha) ? std::stoul(alpha->value(), NULL, 10) : 255;
 	/*
 	std::cout << std::hex << col << '\n';
 	std::cout << std::dec;
@@ -83,18 +110,20 @@ sf::Color parse_color_from_xml(rapidxml::xml_node<>* node)
 	return sf::Color(col);
 }
 
-rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool)
+rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool, bool include_alpha)
 {
 	const auto str = pool->allocate_string("color");
-	const auto alpha = pool->allocate_string("alpha");
-	const auto alpha_val = pool->allocate_string(std::to_string(col.a).c_str());
 	const auto code = pool->allocate_string("code");
-	const auto code_val = pool->allocate_string(u32_to_hex_string(col.toInteger()>>8).c_str());
-	auto* colornode = pool->allocate_node(rapidxml::node_element, str);
-	auto* alphanode = pool->allocate_node(rapidxml::node_element, alpha, alpha_val);
+	const auto code_val = pool->allocate_string(u32_to_hex_string(col.toInteger() >> 8).c_str());
 	auto* codenode = pool->allocate_node(rapidxml::node_element, code, code_val);
+	auto* colornode = pool->allocate_node(rapidxml::node_element, str);
 	colornode->append_node(codenode);
-	colornode->append_node(alphanode);
+	if(include_alpha){
+		const auto alpha = pool->allocate_string("alpha");
+		const auto alpha_val = pool->allocate_string(std::to_string(col.a).c_str());
+		auto* alphanode = pool->allocate_node(rapidxml::node_element, alpha, alpha_val);
+		colornode->append_node(alphanode);
+	}
 	return colornode;
 }
 

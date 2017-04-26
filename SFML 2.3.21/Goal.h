@@ -15,7 +15,7 @@ class Goal : public GameObject {
 	virtual void		initBody(b2World& world) final;
 	virtual ObjectType	getType()const final;
 
-	virtual void Step() override final;
+	virtual void Step(sf::Time dt) override final;
 
 	virtual void BeginContact(b2Contact* contact, bool id) final;
 

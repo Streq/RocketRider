@@ -90,12 +90,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Box2D\Box2D;C:\SFML-2.4.1\include;C:\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Box2D\Box2D;C:\SFML_STATIC_STD\include;C:\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Box2D\x32\Debug;C:\SFML-2.4.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Box2D\x32\Debug;C:\SFML_STATIC_STD\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Box2D.lib;opengl32.lib;freetype.lib;jpeg.lib;gdi32.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;ws2_32.lib;winmm.lib;sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-audio-s-d.lib;sfml-network-s-d.lib;sfml-system-s-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -123,14 +123,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Box2D\Box2D;C:\SFML-2.4.1\include;C:\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Box2D\Box2D;C:\SFML_STATIC_STD\include;C:\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SFML-2.4.1\lib;C:\Box2D\x32\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\SFML_STATIC_STD\lib;C:\Box2D\x32\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Box2D.lib;opengl32.lib;freetype.lib;jpeg.lib;gdi32.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;ws2_32.lib;winmm.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-audio-s.lib;sfml-network-s.lib;sfml-system-s.lib;%(AdditionalDependencies);opengl32.lib;freetype.lib;jpeg.lib;winmm.lib;gdi32.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;ws2_32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -155,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="DeathBlock.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -168,17 +170,22 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerDefinition.cpp" />
+    <ClCompile Include="ScreenMessage.cpp" />
     <ClCompile Include="TextHolder.cpp" />
+    <ClCompile Include="Tilemap.cpp" />
+    <ClCompile Include="TileTexture.cpp" />
     <ClCompile Include="xml_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppContext.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="BackgroundLayer.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockDefinition.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="BoxDefinition.h" />
     <ClInclude Include="ConsoleOut.h" />
+    <ClInclude Include="DeathBlock.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="FontHolder.h" />
     <ClInclude Include="Goal.h" />
@@ -198,8 +205,13 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ResourceHolder.h" />
+    <ClInclude Include="SceneNode.h" />
+    <ClInclude Include="ScreenMessage.h" />
     <ClInclude Include="TextHolder.h" />
     <ClInclude Include="TextureHolder.h" />
+    <ClInclude Include="text_utils.h" />
+    <ClInclude Include="Tilemap.h" />
+    <ClInclude Include="TileTexture.h" />
     <ClInclude Include="xml_utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

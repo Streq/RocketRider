@@ -19,17 +19,23 @@ void Level::load(sf::Image * tilemap, char* configuration)
 
 	//Load the map itself
 	auto pixels=tilemap->getPixelsPtr();
-	const auto size = tilemap->getSize();
-	for (size_t y = 0; y < size.y; y++) {
-		for (size_t x = 0; x < size.x; x++) {
+	size = tilemap->getSize();
+	for (int y = 0; y < size.y; y++) {
+		for (int x = 0; x < size.x; x++) {
+			//get current pixel
 			const auto pos = &pixels[(x + y*size.x) * 4];
-			auto it = defs.find(sf::Color(*pos, *(pos + 1), *(pos + 2), *(pos + 3)).toInteger());
-			if (it != defs.end()) {
-				GameObjectDefinition* def (it->second.get()->copy());
+			//make color
+			sf::Color col(*pos, *(pos + 1), *(pos + 2), *(pos + 3));
+			auto def_iterator = defs.find(col.toInteger()|0x000000FF);
+			if (def_iterator != defs.end()) {
+				GameObjectDefinition* def (def_iterator->second.get()->copy());
 				def->pos.x = x;
-				def->pos.y = -(int)y;
+				def->pos.y = -y;
 				mObjects.push_back(GameObjectDefinition::ptr(def));
 			}
+			//alpha value describes coords in tileset
+			mTiles.push_back(~col.a);
+
 		}
 	}
 }

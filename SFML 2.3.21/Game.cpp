@@ -1,24 +1,21 @@
 #include "Game.h"
 #include "Conversions.h"
-
-#include "GameObjectDefinition.h"
-#include "PlayerContactListener.h"
-#include "PlayerDefinition.h"
-#include "BoxDefinition.h"
-#include "BlockDefinition.h"
-#include "GoalDefinition.h"
+#include "ObjectDefinitions.h"
 #include "Box.h"
 #include "Block.h"
 #include "Player.h"
 #include "Goal.h"
+#include "DeathBlock.h"
+#include "PlayerContactListener.h"
 #include "xml_utils.h"
+#include "TileTexture.h"
 Game::Game(const AppContext & context):
 	mWorld(b2Vec2(0,-10.f)),
 	mContext(context),
 	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(INIT_VIEW_SIZE,INIT_VIEW_SIZE*ASPECT_RATIO)),
 	mContactListener(new GameContactListener()),
 	mLevels(),
-	m_level_index(0)
+	m_level_index(-1)
 {
 	
 
@@ -75,14 +72,15 @@ void Game::handle_event(const sf::Event & e){
 			}
 		}break;
 		case sf::Event::MouseWheelScrolled:{
-			float delta = e.mouseWheelScroll.delta * MOUSE_SCROLL_ZOOM;
-			mView.zoom(1.f-delta);
-			
-
+			int delta = -sign(e.mouseWheelScroll.delta) * MOUSE_SCROLL_ZOOM;
+			//mView.zoom(1.f-delta);
+			mView.setSize(mView.getSize() + static_cast<sf::Vector2f>(ASPECT_RATIO_VEC) * static_cast<float>(16 * delta));
 			if (mView.getSize().x > MAX_VIEW_SIZE)
 				mView.setSize(sf::Vector2f(1.f,ASPECT_RATIO)*(float)MAX_VIEW_SIZE);
 			if (mView.getSize().x < MIN_VIEW_SIZE)
 				mView.setSize(sf::Vector2f(1.f, ASPECT_RATIO)*(float)MIN_VIEW_SIZE);
+			
+			
 		}
 
 
@@ -90,6 +88,10 @@ void Game::handle_event(const sf::Event & e){
 }
 
 void Game::update(sf::Time dt){
+	m_message_display_time -= dt;
+	if (m_message_display_time <= sf::Time::Zero)
+		m_display_message = false;
+
 	if(mController.input[Input::Left])
 		mPlayer->rotateLeft(dt);
 	if(mController.input[Input::Right])
@@ -117,55 +119,85 @@ void Game::update(sf::Time dt){
 	
 
 	mWorld.Step(dt.asSeconds(),B2::VELOCITY_ITERATIONS,B2::POSITION_ITERATIONS);
-	mPlayer->Step();
+	mPlayer->Step(dt);
 
-	std::for_each(mObjects.begin(), mObjects.end(), [](GameObject::Ptr& ptr) {ptr->Step();});
+	std::for_each(mObjects.begin(), mObjects.end(), [&dt](GameObject::Ptr& ptr) {ptr->Step(dt);});
 
 	if (m_goto_next_level) {
-		if (++m_level_index < m_level_amount) {
-			goto_level(m_level_index);
-			m_goto_next_level = false;
-		}
-		else {
-			m_won = true;
-		}
-
-		
+		next_level();
 	}
 	if (mPlayer->isDead())
 		goto_level(m_level_index);
 
 	mView.setCenter(b2_to_sf_pos(mPlayer->getb2Position()));
-	const auto& camara_pos = mView.getCenter();
-	const auto& background_pos = mBackground.getPosition();
-	sf::Vector2i distance((camara_pos-background_pos));
-	auto bounds = mBackground.getGlobalBounds();
-	distance.x -= sign(distance.x)*abs(distance.x)%(int(bounds.width/3));
-	distance.y -= sign(distance.y)*abs(distance.y)%(int(bounds.height/3));
-	mBackground.move(sf::Vector2f(distance));
+	//const auto& camara_pos = mView.getCenter();
+	//const auto& background_pos = mBackground0.getPosition();
+	//sf::Vector2i distance((camara_pos-background_pos));
+	//auto bounds = mBackground0.getGlobalBounds();
+	//distance.x -= sign(distance.x)*abs(distance.x)%(int(bounds.width/3));
+	//distance.y -= sign(distance.y)*abs(distance.y)%(int(bounds.height/3));
+	//mBackground0.move(sf::Vector2f(distance));
+	mBackground0.mTexture.adjust_to_view(mBackground0.transformView(mView));
+	mBackground1.mTexture.adjust_to_view(mBackground1.transformView(mView));
+	mBackground2.mTexture.adjust_to_view(mBackground2.transformView(mView));
+	mBackground3.mTexture.adjust_to_view(mBackground3.transformView(mView));
 }
 
 void Game::draw(){
 	mContext.screen->setView(mView);
-	mContext.screen->draw(mBackground);
+	mContext.screen->draw(mBackground0);
+	mContext.screen->draw(mBackground1);
+	mContext.screen->draw(mBackground2);
+	mContext.screen->draw(mBackground3);
+
+	mContext.screen->draw(mTilemap);
 	for(const auto& object:mObjects){
 		mContext.screen->draw(*object);
 	}
 
+
+
 	mContext.screen->draw(*mPlayer);
-	
+	if(m_display_message){
+		mContext.screen->setView(mContext.screen->getDefaultView());
+		mContext.screen->draw(mMessage);
+	}
+
 }
 
 void Game::init() {
-	mBackground.setTexture(mContext.resources->textures.get(Texture::SPRITE_TILE));
-	mBackground.setTextureRect(sf::IntRect(0, 0, MAX_VIEW_SIZE * 3, ASPECT_RATIO*MAX_VIEW_SIZE * 3));
-	auto bounds = mBackground.getLocalBounds();
-	mBackground.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-	mBackground.setScale(sf::Vector2f(1.f, 1.f)*4.f);
+	//mBackground0.mTexture.m_sprite.setTexture(mContext.resources->textures.get(Texture::SPRITE_BACKGROUND));
+	mBackground0.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS);
+	mBackground1.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS1);
+	mBackground2.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS2);
+	mBackground3.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS1);
+
+	//mBackground0.setTextureRect(sf::IntRect(0, 0, MAX_VIEW_SIZE * 3, ASPECT_RATIO*MAX_VIEW_SIZE * 3));
+	//auto bounds = mBackground0.getLocalBounds();
+	//mBackground0.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+	mBackground0.mTexture.setScale(sf::Vector2f(1.f, 1.f)*1.f);
+	mBackground1.mTexture.setScale(sf::Vector2f(1.f, 1.f)*2.f);
+	mBackground2.mTexture.setScale(sf::Vector2f(1.f, 1.f)*4.f);
+	mBackground3.mTexture.setScale(sf::Vector2f(1.f, 1.f)*6.f);
+
+	mBackground0.speed_factor = 0.1f;
+	mBackground1.speed_factor = 0.4f;
+	mBackground2.speed_factor = 0.6f;
+	mBackground3.speed_factor = 0.9f;
+
+
+
+	sf::Text text("", mContext.resources->fonts.get(Font::consola), 20u);
+	mMessage.setText(std::move(text));
+	mMessage.setLineWidth(40);
+	auto vie = mContext.screen->getDefaultView();
+	mMessage.setPosition(vie.getCenter());
+	
+
 
 	load_levels("Assets/Config/config.xml");
 	mWorld.SetContactListener(mContactListener.get());
-	loadLevel(mLevels[0]);
+	next_level();
 
 
 }
@@ -178,6 +210,7 @@ void Game::clear(){
 
 void Game::loadLevel(const Level & level)
 {
+	mMessage.setString(level.start_message);
 	for (auto& ptr : level.mObjects) {
 		createObject(ptr.get());
 		
@@ -186,6 +219,11 @@ void Game::loadLevel(const Level & level)
 		ptr->initBody(mWorld);
 	}
 	mPlayer->initBody(mWorld);
+
+	mTilemap.setOrigin(16.f, 16.f);
+	mTilemap.load(mContext.resources->textures.get(Texture::TILESET), sf::Vector2u(32u, 32u),&level.mTiles[0],level.size.x,level.size.y);
+	
+
 }
 
 void Game::createObject(GameObjectDefinition *def)
@@ -204,6 +242,9 @@ void Game::createObject(GameObjectDefinition *def)
 		}break;
 		case ObjectType::Goal: {
 			obj = new Goal(*mContext.resources, [this](Player*) {this->m_goto_next_level = true; }, static_cast<GoalDefinition*>(def));
+		}break;
+		case ObjectType::DeathBlock: {
+			obj = new DeathBlock(*mContext.resources, static_cast<BlockDefinition*>(def));
 		}break;
 	}
 	mObjects.push_back(std::unique_ptr<GameObject>(obj));
@@ -249,14 +290,31 @@ void Game::load_levels(const std::string& path)
 				auto* levelconfig = level->first_node("levelconfig");
 				if (!levelconfig) { throw std::runtime_error("Game config invalid, <levelconfig> not found: " + path); }
 
+				auto* msg = level->first_node("message");
+				if(!msg) { throw std::runtime_error("Game config invalid, <message> not found: " + path); }
+
 				const std::string path = "Assets/Maps/";
 
-				mLevels[i].loadFromFiles(path + map->value(),path + levelconfig->value());
-
+				auto& lvl = mLevels[i];
+				lvl.loadFromFiles(path + map->value(),path + levelconfig->value());
+				lvl.start_message = msg->value();
 			
 			}
 			files->remove_node(level);
 		}
 		
+	}
+}
+
+void Game::next_level()
+{
+	if (++m_level_index < m_level_amount) {
+		goto_level(m_level_index);
+		m_goto_next_level = false;
+		m_display_message = true;
+		m_message_display_time = SF::LEVEL_TITLE_TIME;
+	}
+	else {
+		m_won = true;
 	}
 }

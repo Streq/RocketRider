@@ -30,7 +30,7 @@ class GameObject: public sf::Drawable{
 	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse, bool id){}
 	
 	//Game step logic b
-	virtual void Step() {}
+	virtual void Step(sf::Time dt) {}
 
 
 	protected:

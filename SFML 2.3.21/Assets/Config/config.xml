@@ -1,31 +1,71 @@
 <config>
 	<levels>
-		<amount>6</amount>
+		<amount>12</amount>
 		<files>
 			<level>
-				<map>0.png</map>
+				<message>Arrancamo sencillito</message>
+				<map>normal0.png</map>
 				<levelconfig>map.xml</levelconfig>
 			</level>
 			<level>
-				<map>1.png</map>
+				<message>Con 'R' moris (datazo)</message>
+				<map>normal1.png</map>
 				<levelconfig>map.xml</levelconfig>
 			</level>
 			<level>
-				<map>2.png</map>
+				<message>No te quemes amiguito</message>
+				<map>normal2.png</map>
 				<levelconfig>map.xml</levelconfig>
 			</level>
 			<level>
-				<map>3.png</map>
+				<message>Dale derecho hasta Constitucion</message>
+				<map>normal3.png</map>
+				<levelconfig>map.xml</levelconfig>
+			</level>
+			<level>
+				<message>Uia se jodio el volante :( no tenes mouse?</message>
+				<map>no_wheel0.png</map>
 				<levelconfig>map_no_wheel.xml</levelconfig>
 			</level>
 			<level>
-				<map>4.png</map>
+				<message>Te arreglas asi o te pido un remo?</message>
+				<map>normal4.png</map>
+				<levelconfig>map_no_wheel.xml</levelconfig>
+			</level>
+			<level>
+				<message>con la ruedita haces zoom (o des-zoom)</message>
+				<map>no_wheel1.png</map>
+				<levelconfig>map_no_wheel.xml</levelconfig>
+			</level>
+			<level>
+				<message>Ta caro el gasoil</message>
+				<map>no_gas0.png</map>
+				<levelconfig>map_no_gas.xml</levelconfig>
+			</level>
+			<level>
+				<message>sos el spiderman de los juegos mochos</message>
+				<map>no_gas1.png</map>
+				<levelconfig>map_no_gas.xml</levelconfig>
+			</level>
+			<level>
+				<message>a ver esos 360</message>
+				<map>small_circular.png</map>
 				<levelconfig>map.xml</levelconfig>
 			</level>
 			<level>
-				<map>5.png</map>
+				<message>NO VALE TOCAR NADA</message>
+				<map>fragile0.png</map>
 				<levelconfig>map_fragile.xml</levelconfig>
 			</level>
+			<level>
+				<message>No hay mas niveles, sos una bestia loco saludos a la flia</message>
+				<map>the_end.png</map>
+				<levelconfig>map.xml</levelconfig>
+			</level>
+			
+			
+						
+			
 		</files>
 	</levels>
 </config>
