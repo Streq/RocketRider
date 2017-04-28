@@ -11,7 +11,7 @@ Application::Application():
 	mStack(AppContext(mScreen, mWindow, mDisplaySprite, mResources))
 {
 	mScreen.setSmooth(false);
-	mScreen.create(INIT_VIEW_SIZE, INIT_VIEW_SIZE*ASPECT_RATIO);
+	mScreen.create(INIT_VIEW_SIZE, static_cast<int>(INIT_VIEW_SIZE*ASPECT_RATIO));
 
 	mDisplaySprite.setTexture(mScreen.getTexture());
 	mDisplaySprite.setOrigin(sf::Vector2f(mScreen.getSize()) * 0.5f);
@@ -54,8 +54,8 @@ void Application::run(){
 	sf::Clock clock;
 	//FPS calculations
 	sf::Time fps_update_time = sf::Time::Zero;
-	unsigned	frames;
-	bool		frame;
+//	unsigned	frames;
+//	bool		frame;
 
 	while(mWindow.isOpen()){
 		unsigned real_frames = 0;

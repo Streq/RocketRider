@@ -10,7 +10,7 @@ void TextHolder::load(TextFile::ID id, const std::string& filename){
 		in.seekg(0, std::ios::end);
 		
 		//reserve memory equivalent to the position we currently are on in the file, essentially the size of the file
-		contents->reserve(in.tellg());
+		contents->reserve(static_cast<const unsigned>(in.tellg()));
 		
 		//go to the beginning of the file
 		in.seekg(0, std::ios::beg);

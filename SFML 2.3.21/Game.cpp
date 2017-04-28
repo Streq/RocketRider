@@ -12,7 +12,7 @@
 Game::Game(const AppContext & context):
 	mWorld(b2Vec2(0,-10.f)),
 	mContext(context),
-	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(INIT_VIEW_SIZE,INIT_VIEW_SIZE*ASPECT_RATIO)),
+	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE),static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO))),
 	mContactListener(new GameContactListener()),
 	mLevels(),
 	m_level_index(-1)
@@ -308,7 +308,7 @@ void Game::load_levels(const std::string& path)
 
 void Game::next_level()
 {
-	if (++m_level_index < m_level_amount) {
+	if (++m_level_index < static_cast<int>(m_level_amount)) {
 		goto_level(m_level_index);
 		m_goto_next_level = false;
 		m_display_message = true;

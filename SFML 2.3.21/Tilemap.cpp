@@ -21,20 +21,20 @@ void Tilemap::load(sf::Texture & tileset, const sf::Vector2u & tile_size, const 
 			int tv = tileNumber / (htiles);
 
 			// if tile number out of range ignore
-			if (tv >= vtiles){ tv = vtiles - 1; tu = htiles - 1; }
+			if (tv >= static_cast<int>(vtiles)){ tv = vtiles - 1; tu = htiles - 1; }
 
 			// define world position
 			auto* quads = &m_vertices[(i + j*width) * 4];
-			quads[0].position = sf::Vector2f(i*m_tile_size.x, j*m_tile_size.y);
-			quads[1].position = sf::Vector2f((i + 1)*m_tile_size.x, j*m_tile_size.y);
-			quads[2].position = sf::Vector2f((i + 1)*m_tile_size.x, (j + 1)*m_tile_size.y);
-			quads[3].position = sf::Vector2f(i*m_tile_size.x, (j + 1)*m_tile_size.y);
+			quads[0].position = static_cast<sf::Vector2f>(sf::Vector2i(i*m_tile_size.x, j*m_tile_size.y));
+			quads[1].position = static_cast<sf::Vector2f>(sf::Vector2i((i + 1)*m_tile_size.x, j*m_tile_size.y));
+			quads[2].position = static_cast<sf::Vector2f>(sf::Vector2i((i + 1)*m_tile_size.x, (j + 1)*m_tile_size.y));
+			quads[3].position = static_cast<sf::Vector2f>(sf::Vector2i(i*m_tile_size.x, (j + 1)*m_tile_size.y));
 
 			// define texture textCoords
-			quads[0].texCoords = sf::Vector2f(tu*m_tile_size.x, tv*m_tile_size.y);
-			quads[1].texCoords = sf::Vector2f((tu + 1)*m_tile_size.x, tv*m_tile_size.y);
-			quads[2].texCoords = sf::Vector2f((tu + 1)*m_tile_size.x, (tv + 1)*m_tile_size.y);
-			quads[3].texCoords = sf::Vector2f(tu*m_tile_size.x, (tv + 1)*m_tile_size.y);
+			quads[0].texCoords = static_cast<sf::Vector2f>(sf::Vector2i(tu*m_tile_size.x, tv*m_tile_size.y));
+			quads[1].texCoords = static_cast<sf::Vector2f>(sf::Vector2i((tu + 1)*m_tile_size.x, tv*m_tile_size.y));
+			quads[2].texCoords = static_cast<sf::Vector2f>(sf::Vector2i((tu + 1)*m_tile_size.x, (tv + 1)*m_tile_size.y));
+			quads[3].texCoords = static_cast<sf::Vector2f>(sf::Vector2i(tu*m_tile_size.x, (tv + 1)*m_tile_size.y));
 
 
 
@@ -71,8 +71,8 @@ void Tilemap::draw(sf::RenderTarget & target, sf::RenderStates states) const
 		inter.height /= getScale().y;
 
 		//calculate tiles
-		const sf::Vector2u start(std::floor(inter.left / m_tile_size.x), std::floor(inter.top / m_tile_size.y));
-		const sf::Vector2u end(std::ceil((inter.width + inter.left) / m_tile_size.x), std::ceil((inter.height + inter.top) / m_tile_size.y));
+		const sf::Vector2u start(static_cast<unsigned>(std::floor(inter.left / m_tile_size.x)), static_cast<unsigned>(std::floor(inter.top / m_tile_size.y)));
+		const sf::Vector2u end(static_cast<unsigned>(std::ceil((inter.width + inter.left) / m_tile_size.x)), static_cast<unsigned>(std::ceil((inter.height + inter.top) / m_tile_size.y)));
 
 		//draw said tiles
 		for (size_t j = start.y; j < end.y; j++) {

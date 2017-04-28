@@ -8,7 +8,6 @@
 #include <SFML/Graphics/Color.hpp>
 #include <fstream>
 
-
 #define append_field_named_node(ALLOC,FIELD,NAME,APPEND)						\
 do{																				\
 	auto* NAME_STR = ALLOC->allocate_string(NAME);								\
@@ -32,8 +31,7 @@ do{																					\
 	B2_APPEND->append_node(B2_NODE);												\
 }while(false)
 
-
-class GameObjectDefinition;
+struct GameObjectDefinition;
 GameObjectDefinition* def_from_xml(rapidxml::xml_node<>* node);
 
 sf::Color parse_color_from_xml(rapidxml::xml_node<>*node, bool maxed_alpha = false);
