@@ -9,21 +9,21 @@
 #include "PlayerContactListener.h"
 #include "xml_utils.h"
 #include "TileTexture.h"
-Game::Game(const AppContext & context):
+Game::Game(GameStack& s, AppContext context) :
+	GameState(s, std::move(context)),
 	mWorld(b2Vec2(0,-10.f)),
-	mContext(context),
 	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE),static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO))),
 	mContactListener(new GameContactListener()),
 	mLevels(),
 	m_level_index(-1)
 {
 	
-
+	init();
 }
 
 
 
-void Game::handle_event(const sf::Event & e){
+bool Game::handle_event(const sf::Event & e){
 	switch (e.type){
 		case sf::Event::KeyReleased:
 		case sf::Event::KeyPressed:{
@@ -49,7 +49,7 @@ void Game::handle_event(const sf::Event & e){
 				mWindow.setView(mWindow.getDefaultView());
 				auto& mSprite = *mContext.displaySprite;
 				//Transform to local click
-				auto localClick=GlobalToLocalPixel(mWindow,mSprite,sf::Vector2i(e.mouseButton.x, e.mouseButton.y));
+				auto localClick=windowToSpriteCoords(mWindow,mSprite,sf::Vector2i(e.mouseButton.x, e.mouseButton.y));
 				if (mSprite.getLocalBounds().contains(mWindow.mapPixelToCoords(localClick))) {
 					mController.input[Input::Hook] = true;
 
@@ -85,9 +85,10 @@ void Game::handle_event(const sf::Event & e){
 
 
 	}
+	return false;
 }
 
-void Game::update(sf::Time dt){
+bool Game::update(sf::Time dt){
 	m_message_display_time -= dt;
 	if (m_message_display_time <= sf::Time::Zero)
 		m_display_message = false;
@@ -141,9 +142,10 @@ void Game::update(sf::Time dt){
 	mBackground1.mTexture.adjust_to_view(mBackground1.transformView(mView));
 	mBackground2.mTexture.adjust_to_view(mBackground2.transformView(mView));
 	mBackground3.mTexture.adjust_to_view(mBackground3.transformView(mView));
+	return false;
 }
 
-void Game::draw(){
+void Game::draw() const{
 	mContext.screen->setView(mView);
 	mContext.screen->draw(mBackground0);
 	mContext.screen->draw(mBackground1);
@@ -166,7 +168,7 @@ void Game::draw(){
 }
 
 void Game::init() {
-	//mBackground0.mTexture.m_sprite.setTexture(mContext.resources->textures.get(Texture::SPRITE_BACKGROUND));
+	//mBackground0.mTexture.m_sprite.setTexture(mContext.resources->textures.get(Texture::BACKGROUND));
 	mBackground0.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS);
 	mBackground1.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS1);
 	mBackground2.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS2);

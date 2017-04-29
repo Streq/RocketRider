@@ -11,20 +11,23 @@
 #include "ScreenMessage.h"
 #include "TileTexture.h"
 #include "Tilemap.h"
+#include "GameState.h"
 
 #include "BackgroundLayer.h"
 #define rightKey sf::Keyboard::D
 #define leftKey sf::Keyboard::A
 #define accelerateKey sf::Keyboard::W
 #define dieKey sf::Keyboard::R
-class Game{
+
+class Game: public GameState{
 	public:	
 	
-	Game(const AppContext& context);
+	Game(GameStack& s, AppContext context);
 	
-	void handle_event(const sf::Event& e);
-	void update(sf::Time dt);
-	void draw();
+	virtual bool handle_event(const sf::Event& e) override;
+	virtual bool update(sf::Time dt)override;
+	virtual void draw()const override;
+	
 	void init();
 	void clear();
 	void loadLevel(const Level& level);
@@ -37,8 +40,7 @@ class Game{
 	void load_levels(const std::string& path);
 	void next_level();
 	Controller							mController;
-	AppContext							mContext;
-
+	
 	ScreenMessage						mMessage;
 
 

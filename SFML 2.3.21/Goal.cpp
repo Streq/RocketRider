@@ -5,7 +5,7 @@ Goal::Goal(const Resources & res, Goal::Callback callback, const b2Vec2 & size, 
 	mSize(size),
 	mCallback(callback),
 	mSprite(
-		res.textures.get(Texture::SPRITE_GOAL),
+		res.textures.get(Texture::GOAL),
 		sf::IntRect(0, 0, static_cast<int>(size.x*PIXELS_PER_METER), static_cast<int>(size.y*PIXELS_PER_METER))
 	),
 	m_activate(false)

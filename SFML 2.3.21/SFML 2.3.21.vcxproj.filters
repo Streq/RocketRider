@@ -93,6 +93,9 @@
     <ClCompile Include="Tilemap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -201,6 +204,12 @@
       <Filter>Application</Filter>
     </ClInclude>
     <ClInclude Include="Tilemap.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="AppGui.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
       <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>

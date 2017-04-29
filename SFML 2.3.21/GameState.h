@@ -25,7 +25,6 @@ class GameState{
 
 	GameState(GameStack& s, AppContext c);
 
-
 	virtual bool				handle_event(const sf::Event& e) = 0;
 	virtual bool				update(sf::Time tiempo) = 0;
 	virtual void				draw()const = 0;

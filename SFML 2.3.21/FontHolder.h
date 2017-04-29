@@ -4,7 +4,7 @@
 namespace Font {
 enum ID {
 	arial,
-	consola,
+	consola
 };
 }
 

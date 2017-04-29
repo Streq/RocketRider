@@ -29,7 +29,7 @@ void DeathBlock::draw(sf::RenderTarget & target, sf::RenderStates states) const
 
 DeathBlock::DeathBlock(const Resources& res, const b2Vec2& size, const b2Vec2& position) :
 	mSize(size),
-	mSprite(res.textures.get(Texture::SPRITE_LAVA),
+	mSprite(res.textures.get(Texture::LAVA),
 			sf::IntRect(0, 0, static_cast<int>(size.x*PIXELS_PER_METER), static_cast<int>(size.y*PIXELS_PER_METER))
 	)
 {

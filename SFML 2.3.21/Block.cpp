@@ -3,7 +3,7 @@
 #include "Conversions.h"
 Block::Block(const Resources& res, const b2Vec2& size, const b2Vec2& position):
 	mSize(size),
-	mSprite(res.textures.get(Texture::SPRITE_BLOCK),
+	mSprite(res.textures.get(Texture::BLOCK),
 		sf::IntRect(0,0,static_cast<int>(size.x*PIXELS_PER_METER),static_cast<int>(size.y*PIXELS_PER_METER))
 	)
 {

@@ -1,15 +1,19 @@
 #include "Application.h"
 #include "Constants.h"
 #include <SFML/System/Time.hpp>
+#include "Menu.h"
 Application::Application():
 	mWindow(
 		sf::VideoMode(INIT_WINDOW_SIZE.x,INIT_WINDOW_SIZE.y),
 		"Rocket Rider",
 		sf::Style::Default),
 	mScreen(),
-	mGame(AppContext(mScreen, mWindow,mDisplaySprite, mResources)),
 	mStack(AppContext(mScreen, mWindow, mDisplaySprite, mResources))
 {
+	mStack.register_state<Game>(GameState::ID::GAME);
+	mStack.register_state<Menu>(GameState::ID::MAIN_MENU);
+	mStack.push_state(GameState::ID::MAIN_MENU);
+	
 	mScreen.setSmooth(false);
 	mScreen.create(INIT_VIEW_SIZE, static_cast<int>(INIT_VIEW_SIZE*ASPECT_RATIO));
 
@@ -20,22 +24,24 @@ Application::Application():
 	
 	mResources.fonts.load(Font::arial,"Assets/Fonts/arial.ttf");
 	mResources.fonts.load(Font::consola,"Assets/Fonts/consola.ttf");
+	
 	mFPSText.setFont(mResources.fonts.get(Font::consola));
 	
-	mResources.textures.load(Texture::SPRITE_PLAYER_1,"Assets/Textures/player.png");
-	mResources.textures.load(Texture::SPRITE_PLAYER_2,"Assets/Textures/player2.png");
-	mResources.textures.load(Texture::SPRITE_PLAYER_3,"Assets/Textures/player3.png");
-	mResources.textures.load(Texture::SPRITE_BLOCK,"Assets/Textures/wall.png");
-	mResources.textures.get(Texture::SPRITE_BLOCK).setRepeated(true);
-	mResources.textures.load(Texture::SPRITE_TILE, "Assets/Textures/tile.png");
-	mResources.textures.get(Texture::SPRITE_TILE).setRepeated(true);
-	mResources.textures.load(Texture::SPRITE_BACKGROUND, "Assets/Textures/background.png");
-	mResources.textures.get(Texture::SPRITE_BACKGROUND).setRepeated(true);
-	mResources.textures.load(Texture::SPRITE_FIRE,"Assets/Textures/fire.png");
-	mResources.textures.load(Texture::SPRITE_BOX, "Assets/Textures/box.png");
-	mResources.textures.load(Texture::SPRITE_EXPLOSION, "Assets/Textures/explosion.png");
-	mResources.textures.load(Texture::SPRITE_GOAL, "Assets/Textures/goal.png");
-	mResources.textures.load(Texture::SPRITE_LAVA, "Assets/Textures/lava.png");
+	mResources.textures.load(Texture::PLAYER_1,"Assets/Textures/player.png");
+	mResources.textures.load(Texture::PLAYER_2,"Assets/Textures/player2.png");
+	mResources.textures.load(Texture::PLAYER_3,"Assets/Textures/player3.png");
+	mResources.textures.load(Texture::BLOCK,"Assets/Textures/wall.png");
+	mResources.textures.get(Texture::BLOCK).setRepeated(true);
+	mResources.textures.load(Texture::TILE, "Assets/Textures/tile.png");
+	mResources.textures.get(Texture::TILE).setRepeated(true);
+	mResources.textures.load(Texture::BACKGROUND, "Assets/Textures/background.png");
+	mResources.textures.get(Texture::BACKGROUND).setRepeated(true);
+	mResources.textures.load(Texture::FIRE,"Assets/Textures/fire.png");
+	mResources.textures.load(Texture::BOX, "Assets/Textures/box.png");
+	mResources.textures.load(Texture::EXPLOSION, "Assets/Textures/explosion.png");
+	mResources.textures.load(Texture::GOAL, "Assets/Textures/goal.png");
+	mResources.textures.load(Texture::LAVA, "Assets/Textures/lava.png");
+	mResources.textures.load(Texture::BUTTON, "Assets/Textures/button.png");
 	mResources.textures.load(Texture::TILESET, "Assets/Textures/tileset.png");
 	mResources.textures.load(Texture::STARS, "Assets/Textures/stars.png");
 	mResources.textures.get(Texture::STARS).setRepeated(true);
@@ -46,7 +52,7 @@ Application::Application():
 
 	mResources.texts.load(TextFile::MAP_DEF, "Assets/Maps/map.xml");
 	mResources.texts.load(TextFile::CONFIG, "Assets/Config/config.xml");
-	mGame.init();
+	
 }
 void Application::run(){
 	//Time
@@ -54,8 +60,6 @@ void Application::run(){
 	sf::Clock clock;
 	//FPS calculations
 	sf::Time fps_update_time = sf::Time::Zero;
-//	unsigned	frames;
-//	bool		frame;
 
 	while(mWindow.isOpen()){
 		unsigned real_frames = 0;
@@ -149,18 +153,18 @@ void Application::handleEvents(){
 			
 
 		}
-		mGame.handle_event(e);
+		mStack.handle_event(e);
 	}
 }
 
 void Application::update(sf::Time time){
-	mGame.update(time);
+	mStack.update(time);
 }
 
 void Application::render(){
 	mWindow.clear();
 	mScreen.clear();
-	mGame.draw();
+	mStack.draw();
 	mScreen.setView(mScreen.getDefaultView());
 	mScreen.draw(mFPSText);
 	mScreen.display();

@@ -43,16 +43,16 @@ Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration,
 
 	mFixtureDef.shape = bodyShape;
 	
-	mSprite.setTexture(res.textures.get(Texture::SPRITE_PLAYER_1));	
+	mSprite.setTexture(res.textures.get(Texture::PLAYER_1));	
 	auto bounds=mSprite.getLocalBounds();
 	mSprite.setOrigin(bounds.width/2.f,bounds.height/2.f);
 	
-	mFire.setTexture(res.textures.get(Texture::SPRITE_FIRE));	
+	mFire.setTexture(res.textures.get(Texture::FIRE));	
 	bounds=mFire.getLocalBounds();
 	mFire.setOrigin(bounds.width/2.f,bounds.height/2.f);
 	mFire.setPosition(-bounds.width,0.f);
 	
-	mExplosionSprite.setTexture(res.textures.get(Texture::SPRITE_EXPLOSION));
+	mExplosionSprite.setTexture(res.textures.get(Texture::EXPLOSION));
 	bounds = mExplosionSprite.getLocalBounds();
 	mExplosionSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 	mExplosionSprite.setPosition(0.f, 0.f);

@@ -16,8 +16,6 @@ class Application{
 	sf::RenderTexture	mScreen;
 	sf::Sprite			mDisplaySprite;
 	
-	Game				mGame;
-	//a futuro
 	GameStack			mStack;
 	sf::Text			mFPSText;
 	
