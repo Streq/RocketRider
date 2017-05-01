@@ -9,8 +9,9 @@ class Menu:public GameState{
 		virtual bool				handle_event(const sf::Event& e) override;
 		virtual bool				update(sf::Time tiempo) override;
 		GUI::Composite&				getElements();
+		
 
-	private:
+	protected:
 		GUI::Composite mElements;
 
 };

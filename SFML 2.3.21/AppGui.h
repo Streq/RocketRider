@@ -86,7 +86,7 @@ class Leaf : public Node {
 class Button : public Leaf {
 	public:
 		Button(const AppContext& context, std::string text) { 
-			
+			this->setScale(2.f,2.f);
 			m_texture_normal = &context.resources->textures.get(Texture::BUTTON);
 			m_sprite.setTexture(*m_texture_normal,true);
 			m_text.setFont(context.resources->fonts.get(Font::arial));
@@ -104,6 +104,7 @@ class Button : public Leaf {
 							
 							//get the mouse position on the screen
 							auto mouse_position = sf::Vector2i(e.mouseButton.x, e.mouseButton.y);
+							
 							//get the local position
 							auto local_position = pixelToLocalCoords(win, this->getWorldTransform(), mouse_position);
 
@@ -111,7 +112,7 @@ class Button : public Leaf {
 							
 							if (button_bounds.contains(local_position)) {
 								std::cout << "pressed " << m_string << '\n';
-								//mCallback();
+								mCallback();
 							}
 						}
 					}

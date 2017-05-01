@@ -4,7 +4,8 @@
 Menu::Menu(GameStack & s, AppContext c):
 GameState(s,std::move(c))
 {;
-	mElements.addChild(GUI::Node::ptr(new GUI::Button(mContext, "botonn")));
+	
+	
 }
 
 //draw each element
@@ -28,3 +29,4 @@ GUI::Composite & Menu::getElements()
 {
 	return mElements;
 }
+

@@ -48,14 +48,12 @@ bool Game::handle_event(const sf::Event & e){
 				auto& mWindow = *mContext.window;
 				mWindow.setView(mWindow.getDefaultView());
 				auto& mSprite = *mContext.displaySprite;
-				//Transform to local click
-				auto localClick=windowToSpriteCoords(mWindow,mSprite,sf::Vector2i(e.mouseButton.x, e.mouseButton.y));
-				if (mSprite.getLocalBounds().contains(mWindow.mapPixelToCoords(localClick))) {
-					mController.input[Input::Hook] = true;
+				//get local click
+				auto localClick=sf::Vector2i(e.mouseButton.x, e.mouseButton.y);
+				mController.input[Input::Hook] = true;
 
-					mController.lastMouseClick = localClick;
-					
-				}
+				mController.lastMouseClick = localClick;
+				
 			}
 			if(e.mouseButton.button==sf::Mouse::Button::Right){
 				mController.input[Input::ReleaseHook] = true;

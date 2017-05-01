@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "Constants.h"
 #include <SFML/System/Time.hpp>
-#include "Menu.h"
+#include "MainMenu.h"
 Application::Application():
 	mWindow(
 		sf::VideoMode(INIT_WINDOW_SIZE.x,INIT_WINDOW_SIZE.y),
@@ -11,7 +11,7 @@ Application::Application():
 	mStack(AppContext(mScreen, mWindow, mDisplaySprite, mResources))
 {
 	mStack.register_state<Game>(GameState::ID::GAME);
-	mStack.register_state<Menu>(GameState::ID::MAIN_MENU);
+	mStack.register_state<MainMenu>(GameState::ID::MAIN_MENU);
 	mStack.push_state(GameState::ID::MAIN_MENU);
 	
 	mScreen.setSmooth(false);
@@ -53,64 +53,63 @@ Application::Application():
 	mResources.texts.load(TextFile::MAP_DEF, "Assets/Maps/map.xml");
 	mResources.texts.load(TextFile::CONFIG, "Assets/Config/config.xml");
 	
+	mStack.apply_changes();
+
+
 }
 void Application::run(){
-	//Time
-	sf::Time elapsed_time = sf::Time::Zero;
-	sf::Clock clock;
 	//FPS calculations
 	sf::Time fps_update_time = sf::Time::Zero;
 
-	while(mWindow.isOpen()){
-		unsigned real_frames = 0;
-		unsigned ideal_frames = 0;
-		bool frame_updated;
+	unsigned real_frames = 0;
+	unsigned ideal_frames = 0;
+	bool frame_updated;
 
-		sf::Time elapsed_time = sf::Time::Zero;
-		sf::Time delta_time = sf::Time::Zero;
-		sf::Clock mClock;
-		mClock.restart();
-		while (mWindow.isOpen()){
-			auto clocktime = mClock.restart();
-			delta_time += clocktime;
-			frame_updated = (delta_time >= SF::TIME_STEP);
-			real_frames += frame_updated;
-		#ifndef NO_FPS_LIMIT
-			while(delta_time >= SF::TIME_STEP){
-				ideal_frames++;
-				if(ideal_frames == FPS){
-					mFPSText.setString("fps:" + std::to_string(real_frames));
-					ideal_frames = 0;
-					real_frames = 0;
-				}
-				delta_time -= SF::TIME_STEP;
-				elapsed_time += SF::TIME_STEP;
-				handleEvents();
-				update(SF::TIME_STEP);
-
-
-			}
-			if(frame_updated){
-				render();
-			}
-
-		#endif
-		#ifdef NO_FPS_LIMIT
-			handleEvents();
-			update(clocktime);
-			if (delta_time >= SF::FPS_UPDATE_TIME) {
+	sf::Time elapsed_time = sf::Time::Zero;
+	sf::Time delta_time = sf::Time::Zero;
+	sf::Clock mClock;
+	mClock.restart();
+	while (mWindow.isOpen() && !mStack.is_empty()){
+		auto clocktime = mClock.restart();
+		delta_time += clocktime;
+		frame_updated = (delta_time >= SF::TIME_STEP);
+		real_frames += frame_updated;
+	#ifndef NO_FPS_LIMIT
+		while(delta_time >= SF::TIME_STEP){
+			ideal_frames++;
+			if(ideal_frames == FPS){
 				mFPSText.setString("fps:" + std::to_string(real_frames));
-				delta_time -= SF::FPS_UPDATE_TIME;
+				ideal_frames = 0;
 				real_frames = 0;
-			};
+			}
+			delta_time -= SF::TIME_STEP;
+			elapsed_time += SF::TIME_STEP;
+			handleEvents();
+			update(SF::TIME_STEP);
 
-			real_frames++;
+
+		}
+		if(frame_updated){
 			render();
-		#endif
 		}
 
-		
+	#endif
+	#ifdef NO_FPS_LIMIT
+		handleEvents();
+		update(clocktime);
+		if (delta_time >= SF::FPS_UPDATE_TIME) {
+			mFPSText.setString("fps:" + std::to_string(real_frames));
+			delta_time -= SF::FPS_UPDATE_TIME;
+			real_frames = 0;
+		};
+
+		real_frames++;
+		render();
+	#endif
 	}
+
+		
+	
 }
 
 void Application::handleEvents(){
@@ -136,9 +135,8 @@ void Application::handleEvents(){
 					yfact *=  ASPECT_RATIO / current_aspect_ratio;
 					
 				}
-				//lesser aspect_ratio means x is the limiting factor
+				//lesser aspect_ratio means y is the limiting factor
 				else if (current_aspect_ratio < ASPECT_RATIO) {
-					
 					/*
 					example:
 					ideal = 5:3
@@ -148,10 +146,24 @@ void Application::handleEvents(){
 					
 				}
 				mDisplaySprite.setScale(xfact, yfact);
-			}
-			break;
-			
-
+			}break;
+			case sf::Event::MouseButtonPressed:
+			case sf::Event::MouseButtonReleased:{
+				auto mappedPixel = windowToSpriteCoords(mWindow, mDisplaySprite, sf::Vector2i(e.mouseButton.x, e.mouseButton.y));
+				if (mDisplaySprite.getLocalBounds().contains(mWindow.mapPixelToCoords(mappedPixel))) {
+					e.mouseButton.x = mappedPixel.x;
+					e.mouseButton.y = mappedPixel.y;
+				}
+				else return;
+			}break;
+			case sf::Event::MouseMoved: {
+				auto mappedPixel = windowToSpriteCoords(mWindow, mDisplaySprite, sf::Vector2i(e.mouseMove.x, e.mouseMove.y));
+				if (mDisplaySprite.getLocalBounds().contains(mWindow.mapPixelToCoords(mappedPixel))) {
+					e.mouseMove.x = mappedPixel.x;
+					e.mouseMove.y = mappedPixel.y;
+				}
+				else return;
+			}break;
 		}
 		mStack.handle_event(e);
 	}

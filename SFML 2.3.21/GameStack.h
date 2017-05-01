@@ -51,3 +51,4 @@ inline void GameStack::register_state(GameState::ID id) {
 	};
 
 }
+
