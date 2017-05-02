@@ -190,8 +190,8 @@ void Game::init() {
 	sf::Text text("", mContext.resources->fonts.get(Font::consola), 20u);
 	mMessage.setText(std::move(text));
 	mMessage.setLineWidth(40);
-	auto vie = mContext.screen->getDefaultView();
-	mMessage.setPosition(vie.getCenter());
+	auto view = mContext.screen->getDefaultView();
+	mMessage.setPosition(view.getCenter()+sf::Vector2f(0.f,-100.f));
 	
 
 

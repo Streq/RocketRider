@@ -26,7 +26,7 @@ Application::Application():
 	mResources.fonts.load(Font::consola,"Assets/Fonts/consola.ttf");
 	
 	mFPSText.setFont(mResources.fonts.get(Font::consola));
-	
+	mFPSText.setCharacterSize(15u);
 	mResources.textures.load(Texture::PLAYER_1,"Assets/Textures/player.png");
 	mResources.textures.load(Texture::PLAYER_2,"Assets/Textures/player2.png");
 	mResources.textures.load(Texture::PLAYER_3,"Assets/Textures/player3.png");
@@ -52,6 +52,9 @@ Application::Application():
 
 	mResources.texts.load(TextFile::MAP_DEF, "Assets/Maps/map.xml");
 	mResources.texts.load(TextFile::CONFIG, "Assets/Config/config.xml");
+	mResources.texts.load(TextFile::HOWTOPLAY, "Assets/Data/htp.txt");
+	mResources.texts.load(TextFile::CREDITS, "Assets/Data/credits.txt");
+
 	
 	mStack.apply_changes();
 

@@ -5,7 +5,9 @@
 namespace TextFile{
 enum ID{
 	MAP_DEF,
-	CONFIG
+	CONFIG,
+	HOWTOPLAY,
+	CREDITS
 };
 }
 

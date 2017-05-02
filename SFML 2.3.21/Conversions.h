@@ -209,7 +209,7 @@ inline std::string type_to_string(ObjectType type) {
 /**
 @brief converts a sf::View to sf::FloatRect
 @param view the view
-@returns sf::FloatRect in the same coord system as the view
+@returns sf::FloatRect in the same coord system of the view
 */
 inline sf::FloatRect viewRect(const sf::View& view) { return sf::FloatRect(view.getCenter() - view.getSize()*0.5f, view.getSize()); }
 

@@ -1,0 +1,7 @@
+Santiago Requena 2017
+
+www.streq.blogspot.com
+
+Hecho con:
+-SFML (Simple and Fast Multimedia Library) - Copyright © Laurent Gomila
+-Box2D - Copyright © 2007-2013 Erin Catto

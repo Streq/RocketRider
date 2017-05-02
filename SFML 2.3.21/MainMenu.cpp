@@ -20,4 +20,9 @@ MainMenu::MainMenu(GameStack & s, AppContext c):
 		bot->setPosition(50.f, 120.f);
 		mElements.addChild(GUI::Node::ptr(bot));
 	}
+	{
+		auto* bot = new GUI::TextBox(mContext, mContext.resources->texts.get(TextFile::CREDITS), 50u);
+		bot->setPosition(50.f, 190.f);
+		mElements.addChild(GUI::Node::ptr(bot));
+	}
 }

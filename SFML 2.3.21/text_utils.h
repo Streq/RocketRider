@@ -26,7 +26,7 @@ inline std::string textWrap(const std::string& str, const size_t lineWidth) {
 	const auto strlen = result.length(); 
 	//Begin parse
 	//i: Current position on the string
-	//lineDist: Current distance from last line break ('\n')
+	//lineDist: Current position from last line break ('\n')
 	//lastSpace: Position of the last space (' ') found in the current line
 	for (size_t i = 0, lineDist = 0, lastSpace = SIZE_MAX; i < strlen; i++, lineDist++) {
 		switch (result[i]) {
