@@ -134,19 +134,21 @@ void Player::rotateRight(sf::Time dt){
 	mBody->ApplyAngularImpulse(-mAngularAcc*dt.asSeconds(),true);
 }
 
-void Player::throwHook(float x, float y){
-	//Si ya está enganchado no hace nada
-	if(m_hooked) return;
+void Player::throwHookTowardsWorldPosition(float x, float y){
+	//Si ya está enganchado primero se libera
+	if (m_hooked) { releaseHook(); return; }
+	//El punto de casteo relativo al jugador
 	b2Vec2 cast_point_local = mBody->GetLocalCenter(); //+ b2Vec2(0.f, 0.7f);
+	//El punto de casteo global
 	b2Vec2 cast_point_global(mBody->GetWorldPoint(cast_point_local));
+	
 	b2Vec2 targetPoint(x,y);
 	b2Vec2 distance(targetPoint-cast_point_global);
-	if(distance.LengthSquared() > mRopeLength*mRopeLength){
-		distance.Normalize();
-		distance*=mRopeLength;
-		targetPoint=cast_point_global+distance;
-	}
-
+	
+	distance.Normalize();
+	distance*=mRopeLength;
+	targetPoint=cast_point_global+distance;
+	
 	b2Body* targetBody;
 	HookCallback callback(*mBody);
 	
@@ -161,8 +163,19 @@ void Player::throwHook(float x, float y){
 
 }
 
+void Player::throwHookTowardsLocalDirection(float x, float y) {
+	//El punto de origen del casteo relativo al jugador
+	b2Vec2 cast_point_local = mBody->GetLocalCenter(); 
+	b2Vec2 target_point_global(mBody->GetWorldPoint(cast_point_local+b2Vec2(x,y)));
+	
+	throwHookTowardsWorldPosition(target_point_global.x,target_point_global.y);
+	
+}
+
+
 void Player::releaseHook(){
 	if(m_hooked){
+		this->mBody->SetAngularVelocity(0.f);
 		//mWorld->DestroyJoint(mHook);
 		mHook.deactivate();
 		m_hooked=false;

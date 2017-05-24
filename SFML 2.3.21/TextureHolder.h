@@ -14,6 +14,7 @@ namespace Texture {
 		GOAL,
 		LAVA,
 		BUTTON,
+		BUTTON_MOUSEOVER,
 		BACKGROUND,
 		TILESET,
 		STARS,

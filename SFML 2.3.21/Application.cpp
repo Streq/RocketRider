@@ -2,6 +2,8 @@
 #include "Constants.h"
 #include <SFML/System/Time.hpp>
 #include "MainMenu.h"
+#include "MenuHowToPlay.h"
+#include "MenuModo.h"
 Application::Application():
 	mWindow(
 		sf::VideoMode(INIT_WINDOW_SIZE.x,INIT_WINDOW_SIZE.y),
@@ -12,6 +14,8 @@ Application::Application():
 {
 	mStack.register_state<Game>(GameState::ID::GAME);
 	mStack.register_state<MainMenu>(GameState::ID::MAIN_MENU);
+	mStack.register_state<MenuHowToPlay>(GameState::ID::HOW_TO_PLAY);
+	mStack.register_state<MenuModo>(GameState::ID::GAME_MODE);
 	mStack.push_state(GameState::ID::MAIN_MENU);
 	
 	mScreen.setSmooth(false);
@@ -42,6 +46,7 @@ Application::Application():
 	mResources.textures.load(Texture::GOAL, "Assets/Textures/goal.png");
 	mResources.textures.load(Texture::LAVA, "Assets/Textures/lava.png");
 	mResources.textures.load(Texture::BUTTON, "Assets/Textures/button.png");
+	mResources.textures.load(Texture::BUTTON_MOUSEOVER, "Assets/Textures/button_selected.png");
 	mResources.textures.load(Texture::TILESET, "Assets/Textures/tileset.png");
 	mResources.textures.load(Texture::STARS, "Assets/Textures/stars.png");
 	mResources.textures.get(Texture::STARS).setRepeated(true);

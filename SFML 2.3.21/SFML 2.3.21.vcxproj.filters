@@ -99,6 +99,18 @@
     <ClCompile Include="MainMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MenuHowToPlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuModo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mosaico.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -217,6 +229,24 @@
     </ClInclude>
     <ClInclude Include="MainMenu.h">
       <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuModo.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuHowToPlay.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="MovingBlock.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Mosaico.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="rrmath.h">
+      <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

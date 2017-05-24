@@ -90,12 +90,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\user\Documents\Santiago\Libs\SFML-2.4.2\include;C:\Users\user\Documents\Santiago\Libs\Box2D\include;C:\Users\user\Documents\Santiago\Libs\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SFML-2.4.2\include;C:\Box2D\include;C:\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\user\Documents\Santiago\Libs\Box2D\lib\Debug;C:\Users\user\Documents\Santiago\Libs\SFML-2.4.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Box2D\lib\Debug;C:\SFML-2.4.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Box2D.lib;opengl32.lib;freetype.lib;jpeg.lib;gdi32.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;ws2_32.lib;winmm.lib;sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-audio-s-d.lib;sfml-network-s-d.lib;sfml-system-s-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -123,7 +123,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\user\Documents\Santiago\Libs\SFML-2.4.2\include;C:\Users\user\Documents\Santiago\Libs\Box2D\include;C:\Users\user\Documents\Santiago\Libs\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SFML-2.4.2\include;C:\Box2D\include;C:\rapidxml-1.13;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -131,7 +131,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\user\Documents\Santiago\Libs\SFML-2.4.2\lib;C:\Users\user\Documents\Santiago\Libs\Box2D\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\SFML-2.4.2\lib;C:\Box2D\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Box2D.lib;opengl32.lib;freetype.lib;jpeg.lib;gdi32.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;ws2_32.lib;winmm.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-audio-s.lib;sfml-network-s.lib;sfml-system-s.lib;%(AdditionalDependencies);opengl32.lib;freetype.lib;jpeg.lib;winmm.lib;gdi32.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;ws2_32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DeathBlock.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Block.cpp" />
@@ -169,6 +170,9 @@
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="MenuHowToPlay.cpp" />
+    <ClCompile Include="MenuModo.cpp" />
+    <ClCompile Include="Mosaico.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerDefinition.cpp" />
@@ -186,6 +190,7 @@
     <ClInclude Include="BlockDefinition.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="BoxDefinition.h" />
+    <ClInclude Include="Circle.h" />
     <ClInclude Include="ConsoleOut.h" />
     <ClInclude Include="DeathBlock.h" />
     <ClInclude Include="GameObject.h" />
@@ -198,6 +203,10 @@
     <ClInclude Include="AppGui.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="MenuHowToPlay.h" />
+    <ClInclude Include="MenuModo.h" />
+    <ClInclude Include="Mosaico.h" />
+    <ClInclude Include="MovingBlock.h" />
     <ClInclude Include="ObjectDefinitions.h" />
     <ClInclude Include="PlayerContactListener.h" />
     <ClInclude Include="PlayerDefinition.h" />
@@ -210,6 +219,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ResourceHolder.h" />
+    <ClInclude Include="rrmath.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ScreenMessage.h" />
     <ClInclude Include="TextHolder.h" />

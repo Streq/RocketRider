@@ -4,12 +4,10 @@
 #include "Constants.h"
 #include <sstream>
 #include <math.h>
-/**
-Takes a Vector and returns a floored copy
-*/
-inline sf::Vector2f floor(const sf::Vector2f& vec) {
-	return sf::Vector2f(floor(vec.x), floor(vec.y));
-}
+#include "SFML/Main.hpp"
+#include "rrmath.h"
+#include "Circle.h"
+
 /**
 Takes a b2Vector in Box2D World Coordinates and translates it to a sf::Vector2f in SFML World Coordinates
 Note: for size conversions use b2_to_sf_size
@@ -70,64 +68,7 @@ inline sf::Vector2f deg_to_sfVec(float deg, float mag = 1.f){
 	return rad_to_sfVec(deg_to_rad(deg), mag);
 }
 
-/**
-Takes a number and returns its sign
-@returns int
--1 if val < 0
-1 if val > 0
-0 if val == 0
-*/
-inline int sign(float val){
-	return (0.f < val) - (val < 0.f);
-}
-/**
-Takes a number and returns its sign
-@returns int
--1 if val < 0
-1 if val > 0
-0 if val == 0
-*/
-inline int sign(int val){
-	return (0 < val) - (val < 0);
-}
-/**
-Takes a number and returns its sign
-@retval -1 if val < 0
-@retval 1 if val > 0 
-@retval 0 if val == 0
-*/
-inline int sign(double val){
-	return (0 < val) - (val < 0);
-}
 
-/**
-Returns the squared length of a sf::Vector2f
-*/
-inline float vec_length_squared(const sf::Vector2f& vec) {
-	return vec.x*vec.x + vec.y*vec.y;
-}
-/**
-Returns the length of a sf::Vector2f
-*/
-inline float vec_length(const sf::Vector2f& vec) {
-	return sqrtf(vec.x*vec.x + vec.y*vec.y);
-}
-
-/**
-Takes a sf::Vector2f and sets its length to 1.
-@warning if the vector's length is 0 it is left unmodified
-@param vec the vector to modify
-@returns the former length of the vector 
-*/
-inline float normalize(sf::Vector2f& vec){
-	float length = vec_length(vec);
-	
-	if (length < FLT_EPSILON) return 0.f;
-	
-	float inverse_length = 1.f / length;
-	vec *= inverse_length;
-	return length;
-}
 
 
 /**
@@ -211,22 +152,37 @@ inline std::string type_to_string(ObjectType type) {
 @param view the view
 @returns sf::FloatRect in the same coord system of the view
 */
-inline sf::FloatRect viewRect(const sf::View& view) { return sf::FloatRect(view.getCenter() - view.getSize()*0.5f, view.getSize()); }
+inline sf::FloatRect viewRect(const sf::View& view) { 
+	return sf::FloatRect(view.getCenter() - view.getSize()*0.5f, view.getSize());
+}
 
 /**
-@brief get the intersection Rect of two given FloatRects
+@brief converts a sf::View to sf::FloatRect taking its rotation into account
+@param view the view
+@returns the axis aligned bounding rect of the view
 */
-inline sf::FloatRect getIntersection(const sf::FloatRect& rect1, const sf::FloatRect& rect2) {
-	float left = std::max(rect1.left, rect2.left);
-	float top = std::max(rect1.top, rect2.top);
-	float width = std::min(rect1.left + rect1.width, rect2.left + rect2.width) - left;
-	float height = std::min(rect1.top + rect1.height, rect2.top + rect2.height) - top;
-	return sf::FloatRect(left, top, width, height);
-};
+inline sf::FloatRect rotatedViewRect(const sf::View& view) {
+	auto size = view.getSize();
+	sf::FloatRect rect(view.getCenter() - size * 0.5f, size);
+	/*
+	sf::Transform trans;
+	trans.translate(size*0.5f);//set origin
+	trans.rotate(view.getRotation());//rotate (otherwise we would be rotating from the top left corner)
+	trans.translate(-size*0.5f);//reset origin
+	*/
+	sf::Transformable t;
+	t.setOrigin(rectCenter(rect));//set the origin, which also alters the position
+	t.setPosition(view.getCenter());//set the position to even out the setOrigin's position change
+	t.rotate(view.getRotation());//rotate that shit TIGHT
+	return t.getTransform().transformRect(rect);//return the transformed rect
+	
+}
+
+
 
 /**
-Returns the center of a sf::FloatRect
+Returns the bounding circle of a sf::FloatRect
 */
-inline sf::Vector2f rectCenter(const sf::FloatRect& rect){
-	return sf::Vector2f(rect.left + rect.width*0.5f, rect.top + rect.height*0.5f);
+inline Circle getBoundingCircle(const sf::FloatRect& rect) {
+	return Circle(vec_length(sf::Vector2f(rect.width, rect.height)) * 0.5f, rectCenter(rect));
 }

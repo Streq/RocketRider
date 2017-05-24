@@ -18,6 +18,8 @@
 #define leftKey sf::Keyboard::A
 #define accelerateKey sf::Keyboard::W
 #define dieKey sf::Keyboard::R
+#define shootupKey sf::Keyboard::F
+#define shootdownKey sf::Keyboard::G
 
 class Game: public GameState{
 	public:	

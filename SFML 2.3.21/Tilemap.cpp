@@ -53,7 +53,7 @@ void Tilemap::draw(sf::RenderTarget & target, sf::RenderStates states) const
 	sf::Vector2f globalPos (getPosition().x - getOrigin().x * getScale().x, getPosition().y - getOrigin().y * getScale().y);
 
 	//only draw what's inside the view
-	auto view_rect = viewRect(target.getView());
+	auto view_rect = rotatedViewRect(target.getView());
 	//view_rect.height *= 1.25f;
 	//view_rect.width *= 1.25f;
 	auto last_tile_pos = (m_tiles.y * m_tiles.x - 1) * 4;

@@ -23,6 +23,10 @@ class Node : public sf::Drawable , public sf::Transformable{
 		Handle the given event, the window is passed in case of a Mouse event to map the pixel to world coords
 		*/
 		virtual void handleEvent(const sf::Event& e, sf::RenderWindow& window) {};
+		virtual void update(sf::Time time) {};
+
+
+		virtual sf::FloatRect getGlobalBounds() const = 0;
 
 		/**
 		Get the absolute world position by applying all the parent Nodes' transforms
@@ -81,6 +85,29 @@ class Composite : public Node {
 			mChildren.erase(found);
 		}
 
+
+		virtual sf::FloatRect getGlobalBounds()const override {
+			sf::FloatRect rect(getPosition(),sf::Vector2f(0.f,0.f));
+			if (!mChildren.empty()){
+				std::vector<sf::FloatRect> rects;
+				rects.reserve(mChildren.size());
+
+				std::for_each(mChildren.begin(), mChildren.end(), 
+					[&rects](const GUI::Node::ptr& ptr) {
+						rects.push_back(ptr->getGlobalBounds()); 
+					}
+				);
+
+				rect.top = std::min_element(rects.begin(), rects.end(), [](sf::FloatRect& l, sf::FloatRect& r) {return l.top < r.top;})->top;
+				rect.left = std::min_element(rects.begin(), rects.end(), [](sf::FloatRect& l, sf::FloatRect& r) {return l.left < r.left; })->left;
+				auto heightRect = std::max_element(rects.begin(), rects.end(), [](sf::FloatRect& l, sf::FloatRect& r) {return l.top + l.height < r.top + r.height; });
+				rect.width = heightRect->left + heightRect->width - rect.left;
+				auto heightWidth = std::max_element(rects.begin(), rects.end(), [](sf::FloatRect& l, sf::FloatRect& r) {return l.left + l.width < r.left + r.width; });
+				rect.height = heightRect->top + heightRect->height - rect.top;
+			}
+			return rect;
+		};
+
 	protected:
 		virtual void drawSelf(sf::RenderTarget& target, sf::RenderStates states) const {};
 		
@@ -112,14 +139,14 @@ class Leaf : public Node {
 class Button : public Node {
 	public:
 		Button(const AppContext& context, std::string text) { 
-			this->setScale(2.f,2.f);
+			this->setScale(1.f,1.f);
 			m_texture_normal = &context.resources->textures.get(Texture::BUTTON);
+			m_texture_mouseover = &context.resources->textures.get(Texture::BUTTON_MOUSEOVER);
 			m_sprite.setTexture(*m_texture_normal,true);
+			m_sprite.setScale(2.f, 2.f);
 			m_text.setFont(context.resources->fonts.get(Font::arial));
-			m_text.setCharacterSize(10);
+			m_text.setCharacterSize(20);
 			m_text.setFillColor(sf::Color::White);
-			
-			
 			setString(std::move(text));
 		};
 		virtual void handleEvent(const sf::Event& e, sf::RenderWindow& win) override {
@@ -137,14 +164,46 @@ class Button : public Node {
 							auto button_bounds = this->m_sprite.getGlobalBounds();
 							
 							if (button_bounds.contains(local_position)) {
-								std::cout << "pressed " << m_string << '\n';
+//								std::cout << "pressed " << m_string << '\n';
 								mCallback();
 							}
 						}
 					}
+				}break;
+				case sf::Event::MouseMoved: {
+					//get the mouse position on the screen
+					auto mouse_position = sf::Vector2i(e.mouseMove.x, e.mouseMove.y);
+
+					//get the local position
+					auto local_position = pixelToLocalCoords(win, this->getWorldTransform(), mouse_position);
+
+					auto button_bounds = this->m_sprite.getGlobalBounds();
+
+					if (button_bounds.contains(local_position)) {
+//						std::cout << "mousover " << m_string << '\n';
+						m_sprite.setTexture(*m_texture_mouseover);
+					}
+					else { 
+						m_sprite.setTexture(*m_texture_normal);
+					}
 				}
 			}
 		};
+
+		virtual sf::FloatRect getGlobalBounds()const override {
+			
+			auto rect = m_sprite.getGlobalBounds();
+			auto pos = getPosition();
+			auto scale = getScale();
+			
+			rect.left += pos.x;
+			rect.top += pos.y;
+			
+			rect.width *= scale.x;
+			rect.height *= scale.y;
+			return rect;
+		};
+
 
 		void					setCallback(const std::function<void()>& callback) { mCallback = callback; }
 		void					setString(std::string str) { 
@@ -180,17 +239,32 @@ class Button : public Node {
 
 class TextBox :public Leaf {
 public:
-	TextBox(const AppContext& context,const std::string& content, size_t linewidth) :
+	TextBox(const AppContext& context,const std::string& content, size_t linewidth, size_t char_size = 20u) :
 		mText(
 			textWrap(content,linewidth),
 			context.resources->fonts.get(Font::consola),
-			20u)
+			char_size)
 	{};
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override {
 		states.transform *= this->getTransform();
 		target.draw(mText, states);
 	};
+
+	virtual sf::FloatRect getGlobalBounds()const override {
+		auto rect = mText.getGlobalBounds();
+		auto pos = getPosition();
+		auto scale = getScale();
+
+		rect.left += pos.x;
+		rect.top += pos.y;
+
+		rect.width *= scale.x;
+		rect.height *= scale.y;
+
+		return rect;
+	};
+
 private:	
 	sf::Text mText;
 

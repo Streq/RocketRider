@@ -28,20 +28,8 @@ bool Game::handle_event(const sf::Event & e){
 		case sf::Event::KeyReleased:
 		case sf::Event::KeyPressed:{
 			bool pressed = e.type==sf::Event::KeyPressed;
-			switch(e.key.code){
-				case leftKey:{
-					mController.input[Input::Left] = pressed;
-				}break;
-				case rightKey:{
-					mController.input[Input::Right] = pressed;
-				}break;
-				case accelerateKey:{
-					mController.input[Input::Accelerate] = pressed;
-				}break;
-				case dieKey: {
-					mController.input[Input::Die] = pressed;
-				}
-			}
+			mController.update_key(InputData(e.key.code, InputData::Type::keyboard),pressed);
+			
 		}break;
 		case sf::Event::MouseButtonPressed:{
 			if(e.mouseButton.button==sf::Mouse::Button::Left){
@@ -90,32 +78,39 @@ bool Game::update(sf::Time dt){
 	m_message_display_time -= dt;
 	if (m_message_display_time <= sf::Time::Zero)
 		m_display_message = false;
-
-	if(mController.input[Input::Left])
-		mPlayer->rotateLeft(dt);
-	if(mController.input[Input::Right])
-		mPlayer->rotateRight(dt);
-	if(mController.input[Input::Accelerate])
-		mPlayer->accelerate(dt);
-	else mPlayer->decelerate();
-	if (mController.input[Input::Die]) {
-		mPlayer->explode();
-	}
-	if(mController.input[Input::Hook]){
+	if (mController.input[Input::Hook]) {
+		mController.input[Input::Hook] = false;
 		//printf("mouse:%d,%d\n",mController.lastMouseClick.x,mController.lastMouseClick.y);
 		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
-		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mController.lastMouseClick,mView);
+		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mController.lastMouseClick, mView);
 		//printf("world_sf:%d,%d\n",world_pos_sf.x,world_pos_sf.y);
 		//convertir las coordenadas sfml en b2
 		b2Vec2 world_pos_b2 = sf_to_b2_pos(world_pos_sf);
 		//printf("world_b2:%d,%d\n",world_pos_b2.x,world_pos_b2.y);
-		mPlayer->throwHook(world_pos_b2.x, world_pos_b2.y);
-		
+		mPlayer->throwHookTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
+
 	}
-	if(mController.input[Input::ReleaseHook]){
+	if (mController.check_pressed(Input::Hookdown) && mController.check_updated(Input::Hookdown)) {
+		mPlayer->throwHookTowardsLocalDirection(0.f, -1.f);
+	}
+	if (mController.check_pressed(Input::Hookup) && mController.check_updated(Input::Hookup)) {
+		mPlayer->throwHookTowardsLocalDirection(0.f, 1.f);
+	}
+	if (mController.input[Input::ReleaseHook]) {
 		mPlayer->releaseHook();
 	}
+	if (mController.check_pressed(Input::Left))
+		mPlayer->rotateLeft(dt);
+	if (mController.check_pressed(Input::Right))
+		mPlayer->rotateRight(dt);
+	if (mController.check_pressed(Input::Accelerate))
+		mPlayer->accelerate(dt);
+	else mPlayer->decelerate();
+	if (mController.check_pressed(Input::Die))
+		mPlayer->explode();
 	
+	
+	mController.clear_updated();
 
 	mWorld.Step(dt.asSeconds(),B2::VELOCITY_ITERATIONS,B2::POSITION_ITERATIONS);
 	mPlayer->Step(dt);
@@ -129,6 +124,7 @@ bool Game::update(sf::Time dt){
 		goto_level(m_level_index);
 
 	mView.setCenter(b2_to_sf_pos(mPlayer->getb2Position()));
+	//mView.setRotation(-rad_to_deg(mPlayer->getb2Rotation())+90);
 	//const auto& camara_pos = mView.getCenter();
 	//const auto& background_pos = mBackground0.getPosition();
 	//sf::Vector2i distance((camara_pos-background_pos));
@@ -136,10 +132,10 @@ bool Game::update(sf::Time dt){
 	//distance.x -= sign(distance.x)*abs(distance.x)%(int(bounds.width/3));
 	//distance.y -= sign(distance.y)*abs(distance.y)%(int(bounds.height/3));
 	//mBackground0.move(sf::Vector2f(distance));
-	mBackground0.mTexture.adjust_to_view(mBackground0.transformView(mView));
-	mBackground1.mTexture.adjust_to_view(mBackground1.transformView(mView));
-	mBackground2.mTexture.adjust_to_view(mBackground2.transformView(mView));
-	mBackground3.mTexture.adjust_to_view(mBackground3.transformView(mView));
+	//mBackground0.mTexture.adjust_to_view(mBackground0.transformView(mView));
+	//mBackground1.mTexture.adjust_to_view(mBackground1.transformView(mView));
+	//mBackground2.mTexture.adjust_to_view(mBackground2.transformView(mView));
+	//mBackground3.mTexture.adjust_to_view(mBackground3.transformView(mView));
 	return false;
 }
 
@@ -166,12 +162,35 @@ void Game::draw() const{
 }
 
 void Game::init() {
+	mController.set_key(InputData(shootupKey, InputData::Type::keyboard), Input::ID::Hookup);
+	mController.set_key(InputData(shootdownKey, InputData::Type::keyboard), Input::ID::Hookdown);
+	mController.set_key(InputData(leftKey, InputData::Type::keyboard), Input::ID::Left);
+	mController.set_key(InputData(accelerateKey, InputData::Type::keyboard), Input::ID::Accelerate);
+	mController.set_key(InputData(rightKey, InputData::Type::keyboard), Input::ID::Right);
+	mController.set_key(InputData(dieKey, InputData::Type::keyboard), Input::ID::Die);
+
 	//mBackground0.mTexture.m_sprite.setTexture(mContext.resources->textures.get(Texture::BACKGROUND));
+	mBackground0.mTexture.setTexture(mContext.resources->textures.get(Texture::STARS), true);
+	mBackground1.mTexture.setTexture(mContext.resources->textures.get(Texture::STARS1), true);
+	mBackground2.mTexture.setTexture(mContext.resources->textures.get(Texture::STARS2), true);
+	mBackground3.mTexture.setTexture(mContext.resources->textures.get(Texture::STARS1), true);
+
+	
+	/*
 	mBackground0.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS);
 	mBackground1.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS1);
 	mBackground2.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS2);
 	mBackground3.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS1);
-
+	*//*
+	sf::Sprite sprite0(mContext.resources->textures.get(Texture::STARS));
+	mBackground0.mTexture.setSprite(sprite0);
+	sf::Sprite sprite1(mContext.resources->textures.get(Texture::STARS1));
+	mBackground1.mTexture.setSprite(sprite1);
+	sf::Sprite sprite2(mContext.resources->textures.get(Texture::STARS2));
+	mBackground2.mTexture.setSprite(sprite2);
+	sf::Sprite sprite3(mContext.resources->textures.get(Texture::STARS1));
+	mBackground3.mTexture.setSprite(sprite3);
+	*/
 	//mBackground0.setTextureRect(sf::IntRect(0, 0, MAX_VIEW_SIZE * 3, ASPECT_RATIO*MAX_VIEW_SIZE * 3));
 	//auto bounds = mBackground0.getLocalBounds();
 	//mBackground0.setOrigin(bounds.width / 2.f, bounds.height / 2.f);

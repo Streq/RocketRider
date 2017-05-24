@@ -18,7 +18,8 @@ class Player: public GameObject{
 	void decelerate();
 	void rotateLeft(sf::Time dt);
 	void rotateRight(sf::Time dt);
-	void throwHook(float x, float y);
+	void throwHookTowardsWorldPosition(float x, float y);
+	void throwHookTowardsLocalDirection(float x, float y);
 	void releaseHook();
 	void explode();
 	void setGoalCompleted(bool=true);
