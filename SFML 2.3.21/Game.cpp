@@ -58,14 +58,6 @@ bool Game::update(sf::Time dt){
 		mPlayer->throwHookTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
 
 	}
-	{
-		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
-		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mController.lastMousePosition, mView);
-		//convertir las coordenadas sfml en b2
-		b2Vec2 world_pos_b2 = sf_to_b2_pos(world_pos_sf);
-
-		mPlayer->updateAimTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
-	}
 	if (mController.check_pressed(Input::Hookdown) && mController.check_updated(Input::Hookdown)) {
 		mPlayer->throwHookTowardsLocalDirection(0.f, -1.f);
 	}
@@ -103,6 +95,15 @@ bool Game::update(sf::Time dt){
 		goto_level(m_level_index);
 
 	mView.setCenter(b2_to_sf_pos(mPlayer->getb2Position()));
+
+	{
+		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
+		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mController.lastMousePosition, mView);
+		//convertir las coordenadas sfml en b2
+		b2Vec2 world_pos_b2 = sf_to_b2_pos(world_pos_sf);
+
+		mPlayer->updateAimTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
+	}
 	//mView.setRotation(-rad_to_deg(mPlayer->getb2Rotation())+90);
 	//const auto& camara_pos = mView.getCenter();
 	//const auto& background_pos = Stars0.getPosition();

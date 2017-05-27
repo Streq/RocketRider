@@ -216,10 +216,10 @@ void Player::updateAimTowardsWorldPosition(float x, float y)
 	sf::Color col;
 	if (targetBody) {
 		col = sf::Color::Green;
-		mAim = callback.getPoint()-pos;
+		mAim = callback.getPoint();
 	}
 	else {
-		mAim = mRopeLength*direction;
+		mAim = pos + mRopeLength*direction;
 		col = sf::Color::Red;
 	}
 	for (int i = 0; i < 4; i++) {
@@ -252,7 +252,7 @@ void Player::draw(sf::RenderTarget & target, sf::RenderStates states)const{
 
 void Player::drawAim(sf::RenderTarget & target, sf::RenderStates states) const{
 	sf::Vector2f ppos(b2_to_sf_pos(getb2Position()));
-	sf::Vector2f tpos(b2_to_sf_pos(mAim)+ppos);
+	sf::Vector2f tpos(b2_to_sf_pos(mAim));
 	sf::Vector2f distance(tpos - ppos);
 	sf::Vector2f versor_normal(distance.y, -distance.x);
 	normalize(versor_normal);
