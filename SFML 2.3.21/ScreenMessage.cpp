@@ -52,5 +52,5 @@ void ScreenMessage::updateBox()
 {
 	auto bounds = m_text.getGlobalBounds();
 	centerOrigin(m_text);
-	//mBackground0.setSize(sf::Vector2f(bounds.width + 20, bounds.height + 20));
+	//Stars0.setSize(sf::Vector2f(bounds.width + 20, bounds.height + 20));
 }

@@ -26,6 +26,9 @@ class Player: public GameObject{
 	bool goalCompleted();
 	bool isDead()const;
 	bool isHooked()const;
+	void updateAimTowardsWorldPosition(float x,float y);
+	void setMira(bool mira);
+	bool getMira();
 	virtual void initBody(b2World& world) final;
 
 
@@ -38,8 +41,12 @@ class Player: public GameObject{
 	sf::Sprite		mSprite;
 	sf::Sprite		mExplosionSprite;
 	sf::Sprite		mFire;
+	mutable sf::VertexArray aimLine;
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const final;
-	
+	void		 drawAim(sf::RenderTarget& target, sf::RenderStates states) const;
+	b2Vec2	getDirectionTowards(float x, float y);
+
+
 	Hook		mHook;
 	float		mFuel;
 	float		mMaxFuel;
@@ -55,5 +62,8 @@ class Player: public GameObject{
 	bool		m_explode;
 	bool		m_goal;
 	bool		m_dead;
+	bool		m_mira;
+
+	b2Vec2		mAim;
 	//b2RopeJoint* mHook;
 };

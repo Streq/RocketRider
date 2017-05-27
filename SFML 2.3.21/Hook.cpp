@@ -2,19 +2,24 @@
 #include "Conversions.h"
 #include "Player.h"
 Hook::Hook(Player & mPlayer):
-	mPlayer(mPlayer)
+	mPlayer(mPlayer),
+	mVec(sf::PrimitiveType::Quads, 4)
 {
+
 }
 
 void Hook::draw(sf::RenderTarget& target, sf::RenderStates states)const {
-	if (!mActive) return;
-	sf::VertexArray mVec(sf::PrimitiveType::Quads,4);
+	if (!mActive) {
+		
+	};
+
 	mVec[0].color = sf::Color::Black;
 	mVec[1].color = sf::Color::Black;
 	mVec[2].color = sf::Color::Black;
 	mVec[3].color = sf::Color::Black;
-
+	//PlayerPosition
 	sf::Vector2f ppos(b2_to_sf_pos(mPlayer.getb2Position()));
+	//TargetPosition
 	sf::Vector2f tpos(b2_to_sf_pos(mJointA->GetAnchorB()));
 	sf::Vector2f distance(tpos - ppos);
 	sf::Vector2f versor_normal(distance.y, -distance.x);

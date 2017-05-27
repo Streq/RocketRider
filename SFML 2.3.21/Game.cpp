@@ -10,7 +10,8 @@
 #include "xml_utils.h"
 #include "TileTexture.h"
 Game::Game(GameStack& s, AppContext context) :
-	GameState(s, std::move(context)),
+	GameState(s, context),
+	mController(std::move(context)),
 	mWorld(b2Vec2(0,-10.f)),
 	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE),static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO))),
 	mContactListener(new GameContactListener()),
@@ -24,39 +25,9 @@ Game::Game(GameStack& s, AppContext context) :
 
 
 bool Game::handle_event(const sf::Event & e){
+	mController.handleEvent(e);
 	switch (e.type){
-		case sf::Event::KeyReleased:
-		case sf::Event::KeyPressed:{
-			bool pressed = e.type==sf::Event::KeyPressed;
-			mController.update_key(InputData(e.key.code, InputData::Type::keyboard),pressed);
-			
-		}break;
-		case sf::Event::MouseButtonPressed:{
-			if(e.mouseButton.button==sf::Mouse::Button::Left){
-				auto& mWindow = *mContext.window;
-				mWindow.setView(mWindow.getDefaultView());
-				auto& mSprite = *mContext.displaySprite;
-				//get local click
-				auto localClick=sf::Vector2i(e.mouseButton.x, e.mouseButton.y);
-				mController.input[Input::Hook] = true;
-
-				mController.lastMouseClick = localClick;
-				
-			}
-			if(e.mouseButton.button==sf::Mouse::Button::Right){
-				mController.input[Input::ReleaseHook] = true;
-
-			}
-		}break;
-		case sf::Event::MouseButtonReleased:{
-			if(e.mouseButton.button==sf::Mouse::Button::Left){
-				mController.input[Input::Hook] = false;
-			}
-			if(e.mouseButton.button==sf::Mouse::Button::Right){
-				mController.input[Input::ReleaseHook] = false;
-
-			}
-		}break;
+		
 		case sf::Event::MouseWheelScrolled:{
 			int delta = -sign(e.mouseWheelScroll.delta) * MOUSE_SCROLL_ZOOM;
 			//mView.zoom(1.f-delta);
@@ -80,18 +51,27 @@ bool Game::update(sf::Time dt){
 		m_display_message = false;
 	if (mController.input[Input::Hook]) {
 		mController.input[Input::Hook] = false;
-		//printf("mouse:%d,%d\n",mController.lastMouseClick.x,mController.lastMouseClick.y);
 		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
 		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mController.lastMouseClick, mView);
-		//printf("world_sf:%d,%d\n",world_pos_sf.x,world_pos_sf.y);
 		//convertir las coordenadas sfml en b2
 		b2Vec2 world_pos_b2 = sf_to_b2_pos(world_pos_sf);
-		//printf("world_b2:%d,%d\n",world_pos_b2.x,world_pos_b2.y);
 		mPlayer->throwHookTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
 
 	}
+	{
+		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
+		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mController.lastMousePosition, mView);
+		//convertir las coordenadas sfml en b2
+		b2Vec2 world_pos_b2 = sf_to_b2_pos(world_pos_sf);
+
+		mPlayer->updateAimTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
+	}
 	if (mController.check_pressed(Input::Hookdown) && mController.check_updated(Input::Hookdown)) {
 		mPlayer->throwHookTowardsLocalDirection(0.f, -1.f);
+	}
+	if (mController.check_pressed(Input::Mira) && mController.check_updated(Input::Mira)) {
+		mPlayer->setMira(!mPlayer->getMira());
+		m_mira = mPlayer->getMira();
 	}
 	if (mController.check_pressed(Input::Hookup) && mController.check_updated(Input::Hookup)) {
 		mPlayer->throwHookTowardsLocalDirection(0.f, 1.f);
@@ -109,7 +89,6 @@ bool Game::update(sf::Time dt){
 	if (mController.check_pressed(Input::Die))
 		mPlayer->explode();
 	
-	
 	mController.clear_updated();
 
 	mWorld.Step(dt.asSeconds(),B2::VELOCITY_ITERATIONS,B2::POSITION_ITERATIONS);
@@ -126,25 +105,25 @@ bool Game::update(sf::Time dt){
 	mView.setCenter(b2_to_sf_pos(mPlayer->getb2Position()));
 	//mView.setRotation(-rad_to_deg(mPlayer->getb2Rotation())+90);
 	//const auto& camara_pos = mView.getCenter();
-	//const auto& background_pos = mBackground0.getPosition();
+	//const auto& background_pos = Stars0.getPosition();
 	//sf::Vector2i distance((camara_pos-background_pos));
-	//auto bounds = mBackground0.getGlobalBounds();
+	//auto bounds = Stars0.getGlobalBounds();
 	//distance.x -= sign(distance.x)*abs(distance.x)%(int(bounds.width/3));
 	//distance.y -= sign(distance.y)*abs(distance.y)%(int(bounds.height/3));
-	//mBackground0.move(sf::Vector2f(distance));
-	//mBackground0.mTexture.adjust_to_view(mBackground0.transformView(mView));
-	//mBackground1.mTexture.adjust_to_view(mBackground1.transformView(mView));
-	//mBackground2.mTexture.adjust_to_view(mBackground2.transformView(mView));
-	//mBackground3.mTexture.adjust_to_view(mBackground3.transformView(mView));
+	//Stars0.move(sf::Vector2f(distance));
+	//Stars0.mTexture.adjust_to_view(Stars0.applyDepthToView(mView));
+	//Stars1.mTexture.adjust_to_view(Stars1.applyDepthToView(mView));
+	//Stars2.mTexture.adjust_to_view(Stars2.applyDepthToView(mView));
+	//Stars3.mTexture.adjust_to_view(Stars3.applyDepthToView(mView));
 	return false;
 }
 
 void Game::draw() const{
 	mContext.screen->setView(mView);
-	mContext.screen->draw(mBackground0);
-	mContext.screen->draw(mBackground1);
-	mContext.screen->draw(mBackground2);
-	mContext.screen->draw(mBackground3);
+	for(const BackgroundLayer& lay : background) {
+		mContext.screen->draw(lay); 
+	}
+
 
 	mContext.screen->draw(mTilemap);
 	for(const auto& object:mObjects){
@@ -168,44 +147,98 @@ void Game::init() {
 	mController.set_key(InputData(accelerateKey, InputData::Type::keyboard), Input::ID::Accelerate);
 	mController.set_key(InputData(rightKey, InputData::Type::keyboard), Input::ID::Right);
 	mController.set_key(InputData(dieKey, InputData::Type::keyboard), Input::ID::Die);
+	mController.set_key(InputData(miraKey, InputData::Type::keyboard), Input::ID::Mira);
+	background.resize(14);
+	//Stars0.mTexture.m_sprite.setTexture(mContext.resources->textures.get(Texture::BACKGROUND));
 
-	//mBackground0.mTexture.m_sprite.setTexture(mContext.resources->textures.get(Texture::BACKGROUND));
-	mBackground0.mTexture.setTexture(mContext.resources->textures.get(Texture::STARS), true);
-	mBackground1.mTexture.setTexture(mContext.resources->textures.get(Texture::STARS1), true);
-	mBackground2.mTexture.setTexture(mContext.resources->textures.get(Texture::STARS2), true);
-	mBackground3.mTexture.setTexture(mContext.resources->textures.get(Texture::STARS1), true);
+	BackgroundLayer& SeaBlock = background[0];
+	BackgroundLayer& Background = background[1];
+	BackgroundLayer& Sky = background[2];
+	BackgroundLayer& Sea = background[3];
+	BackgroundLayer& Ground0 = background[4];
+	BackgroundLayer& Ground1 = background[5];
+	BackgroundLayer& Stars0 = background[6];
+	BackgroundLayer& Stars1 = background[7];
+	BackgroundLayer& Stars2 = background[8];
+	BackgroundLayer& Stars3 = background[9];
+	BackgroundLayer& Clouds0 = background[10];
+	BackgroundLayer& Clouds1 = background[11];
+	BackgroundLayer& Clouds2 = background[12];
+	BackgroundLayer& Clouds3 = background[13];
+
+#define SET_TEXTURE(LAYER,TEXTURE)LAYER.mTexture.setTexture(mContext.resources->textures.get(Texture::##TEXTURE),true)
+#define SET_FLAGS(LAYER,LEFT,RIGHT,UP,DOWN)LAYER.mTexture.setFlags((Mosaico::Flags::infiniteUp*UP) | (Mosaico::Flags::infiniteLeft*LEFT) | (Mosaico::Flags::infiniteRight*RIGHT) | (Mosaico::Flags::infiniteDown*DOWN));
+	SET_TEXTURE(Stars0, STARS);
+	SET_TEXTURE(Stars1, STARS1);
+	SET_TEXTURE(Stars2, STARS2);
+	SET_TEXTURE(Stars3, STARS1);
+	SET_TEXTURE(Background, BACKGROUND);
+	SET_TEXTURE(Sky, SKY);
+	SET_TEXTURE(Clouds0, CLOUDS);
+	SET_TEXTURE(Clouds1, CLOUDS);
+	SET_TEXTURE(Clouds2, CLOUDS);
+	SET_TEXTURE(Clouds3, CLOUDS);
+	SET_TEXTURE(Sea, SEA);
+	SET_TEXTURE(Ground0, MOUNTAIN0);
+	SET_TEXTURE(Ground1, MOUNTAIN1);
+	SET_TEXTURE(SeaBlock, SEA_BLOCK);
+
+	SET_FLAGS(Stars0, true, true, true, false);
+	SET_FLAGS(Stars1, true, true, true, false);
+	SET_FLAGS(Stars2, true, true, true, false);
+	SET_FLAGS(Stars3, true, true, true, false);
+	SET_FLAGS(Background, true, true, false, false);
+	SET_FLAGS(Sky, true, true, true, false);
+	SET_FLAGS(Clouds0, true, true, false, false);
+	SET_FLAGS(Clouds1, true, true, false, false);
+	SET_FLAGS(Clouds2, true, true, false, false);
+	SET_FLAGS(Clouds3, true, true, false, false);
+	SET_FLAGS(Sea, true, true, false, false);
+	SET_FLAGS(Ground0, true, true, false, false);
+	SET_FLAGS(Ground1, true, true, false, false);
+	SET_FLAGS(SeaBlock, true, true, false, true);
+#undef SET_TEXTURE
+#undef SET_FLAGS
+	const float size_fact=3.f;
+
+	Stars0.mTexture.setScale(sf::Vector2f(1.f, 1.f)*1.f * size_fact);
+	Stars1.mTexture.setScale(sf::Vector2f(1.f, 1.f)*2.f * size_fact);
+	Stars2.mTexture.setScale(sf::Vector2f(1.f, 1.f)*3.f * size_fact);
+	Stars3.mTexture.setScale(sf::Vector2f(1.f, 1.f)*5.f * size_fact);
+	Sky.mTexture.setScale(sf::Vector2f(1.f, 1.f)*1.f * size_fact);
+	Background.mTexture.setScale(sf::Vector2f(1.f, 1.f)*1.f * size_fact);
+	Clouds0.mTexture.setScale(sf::Vector2f(1.f, 1.f)*0.4f * size_fact*2.f);
+	Clouds1.mTexture.setScale(sf::Vector2f(1.f, 1.f)*0.6f * size_fact*2.f);
+	Clouds2.mTexture.setScale(sf::Vector2f(1.f, 1.f)*0.8f * size_fact*2.f);
+	Clouds3.mTexture.setScale(sf::Vector2f(1.f, 1.f)*1.f * size_fact*2.f);
+
+	Stars0.speed_factor = 0.1f;
+	Stars1.speed_factor = 0.2f;
+	Stars2.speed_factor = 0.3f;
+	Stars3.speed_factor = 0.5f;
+	Sky.speed_factor = 0.1f;
+	Background.speed_factor = 0.1f;
+
+	Clouds3.speed_factor = 0.8f;
+	float speed_factor_fifth = Clouds3.speed_factor * 0.2f;
+	Clouds0.speed_factor = 0.8f - speed_factor_fifth * 3;
+	Clouds1.speed_factor = 0.8f - speed_factor_fifth * 2;
+	Clouds2.speed_factor = 0.8f - speed_factor_fifth;
+	
+	Clouds0.setPosition(sf::Vector2f(100.f, 1000.f) * Clouds0.speed_factor *size_fact);
+	Clouds1.setPosition(sf::Vector2f(0.f, 1000.f) * Clouds1.speed_factor*size_fact);
+	Clouds2.setPosition(sf::Vector2f(200.f, 1000.f) * Clouds2.speed_factor*size_fact);
+	Clouds3.setPosition(sf::Vector2f(300.f, 1000.f) * Clouds3.speed_factor*size_fact);
+
+	Sea.speed_factor = 0.1f;
+	Ground0.speed_factor = 0.4f;
+	Ground1.speed_factor = 0.6f;
+
+	Sea.setScale(sf::Vector2f(1.f, 1.f)*1.f*size_fact);
+	Ground0.setScale(sf::Vector2f(1.f, 1.f)*4.f*size_fact);
+	Ground1.setScale(sf::Vector2f(1.f, 1.f)*6.f*size_fact);
 
 	
-	/*
-	mBackground0.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS);
-	mBackground1.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS1);
-	mBackground2.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS2);
-	mBackground3.mTexture.m_texture = &mContext.resources->textures.get(Texture::STARS1);
-	*//*
-	sf::Sprite sprite0(mContext.resources->textures.get(Texture::STARS));
-	mBackground0.mTexture.setSprite(sprite0);
-	sf::Sprite sprite1(mContext.resources->textures.get(Texture::STARS1));
-	mBackground1.mTexture.setSprite(sprite1);
-	sf::Sprite sprite2(mContext.resources->textures.get(Texture::STARS2));
-	mBackground2.mTexture.setSprite(sprite2);
-	sf::Sprite sprite3(mContext.resources->textures.get(Texture::STARS1));
-	mBackground3.mTexture.setSprite(sprite3);
-	*/
-	//mBackground0.setTextureRect(sf::IntRect(0, 0, MAX_VIEW_SIZE * 3, ASPECT_RATIO*MAX_VIEW_SIZE * 3));
-	//auto bounds = mBackground0.getLocalBounds();
-	//mBackground0.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-	mBackground0.mTexture.setScale(sf::Vector2f(1.f, 1.f)*1.f);
-	mBackground1.mTexture.setScale(sf::Vector2f(1.f, 1.f)*2.f);
-	mBackground2.mTexture.setScale(sf::Vector2f(1.f, 1.f)*4.f);
-	mBackground3.mTexture.setScale(sf::Vector2f(1.f, 1.f)*6.f);
-
-	mBackground0.speed_factor = 0.1f;
-	mBackground1.speed_factor = 0.4f;
-	mBackground2.speed_factor = 0.6f;
-	mBackground3.speed_factor = 0.9f;
-
-
-
 	sf::Text text("", mContext.resources->fonts.get(Font::consola), 20u);
 	mMessage.setText(std::move(text));
 	mMessage.setLineWidth(40);
@@ -238,7 +271,7 @@ void Game::loadLevel(const Level & level)
 		ptr->initBody(mWorld);
 	}
 	mPlayer->initBody(mWorld);
-
+	mPlayer->setMira(m_mira);
 	mTilemap.setOrigin(16.f, 16.f);
 	mTilemap.load(mContext.resources->textures.get(Texture::TILESET), sf::Vector2u(32u, 32u),&level.mTiles[0],level.size.x,level.size.y);
 	

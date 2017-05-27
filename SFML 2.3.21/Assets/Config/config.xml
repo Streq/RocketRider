@@ -4,7 +4,7 @@
 		<files>
 			<level>
 				<message>Arrancamo sencillito</message>
-				<map>small_circular.png</map>
+				<map>normal0.png</map>
 				<levelconfig>map.xml</levelconfig>
 			</level>
 			<level>

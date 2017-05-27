@@ -1,14 +1,9 @@
-Mosaico (hereda de drawable y transformable):
-	-Se inicializa con una posicion central y cuatro dimensiones
-	-Si una dimensión es negativa se repite indefinidamente en ese sentido. Ej: si top es negativo se repite hacia arriba indefinidamente
-		-Cuando se lo manda a dibujar evalúa cómo debe mostrarse en pantalla teniendo en cuenta la vista.
-Background Layer:
-	-Wrapper de drawable/s
-	-Se especifica una profundidad y cuando se lo manda a dibujar calcula la verdadera posición en la vista respectiva a partir de la misma
-
-Terminar el Background pillo cuando esté lo anterior
+Terminar el Background pillo cuando esté lo anterior (maomeno ta)
 
 Mira linda:
 	-Avisar visualmente al jugador el punto exacto donde aterrizaría el gancho si apretara click.
 
-
+Modos de juego:
+Normal
+Sin Gasoil
+Sin Volante

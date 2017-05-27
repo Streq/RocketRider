@@ -1,5 +1,5 @@
 #include "Mosaico.h"
-
+#include "ConsoleOut.h"
 Mosaico::Mosaico(const sf::Texture & texture, unsigned flags)
 	: original_vertices(sf::PrimitiveType::Quads,4)
 	, vertices(sf::PrimitiveType::Quads, 4)
@@ -39,16 +39,45 @@ void Mosaico::draw(sf::RenderTarget& target, sf::RenderStates states)const {
 	//get the current view
 	const auto& view = target.getView();
 	//get transform
-	sf::Transform transform(this->getInverseTransform());
+	sf::Transform transform(this->getInverseTransform()*states.transform.getInverse());
 	//apply inverse transform to view rect so it's in the same coord system as the Mosaico
 	auto rect = transform.transformRect(rotatedViewRect(view));
 	
+	//intersect view Rect with boundaries;
+	sf::Vector2f topleft = getPosition() + original_vertices[0].position;
+	sf::Vector2f botright = getPosition() + original_vertices[2].position;
+
+
+	if (!(flags & Flags::infiniteUp)) {
+		//if it has an upward boundary
+		rect.top = std::max(rect.top, topleft.y);
+	}
+	if (!(flags & Flags::infiniteDown)) {
+		//if it has a left boundary
+		rect.height = std::min(rect.top + rect.height, botright.y) - rect.top;
+		
+	}
+	if (!(flags & Flags::infiniteLeft)) {
+		//if it has an right boundary
+		rect.top = std::max(rect.left, topleft.x);
+	}
+	if (!(flags & Flags::infiniteRight)) {
+		//if it has an downward boundary
+		rect.top = std::min(rect.left+rect.width, botright.x) - rect.left;
+	}
+	//only draw if it makes sense lmao
+	if (rect.height <= 0 || rect.width <= 0)return;
 	//fill the damn rect
 	fillRect(rect);
 
 	states.transform *= this->getTransform();
 	states.texture = this->texture;
 	target.draw(vertices, states);
+}
+
+void Mosaico::setFlags(unsigned flags)
+{
+	this->flags = flags;
 }
 
 void Mosaico::setTextureRect(sf::VertexArray & verts, const sf::FloatRect & textRect)

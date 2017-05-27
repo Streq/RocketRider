@@ -19,7 +19,13 @@ namespace Texture {
 		TILESET,
 		STARS,
 		STARS1,
-		STARS2
+		STARS2,
+		SKY,
+		CLOUDS,
+		SEA,
+		MOUNTAIN0,
+		MOUNTAIN1,
+		SEA_BLOCK
 	};
 }
 

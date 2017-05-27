@@ -1,7 +1,9 @@
 #pragma once
 #include <array>
 #include <SFML/System.hpp>
-#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+#include "AppContext.h"
 namespace Input{
 enum ID{
 	Left,
@@ -12,6 +14,7 @@ enum ID{
 	Hookdown,
 	ReleaseHook,
 	Die,
+	Mira,
 	size
 };
 }
@@ -65,6 +68,7 @@ struct InputData {
 struct Controller{
 		std::array<bool,Input::size> input;
 	public:
+		Controller(AppContext context);
 		typedef sf::Keyboard::Key Key;
 		typedef std::array<bool, Input::size> KeyBoolSet;
 		//typedef unsigned Key;
@@ -73,6 +77,7 @@ struct Controller{
 		std::array<bool, Input::size>	just_updated_keys;
 		InputData				keys[Input::size];
 	public:
+		void					handleEvent(const sf::Event& e);
 		void					update_key(const InputData& data, bool pressed);
 		void					set_key(const InputData& key, Input::ID action);
 		bool					check_pressed(Input::ID action)const;//check if currently pressed
@@ -81,4 +86,6 @@ struct Controller{
 		const KeyBoolSet&		get_pressed() const;
 		const KeyBoolSet&		get_updated() const;
 		sf::Vector2i lastMouseClick;
+		sf::Vector2i lastMousePosition;
+		AppContext mContext;
 };

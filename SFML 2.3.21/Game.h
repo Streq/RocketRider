@@ -20,6 +20,7 @@
 #define dieKey sf::Keyboard::R
 #define shootupKey sf::Keyboard::F
 #define shootdownKey sf::Keyboard::G
+#define miraKey sf::Keyboard::M
 
 class Game: public GameState{
 	public:	
@@ -52,10 +53,7 @@ class Game: public GameState{
 
 	Player::Ptr							mPlayer;
 	sf::View							mView;
-	BackgroundLayer						mBackground0;
-	BackgroundLayer						mBackground1;
-	BackgroundLayer						mBackground2;
-	BackgroundLayer						mBackground3;
+	std::vector<BackgroundLayer>		background;
 	Tilemap								mTilemap;
 
 
@@ -68,4 +66,5 @@ class Game: public GameState{
 	bool								m_won;
 	sf::Time							m_message_display_time;
 	bool								m_display_message;
+	bool								m_mira;
 };

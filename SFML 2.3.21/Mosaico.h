@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "Conversions.h"
 /*
-This class is really just a wrapper around a Sprite to make it have "infinite" boundaries
+This class is really just a Sprite with optional "infinite" boundaries
 */
 class Mosaico:public sf::Drawable,public sf::Transformable{
 	public: 
@@ -24,6 +24,7 @@ class Mosaico:public sf::Drawable,public sf::Transformable{
 		void			setTextureRect(const sf::FloatRect& rect);
 		void			setTexture(const sf::Texture& texture, bool resetRect=false);
 		void 			draw(sf::RenderTarget& target, sf::RenderStates states)const override;
+		void			setFlags(unsigned flags);
 	
 	private:
 		static void setTextureRect(sf::VertexArray& verts, const sf::FloatRect& rect);

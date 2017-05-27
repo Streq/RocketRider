@@ -8,17 +8,19 @@ ObjectType Player::getType() const
 	return ObjectType::Player;
 }
 
-Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration, float mAngularAcc, float mRopeLength, float mMaxFuel, float mFuel, float mExplosionImpulse, float mMaxSpeed, bool m_always_accelerating):
+Player::Player(const Resources& res, const b2Vec2& position, float mAcceleration, float mAngularAcc, float mRopeLength, float mMaxFuel, float mFuel, float mExplosionImpulse, float mMaxSpeed, bool m_always_accelerating) :
 	mAcceleration(mAcceleration),
 	mAngularAcc(mAngularAcc),
 	mRopeLength(mRopeLength),
-	mMaxFuel(mMaxFuel), 
+	mMaxFuel(mMaxFuel),
 	mFuel(mFuel),
 	mMaxSpeed(mMaxSpeed),
 	m_accelerating(false),
 	m_hooked(false),
 	mHook(*this),
-	mExplosionImpulse(mExplosionImpulse)
+	mExplosionImpulse(mExplosionImpulse),
+	aimLine(sf::PrimitiveType::Quads, 4),
+	m_mira(false)
 {
 	mBodyDef.position = position;
 	mBodyDef.angle = b2_pi / 2;
@@ -57,18 +59,19 @@ Player::Player(const Resources& res, const b2Vec2& position,float mAcceleration,
 	mExplosionSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 	mExplosionSprite.setPosition(0.f, 0.f);
 }
-Player::Player(const Resources & res, PlayerDefinition * def):Player(
-	res,
-	def->pos,
-	def->acceleration,
-	def->angular_acceleration,
-	def->rope_length,
-	def->max_fuel,
-	def->fuel,
-	def->explosion_impulse,
-	def->max_speed,
-	def->always_accelerating
-)
+Player::Player(const Resources & res, PlayerDefinition * def):
+	Player(
+		res,
+		def->pos,
+		def->acceleration,
+		def->angular_acceleration,
+		def->rope_length,
+		def->max_fuel,
+		def->fuel,
+		def->explosion_impulse,
+		def->max_speed,
+		def->always_accelerating
+	)
 {
 }
 void Player::initBody(b2World & world){
@@ -135,25 +138,19 @@ void Player::rotateRight(sf::Time dt){
 }
 
 void Player::throwHookTowardsWorldPosition(float x, float y){
-	//Si ya está enganchado primero se libera
+	//Si ya está enganchado se libera
 	if (m_hooked) { releaseHook(); return; }
-	//El punto de casteo relativo al jugador
-	b2Vec2 cast_point_local = mBody->GetLocalCenter(); //+ b2Vec2(0.f, 0.7f);
-	//El punto de casteo global
-	b2Vec2 cast_point_global(mBody->GetWorldPoint(cast_point_local));
-	
-	b2Vec2 targetPoint(x,y);
-	b2Vec2 distance(targetPoint-cast_point_global);
-	
-	distance.Normalize();
+	auto cast_point_global = this->getb2Position();
+	auto distance = getDirectionTowards(x, y);
 	distance*=mRopeLength;
-	targetPoint=cast_point_global+distance;
+	auto targetPoint=cast_point_global+distance;
 	
 	b2Body* targetBody;
 	HookCallback callback(*mBody);
 	
 	
 	mWorld->RayCast(&callback,cast_point_global,targetPoint);
+	
 	targetBody=callback.getTargetBody();
 	if(targetBody){
 		mHook.activate(targetBody, targetBody->GetLocalPoint(callback.getPoint()));
@@ -165,8 +162,7 @@ void Player::throwHookTowardsWorldPosition(float x, float y){
 
 void Player::throwHookTowardsLocalDirection(float x, float y) {
 	//El punto de origen del casteo relativo al jugador
-	b2Vec2 cast_point_local = mBody->GetLocalCenter(); 
-	b2Vec2 target_point_global(mBody->GetWorldPoint(cast_point_local+b2Vec2(x,y)));
+	b2Vec2 target_point_global(getb2Position()+b2Vec2(x,y));
 	
 	throwHookTowardsWorldPosition(target_point_global.x,target_point_global.y);
 	
@@ -206,23 +202,76 @@ bool Player::isHooked() const{
 	return m_hooked;
 }
 
+void Player::updateAimTowardsWorldPosition(float x, float y)
+{
+	b2Body* targetBody;
+	HookCallback callback(*mBody);
+	auto pos = this->getb2Position();
+	b2Vec2 direction{ getDirectionTowards(x,y) };
+	mWorld->RayCast(&callback, pos, pos + mRopeLength * direction);
+
+	targetBody = callback.getTargetBody();
+
+
+	sf::Color col;
+	if (targetBody) {
+		col = sf::Color::Green;
+		mAim = callback.getPoint()-pos;
+	}
+	else {
+		mAim = mRopeLength*direction;
+		col = sf::Color::Red;
+	}
+	for (int i = 0; i < 4; i++) {
+
+		aimLine[i].color = col;
+	}
+}
+
+void Player::setMira(bool mira)
+{
+	this->m_mira = mira;
+}
+
+bool Player::getMira()
+{
+	return m_mira;
+}
+
 
 void Player::draw(sf::RenderTarget & target, sf::RenderStates states)const{
 	if(m_hooked){
 		mHook.draw(target, states);
-		/*
-		sf::Vector2f pa(b2_to_sf_pos(mHook->GetAnchorA()));
-		sf::Vector2f pb(b2_to_sf_pos(mHook->GetAnchorB()));
-		auto line = sf::VertexArray(sf::PrimitiveType::Lines,2);
-		line[0].color=Color::Brown;
-		line[1].color=Color::Brown;
-		line[0].position=pa;
-		line[1].position=pb;
-		target.draw(line,states);
-		*/
-	}
+	} else if(m_mira)drawAim(target, states);
 	states.transform.translate(b2_to_sf_pos(getb2Position()));
 	states.transform.rotate(-rad_to_deg(getb2Rotation()));
-	if(m_accelerating&&mAcceleration>b2_epsilon)target.draw(mFire,states);
-	target.draw(mSprite,states);
+	if(m_accelerating && mAcceleration>b2_epsilon)target.draw(mFire,states);
+
+	target.draw(mSprite, states);
+}
+
+void Player::drawAim(sf::RenderTarget & target, sf::RenderStates states) const{
+	sf::Vector2f ppos(b2_to_sf_pos(getb2Position()));
+	sf::Vector2f tpos(b2_to_sf_pos(mAim)+ppos);
+	sf::Vector2f distance(tpos - ppos);
+	sf::Vector2f versor_normal(distance.y, -distance.x);
+	normalize(versor_normal);
+
+	aimLine[0].position = ppos - versor_normal;
+	aimLine[1].position = ppos + versor_normal;
+	aimLine[2].position = tpos + versor_normal;
+	aimLine[3].position = tpos - versor_normal;
+	target.draw(aimLine, states);
+}
+
+b2Vec2 Player::getDirectionTowards(float x, float y)
+{
+	//El punto de casteo global
+	b2Vec2 cast_point_global{ getb2Position() };
+
+	b2Vec2 targetPoint(x, y);
+	b2Vec2 distance(targetPoint - cast_point_global);
+
+	distance.Normalize();
+	return distance;
 }

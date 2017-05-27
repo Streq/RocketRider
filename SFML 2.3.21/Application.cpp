@@ -38,7 +38,7 @@ Application::Application():
 	mResources.textures.get(Texture::BLOCK).setRepeated(true);
 	mResources.textures.load(Texture::TILE, "Assets/Textures/tile.png");
 	mResources.textures.get(Texture::TILE).setRepeated(true);
-	mResources.textures.load(Texture::BACKGROUND, "Assets/Textures/background.png");
+	mResources.textures.load(Texture::BACKGROUND, "Assets/Textures/skybox.png");
 	mResources.textures.get(Texture::BACKGROUND).setRepeated(true);
 	mResources.textures.load(Texture::FIRE,"Assets/Textures/fire.png");
 	mResources.textures.load(Texture::BOX, "Assets/Textures/box.png");
@@ -54,6 +54,18 @@ Application::Application():
 	mResources.textures.get(Texture::STARS1).setRepeated(true);
 	mResources.textures.load(Texture::STARS2, "Assets/Textures/stars2.png");
 	mResources.textures.get(Texture::STARS2).setRepeated(true);
+	mResources.textures.load(Texture::SKY, "Assets/Textures/sky.png");
+	mResources.textures.get(Texture::SKY).setRepeated(true);
+	mResources.textures.load(Texture::CLOUDS, "Assets/Textures/clouds.png");
+	mResources.textures.get(Texture::CLOUDS).setRepeated(true);
+	mResources.textures.load(Texture::SEA, "Assets/Textures/sea.png");
+	mResources.textures.get(Texture::SEA).setRepeated(true);
+	mResources.textures.load(Texture::MOUNTAIN0, "Assets/Textures/mountain0.png");
+	mResources.textures.get(Texture::MOUNTAIN0).setRepeated(true);
+	mResources.textures.load(Texture::MOUNTAIN1, "Assets/Textures/mountain1.png");
+	mResources.textures.get(Texture::MOUNTAIN1).setRepeated(true);
+	mResources.textures.load(Texture::SEA_BLOCK, "Assets/Textures/seablock.png");
+	mResources.textures.get(Texture::SEA_BLOCK).setRepeated(true);
 
 	mResources.texts.load(TextFile::MAP_DEF, "Assets/Maps/map.xml");
 	mResources.texts.load(TextFile::CONFIG, "Assets/Config/config.xml");
