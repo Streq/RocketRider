@@ -4,6 +4,7 @@
 #include "MainMenu.h"
 #include "MenuHowToPlay.h"
 #include "MenuModo.h"
+#include "PauseMenu.h"
 Application::Application():
 	mWindow(
 		sf::VideoMode(INIT_WINDOW_SIZE.x,INIT_WINDOW_SIZE.y),
@@ -16,6 +17,7 @@ Application::Application():
 	mStack.register_state<MainMenu>(GameState::ID::MAIN_MENU);
 	mStack.register_state<MenuHowToPlay>(GameState::ID::HOW_TO_PLAY);
 	mStack.register_state<MenuModo>(GameState::ID::GAME_MODE);
+	mStack.register_state<PauseMenu>(GameState::ID::PAUSE);
 	mStack.push_state(GameState::ID::MAIN_MENU);
 	
 	mScreen.setSmooth(false);

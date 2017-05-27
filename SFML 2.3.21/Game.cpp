@@ -39,6 +39,10 @@ bool Game::handle_event(const sf::Event & e){
 			
 			
 		}
+		case sf::Event::KeyPressed: {
+			if(e.key.code==sf::Keyboard::Return)
+				requestStackPush(GameState::ID::PAUSE);
+		}
 
 
 	}
@@ -232,12 +236,12 @@ void Game::init() {
 	Clouds3.setPosition(sf::Vector2f(300.f, 1000.f) * Clouds3.speed_factor*size_fact);
 
 	Sea.speed_factor = 0.1f;
-	Ground0.speed_factor = 0.4f;
-	Ground1.speed_factor = 0.6f;
+	Ground0.speed_factor = 0.2f;
+	Ground1.speed_factor = 0.5f;
 
 	Sea.setScale(sf::Vector2f(1.f, 1.f)*1.f*size_fact);
-	Ground0.setScale(sf::Vector2f(1.f, 1.f)*4.f*size_fact);
-	Ground1.setScale(sf::Vector2f(1.f, 1.f)*6.f*size_fact);
+	Ground0.setScale(sf::Vector2f(1.f, 1.f)*2.f*size_fact);
+	Ground1.setScale(sf::Vector2f(1.f, 1.f)*5.f*size_fact);
 
 	
 	sf::Text text("", mContext.resources->fonts.get(Font::consola), 20u);

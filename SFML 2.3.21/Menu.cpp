@@ -11,6 +11,7 @@ GameState(s,std::move(c))
 //draw each element
 void Menu::draw() const
 {
+	mContext.screen->setView(mContext.screen->getDefaultView());
 	mContext.screen->draw(mElements);
 }
 

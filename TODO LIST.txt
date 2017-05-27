@@ -1,9 +1,15 @@
-Terminar el Background pillo cuando esté lo anterior (maomeno ta)
+Fondo pantalla inicio
 
-Mira linda:
-	-Avisar visualmente al jugador el punto exacto donde aterrizaría el gancho si apretara click.
+HUD
+	-Avisar qué habilidades están disponibles
 
 Modos de juego:
-Normal
-Sin Gasoil
-Sin Volante
+	-Tutorial
+	-Normal
+	-Sin Gasoil
+	-Sin Volante
+
+Grabar partida
+	-almacenar frames
+	-almacenar estado del controller por frame
+	-almacenar nivel

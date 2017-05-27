@@ -111,6 +111,9 @@
     <ClCompile Include="Mosaico.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PauseMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -247,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="rrmath.h">
       <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseMenu.h">
+      <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

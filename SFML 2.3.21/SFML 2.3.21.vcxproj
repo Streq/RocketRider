@@ -173,6 +173,7 @@
     <ClCompile Include="MenuHowToPlay.cpp" />
     <ClCompile Include="MenuModo.cpp" />
     <ClCompile Include="Mosaico.cpp" />
+    <ClCompile Include="PauseMenu.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerDefinition.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="Mosaico.h" />
     <ClInclude Include="MovingBlock.h" />
     <ClInclude Include="ObjectDefinitions.h" />
+    <ClInclude Include="PauseMenu.h" />
     <ClInclude Include="PlayerContactListener.h" />
     <ClInclude Include="PlayerDefinition.h" />
     <ClInclude Include="Resources.h" />

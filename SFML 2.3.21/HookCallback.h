@@ -8,6 +8,13 @@ class HookCallback:public b2RayCastCallback{
 		const b2Vec2& normal, float32 fraction) final{
 		//si el cuerpo es el del jugador no cuenta
 		if(fixture->GetBody()==caster)return -1;
+		//nos fijamos el tipo del objeto
+		switch (static_cast<GameObject*>(fixture->GetBody()->GetUserData())->getType()) {
+			case ObjectType::DeathBlock:
+			case ObjectType::Goal:
+				return -1;
+		}
+		
 		//cuerpo que colisiona con el rayito pasa a ser el actual
 		targetBody=fixture->GetBody();
 		//punto de colision
