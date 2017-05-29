@@ -14,7 +14,7 @@
 		</color>
 		<GameObject>
 			<type>Player</type>
-			<acceleration>0.f</acceleration>
+			<has_fuel>false</has_fuel>
 		</GameObject>
 	</equivalence>
 	<equivalence>	

@@ -3,7 +3,7 @@
 #include <iostream>
 
 struct PlayerDefinition : public GameObjectDefinition{
-	PlayerDefinition():
+	PlayerDefinition() :
 		acceleration(30.f),
 		angular_acceleration(1.f),
 		rope_length(15.f),
@@ -11,7 +11,10 @@ struct PlayerDefinition : public GameObjectDefinition{
 		fuel(20.f),
 		max_speed(20.f),
 		explosion_impulse(10.f),
-		always_accelerating(false)
+		always_accelerating(false),
+		has_fuel(true),
+		has_rope(true),
+		has_steer(true)
 	{
 		type = ObjectType::Player;
 	}
@@ -29,6 +32,9 @@ struct PlayerDefinition : public GameObjectDefinition{
 		append_field_node(doc, angular_acceleration, obj);
 		append_field_node(doc, explosion_impulse, obj);
 		append_field_node(doc, always_accelerating, obj);
+		append_field_node(doc, has_fuel, obj);
+		append_field_node(doc, has_rope, obj);
+		append_field_node(doc, has_steer, obj);
 		
 		return doc;
 	}
@@ -47,4 +53,7 @@ struct PlayerDefinition : public GameObjectDefinition{
 	float		angular_acceleration;
 	float		explosion_impulse;
 	bool		always_accelerating;
+	bool		has_rope;
+	bool		has_fuel;
+	bool		has_steer;
 };

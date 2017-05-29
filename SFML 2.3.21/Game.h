@@ -12,6 +12,7 @@
 #include "TileTexture.h"
 #include "Tilemap.h"
 #include "GameState.h"
+#include "HUD.h"
 
 #include "BackgroundLayer.h"
 #define rightKey sf::Keyboard::D
@@ -52,6 +53,7 @@ class Game: public GameState{
 	std::vector<GameObject::Ptr>		mObjects;
 
 	Player::Ptr							mPlayer;
+	HUD									mHUD;
 	sf::View							mView;
 	std::vector<BackgroundLayer>		background;
 	Tilemap								mTilemap;

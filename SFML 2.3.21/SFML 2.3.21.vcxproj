@@ -167,6 +167,7 @@
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Goal.cpp" />
     <ClCompile Include="Hook.cpp" />
+    <ClCompile Include="HUD.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Menu.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="GoalDefinition.h" />
     <ClInclude Include="Hook.h" />
     <ClInclude Include="HookCallback.h" />
+    <ClInclude Include="HUD.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="AppGui.h" />
     <ClInclude Include="MainMenu.h" />

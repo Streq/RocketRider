@@ -108,18 +108,7 @@ bool Game::update(sf::Time dt){
 
 		mPlayer->updateAimTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
 	}
-	//mView.setRotation(-rad_to_deg(mPlayer->getb2Rotation())+90);
-	//const auto& camara_pos = mView.getCenter();
-	//const auto& background_pos = Stars0.getPosition();
-	//sf::Vector2i distance((camara_pos-background_pos));
-	//auto bounds = Stars0.getGlobalBounds();
-	//distance.x -= sign(distance.x)*abs(distance.x)%(int(bounds.width/3));
-	//distance.y -= sign(distance.y)*abs(distance.y)%(int(bounds.height/3));
-	//Stars0.move(sf::Vector2f(distance));
-	//Stars0.mTexture.adjust_to_view(Stars0.applyDepthToView(mView));
-	//Stars1.mTexture.adjust_to_view(Stars1.applyDepthToView(mView));
-	//Stars2.mTexture.adjust_to_view(Stars2.applyDepthToView(mView));
-	//Stars3.mTexture.adjust_to_view(Stars3.applyDepthToView(mView));
+	mHUD.update(dt);
 	return false;
 }
 
@@ -143,6 +132,8 @@ void Game::draw() const{
 		mContext.screen->draw(mMessage);
 	}
 
+	mContext.screen->setView(mContext.screen->getDefaultView());
+	mContext.screen->draw(mHUD);
 }
 
 void Game::init() {
@@ -243,6 +234,9 @@ void Game::init() {
 	Ground0.setScale(sf::Vector2f(1.f, 1.f)*2.f*size_fact);
 	Ground1.setScale(sf::Vector2f(1.f, 1.f)*5.f*size_fact);
 
+	mHUD.init((*mPlayer),mContext);
+	auto screenview = mContext.screen->getDefaultView();
+	mHUD.setPosition(screenview.getCenter()+sf::Vector2f(-96.f , screenview.getSize().y/2.f-96.f));
 	
 	sf::Text text("", mContext.resources->fonts.get(Font::consola), 20u);
 	mMessage.setText(std::move(text));
@@ -250,7 +244,7 @@ void Game::init() {
 	auto view = mContext.screen->getDefaultView();
 	mMessage.setPosition(view.getCenter()+sf::Vector2f(0.f,-100.f));
 	
-
+	m_mira = true;
 
 	load_levels("Assets/Config/config.xml");
 	mWorld.SetContactListener(mContactListener.get());
@@ -279,6 +273,7 @@ void Game::loadLevel(const Level & level)
 	mPlayer->setMira(m_mira);
 	mTilemap.setOrigin(16.f, 16.f);
 	mTilemap.load(mContext.resources->textures.get(Texture::TILESET), sf::Vector2u(32u, 32u),&level.mTiles[0],level.size.x,level.size.y);
+	mHUD.setPlayer(*mPlayer);
 	
 
 }

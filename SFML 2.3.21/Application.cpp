@@ -69,6 +69,12 @@ Application::Application():
 	mResources.textures.load(Texture::SEA_BLOCK, "Assets/Textures/seablock.png");
 	mResources.textures.get(Texture::SEA_BLOCK).setRepeated(true);
 
+	mResources.textures.load(Texture::GAS_ICON, "Assets/Textures/fuel_icon.png");
+	mResources.textures.load(Texture::ROPE_ICON, "Assets/Textures/rope_icon.png");
+	mResources.textures.load(Texture::STEER_ICON, "Assets/Textures/steer_icon.png");
+	mResources.textures.load(Texture::BLOCKED_ICON, "Assets/Textures/not_available.png");
+
+
 	mResources.texts.load(TextFile::MAP_DEF, "Assets/Maps/map.xml");
 	mResources.texts.load(TextFile::CONFIG, "Assets/Config/config.xml");
 	mResources.texts.load(TextFile::HOWTOPLAY, "Assets/Data/htp.txt");

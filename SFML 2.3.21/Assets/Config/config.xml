@@ -1,6 +1,6 @@
 <config>
 	<levels>
-		<amount>12</amount>
+		<amount>14</amount>
 		<files>
 			<level>
 				<message>Arrancamo sencillito</message>
@@ -28,7 +28,7 @@
 				<levelconfig>map_no_wheel.xml</levelconfig>
 			</level>
 			<level>
-				<message>Te arreglas asi o te pido un remo?</message>
+				<message>fijate que los 3 dibujitos de abajo te dicen que podes hacer y que no</message>
 				<map>normal4.png</map>
 				<levelconfig>map_no_wheel.xml</levelconfig>
 			</level>
@@ -52,11 +52,21 @@
 				<map>small_circular.png</map>
 				<levelconfig>map.xml</levelconfig>
 			</level>
-			<level>
-				<message>NO VALE TOCAR NADA</message>
-				<map>fragile0.png</map>
-				<levelconfig>map_fragile.xml</levelconfig>
-			</level>
+      <level>
+        <message>NO VALE TOCAR NADA</message>
+        <map>fragile0.png</map>
+        <levelconfig>map_fragile.xml</levelconfig>
+      </level>
+      <level>
+        <message>buena men no tocaste nada</message>
+        <map>garrafa.png</map>
+        <levelconfig>map.xml</levelconfig>
+      </level>
+      <level>
+        <message>esta es mi casa</message>
+        <map>casa.png</map>
+        <levelconfig>map.xml</levelconfig>
+      </level>
 			<level>
 				<message>No hay mas niveles, sos una bestia loco saludos a la flia</message>
 				<map>the_end.png</map>

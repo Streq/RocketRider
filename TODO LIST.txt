@@ -4,12 +4,11 @@ HUD
 	-Avisar qué habilidades están disponibles
 
 Modos de juego:
-	-Tutorial
 	-Normal
 	-Sin Gasoil
 	-Sin Volante
 
-Grabar partida
+Grabar una partida
 	-almacenar frames
 	-almacenar estado del controller por frame
 	-almacenar nivel

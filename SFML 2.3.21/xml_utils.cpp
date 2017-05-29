@@ -53,7 +53,19 @@ GameObjectDefinition * def_from_xml(rapidxml::xml_node<>* node)
 			
 			auto* always_accelerating_node = node->first_node("always_accelerating");
 			if (always_accelerating_node) {
-				std::istringstream(always_accelerating_node->value()) >> std::boolalpha >> play->always_accelerating; 
+				std::istringstream(always_accelerating_node->value()) >> std::boolalpha >> play->always_accelerating;
+			}
+			auto* has_fuel_node = node->first_node("has_fuel");
+			if (has_fuel_node) {
+				std::istringstream(has_fuel_node->value()) >> std::boolalpha >> play->has_fuel;
+			}
+			auto* has_rope_node = node->first_node("has_rope");
+			if (has_rope_node) {
+				std::istringstream(has_rope_node->value()) >> std::boolalpha >> play->has_rope;
+			}
+			auto* has_steer_node = node->first_node("has_steer");
+			if (has_steer_node) {
+				std::istringstream(has_steer_node->value()) >> std::boolalpha >> play->has_steer;
 			}
 
 

@@ -14,7 +14,7 @@
 		</color>
 		<GameObject>
 			<type>Player</type>
-			<angular_acceleration>0.f</angular_acceleration>
+      <has_steer>false</has_steer>
 		</GameObject>
 	</equivalence>
 	<equivalence>	

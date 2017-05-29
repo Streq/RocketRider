@@ -11,7 +11,7 @@ class Player: public GameObject{
 	
 	virtual ObjectType		getType()const final;
 
-	Player(const Resources& res, const b2Vec2& position = b2Vec2(0.f, 0.f), float mAcceleration=30.f, float mAngularAcc=1.f, float mRopeLength=15.f, float mMaxFuel=20.f, float mFuel=20.f, float mExplosionImpulse=20.f, float mMaxSpeed = 200.f, bool m_always_accelerating = false);
+	Player(const Resources& res, const b2Vec2& position = b2Vec2(0.f, 0.f), float mAcceleration=30.f, float mAngularAcc=1.f, float mRopeLength=15.f, float mMaxFuel=20.f, float mFuel=20.f, float mExplosionImpulse=20.f, float mMaxSpeed = 200.f, bool m_always_accelerating = false, bool has_fuel = true, bool has_rope = true, bool has_steer = true);
 	Player(const Resources& res, PlayerDefinition* def);
 	
 	void accelerate(sf::Time dt);
@@ -31,6 +31,10 @@ class Player: public GameObject{
 	bool getMira();
 	virtual void initBody(b2World& world) final;
 
+
+	bool hasRope()const;
+	bool hasSteer()const;
+	bool hasFuel()const;
 
 	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse, bool id)final;
 	virtual void BeginContact(b2Contact* contact, bool id)final;
@@ -63,6 +67,10 @@ class Player: public GameObject{
 	bool		m_goal;
 	bool		m_dead;
 	bool		m_mira;
+
+	bool has_fuel;
+	bool has_rope;
+	bool has_steer;
 
 	b2Vec2		mAim;
 	//b2RopeJoint* mHook;

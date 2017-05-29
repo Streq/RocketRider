@@ -8,7 +8,7 @@ ObjectType Player::getType() const
 	return ObjectType::Player;
 }
 
-Player::Player(const Resources& res, const b2Vec2& position, float mAcceleration, float mAngularAcc, float mRopeLength, float mMaxFuel, float mFuel, float mExplosionImpulse, float mMaxSpeed, bool m_always_accelerating) :
+Player::Player(const Resources& res, const b2Vec2& position, float mAcceleration, float mAngularAcc, float mRopeLength, float mMaxFuel, float mFuel, float mExplosionImpulse, float mMaxSpeed, bool m_always_accelerating, bool has_fuel, bool has_rope, bool has_steer) :
 	mAcceleration(mAcceleration),
 	mAngularAcc(mAngularAcc),
 	mRopeLength(mRopeLength),
@@ -20,7 +20,11 @@ Player::Player(const Resources& res, const b2Vec2& position, float mAcceleration
 	mHook(*this),
 	mExplosionImpulse(mExplosionImpulse),
 	aimLine(sf::PrimitiveType::Quads, 4),
-	m_mira(false)
+	m_mira(false),
+	m_always_accelerating(m_always_accelerating),
+	has_fuel(has_fuel),
+	has_rope(has_rope),
+	has_steer(has_steer)
 {
 	mBodyDef.position = position;
 	mBodyDef.angle = b2_pi / 2;
@@ -70,7 +74,10 @@ Player::Player(const Resources & res, PlayerDefinition * def):
 		def->fuel,
 		def->explosion_impulse,
 		def->max_speed,
-		def->always_accelerating
+		def->always_accelerating,
+		def->has_fuel,
+		def->has_rope,
+		def->has_steer
 	)
 {
 }
@@ -83,6 +90,19 @@ void Player::initBody(b2World & world){
 	mBody->CreateFixture(&mFixtureDef);
 	mHook.init();
 
+}
+
+bool Player::hasRope() const
+{
+	return has_rope;
+}
+bool Player::hasFuel() const
+{
+	return has_fuel;
+}
+bool Player::hasSteer() const
+{
+	return has_steer;
 }
 
 void Player::PostSolve(b2Contact * contact, const b2ContactImpulse * impulse, bool id){
@@ -122,24 +142,28 @@ void Player::Step(sf::Time dt)
 }
 
 void Player::accelerate(sf::Time dt){
+	if(has_fuel)
 	m_accelerating=true;
 }
 
 void Player::decelerate(){
-		m_accelerating = m_always_accelerating;
+	m_accelerating = m_always_accelerating;
 }
 
 void Player::rotateLeft(sf::Time dt){
+	if(has_steer)
 	mBody->ApplyAngularImpulse(mAngularAcc*dt.asSeconds(),true);
 }
 
 void Player::rotateRight(sf::Time dt){
+	if (has_steer)
 	mBody->ApplyAngularImpulse(-mAngularAcc*dt.asSeconds(),true);
 }
 
 void Player::throwHookTowardsWorldPosition(float x, float y){
 	//Si ya está enganchado se libera
 	if (m_hooked) { releaseHook(); return; }
+	if (!has_rope) return;
 	auto cast_point_global = this->getb2Position();
 	auto distance = getDirectionTowards(x, y);
 	distance*=mRopeLength;

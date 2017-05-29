@@ -25,7 +25,11 @@ namespace Texture {
 		SEA,
 		MOUNTAIN0,
 		MOUNTAIN1,
-		SEA_BLOCK
+		SEA_BLOCK,
+		GAS_ICON,
+		STEER_ICON,
+		ROPE_ICON,
+		BLOCKED_ICON
 	};
 }
 
