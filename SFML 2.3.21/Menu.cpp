@@ -42,9 +42,16 @@ GUI::Composite & Menu::getElements()
 	return mElements;
 }
 
-void Menu::addElement(GUI::Node::ptr ptr, float x_offset, float y_offset) {
-	auto bounds = mElements.getGlobalBounds();
-	ptr->setPosition(50.f, bounds.top + bounds.height + 20.f);
+void Menu::addElement(GUI::Node::ptr ptr, float x_offset, float y_offset, bool lineBreak) {
+	auto size = mElements.getChildren().size();
+	if(lineBreak||size==0){
+		auto bounds = mElements.getGlobalBounds();
+		ptr->setPosition(50.f, bounds.top + bounds.height + 20.f);
+	}
+	else {
+		auto bounds = mElements.getChildren()[size-1]->getGlobalBounds();
+		ptr->setPosition(bounds.left+bounds.width+10.f, bounds.top);
+	}
 	mElements.addChild(std::move(ptr));
 };
 

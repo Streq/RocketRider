@@ -9,14 +9,16 @@
 #include "PlayerContactListener.h"
 #include "xml_utils.h"
 #include "TileTexture.h"
-Game::Game(GameStack& s, AppContext context) :
-	GameState(s, context),
-	mController(std::move(context)),
-	mWorld(b2Vec2(0,-10.f)),
-	mView(sf::Vector2f(0.f,0.f),sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE),static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO))),
-	mContactListener(new GameContactListener()),
-	mLevels(),
-	m_level_index(-1)
+Game::Game(GameStack& s, AppContext context) 
+	: GameState(s, context)
+	, mWorld(b2Vec2(0,-10.f))
+	, mView(
+		sf::Vector2f(0.f,0.f),
+		sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE),static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO)))
+	, mController(std::move(context), mView)
+	, mContactListener(new GameContactListener())
+	, mLevels()
+	, m_level_index(-1)
 {
 	
 	init();
@@ -51,41 +53,13 @@ bool Game::handle_event(const sf::Event & e){
 
 bool Game::update(sf::Time dt){
 	m_message_display_time -= dt;
+
 	if (m_message_display_time <= sf::Time::Zero)
 		m_display_message = false;
-	if (mController.input[Input::Hook]) {
-		mController.input[Input::Hook] = false;
-		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
-		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mController.lastMouseClick, mView);
-		//convertir las coordenadas sfml en b2
-		b2Vec2 world_pos_b2 = sf_to_b2_pos(world_pos_sf);
-		mPlayer->throwHookTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
 
-	}
-	if (mController.check_pressed(Input::Hookdown) && mController.check_updated(Input::Hookdown)) {
-		mPlayer->throwHookTowardsLocalDirection(0.f, -1.f);
-	}
-	if (mController.check_pressed(Input::Mira) && mController.check_updated(Input::Mira)) {
-		mPlayer->setMira(!mPlayer->getMira());
-		m_mira = mPlayer->getMira();
-	}
-	if (mController.check_pressed(Input::Hookup) && mController.check_updated(Input::Hookup)) {
-		mPlayer->throwHookTowardsLocalDirection(0.f, 1.f);
-	}
-	if (mController.input[Input::ReleaseHook]) {
-		mPlayer->releaseHook();
-	}
-	if (mController.check_pressed(Input::Left))
-		mPlayer->rotateLeft(dt);
-	if (mController.check_pressed(Input::Right))
-		mPlayer->rotateRight(dt);
-	if (mController.check_pressed(Input::Accelerate))
-		mPlayer->accelerate(dt);
-	else mPlayer->decelerate();
-	if (mController.check_pressed(Input::Die))
-		mPlayer->explode();
-	
-	mController.clear_updated();
+	mController.updateInput();
+	mPlayer->updateControl(dt);
+
 
 	mWorld.Step(dt.asSeconds(),B2::VELOCITY_ITERATIONS,B2::POSITION_ITERATIONS);
 	mPlayer->Step(dt);
@@ -112,6 +86,9 @@ bool Game::update(sf::Time dt){
 	return false;
 }
 
+const sf::View& Game::getView() { return mView; }
+
+
 void Game::draw() const{
 	mContext.screen->setView(mView);
 	for(const BackgroundLayer& lay : background) {
@@ -137,13 +114,15 @@ void Game::draw() const{
 }
 
 void Game::init() {
-	mController.set_key(InputData(shootupKey, InputData::Type::keyboard), Input::ID::Hookup);
-	mController.set_key(InputData(shootdownKey, InputData::Type::keyboard), Input::ID::Hookdown);
-	mController.set_key(InputData(leftKey, InputData::Type::keyboard), Input::ID::Left);
-	mController.set_key(InputData(accelerateKey, InputData::Type::keyboard), Input::ID::Accelerate);
-	mController.set_key(InputData(rightKey, InputData::Type::keyboard), Input::ID::Right);
-	mController.set_key(InputData(dieKey, InputData::Type::keyboard), Input::ID::Die);
-	mController.set_key(InputData(miraKey, InputData::Type::keyboard), Input::ID::Mira);
+	mController.set_key(InputData(shootupKey, InputData::Type::keyboard), Input::ID::Hookup, true);
+	mController.set_key(InputData(shootdownKey, InputData::Type::keyboard), Input::ID::Hookdown, true);
+	mController.set_key(InputData(leftKey, InputData::Type::keyboard), Input::ID::Left,false);
+	mController.set_key(InputData(accelerateKey, InputData::Type::keyboard), Input::ID::Accelerate, false);
+	mController.set_key(InputData(rightKey, InputData::Type::keyboard), Input::ID::Right, false);
+	mController.set_key(InputData(dieKey, InputData::Type::keyboard), Input::ID::Die, true);
+	mController.set_key(InputData(miraKey, InputData::Type::keyboard), Input::ID::Mira, true);
+	mController.set_key(InputData(sf::Mouse::Button::Left, InputData::Type::mouse), Input::ID::Hook, true);
+	mController.set_key(InputData(sf::Mouse::Button::Right, InputData::Type::mouse), Input::ID::ReleaseHook, true);
 	background.resize(14);
 	//Stars0.mTexture.m_sprite.setTexture(mContext.resources->textures.get(Texture::BACKGROUND));
 
@@ -271,6 +250,7 @@ void Game::loadLevel(const Level & level)
 	}
 	mPlayer->initBody(mWorld);
 	mPlayer->setMira(m_mira);
+	mPlayer->setController(mController);
 	mTilemap.setOrigin(16.f, 16.f);
 	mTilemap.load(mContext.resources->textures.get(Texture::TILESET), sf::Vector2u(32u, 32u),&level.mTiles[0],level.size.x,level.size.y);
 	mHUD.setPlayer(*mPlayer);
@@ -312,50 +292,8 @@ void Game::goto_level(unsigned level)
 
 void Game::load_levels(const std::string& path)
 {
-	rapidxml::file<>file(&path[0]);
-	
-	rapidxml::xml_document<> doc;
-	doc.parse<rapidxml::parse_default>(file.data());
-
-	auto* config = doc.first_node("config");
-	if (!config) { throw std::runtime_error("Game config invalid, <config> not found: " + path); }
-
-	auto* levels = config->first_node("levels");
-
-	{
-		auto* amount = levels->first_node("amount");
-		if (!amount) { throw std::runtime_error("Game config invalid, <amount> not found: " + path); }
-		m_level_amount = std::stoul(amount->value());
-		mLevels.resize(m_level_amount);
-	}
-	{
-		auto* files = levels->first_node("files");
-		if (!files) { throw std::runtime_error("Game config invalid, <files> not found: " + path); }
-		for (unsigned i = 0; i < m_level_amount; i++) {
-			
-			auto* level = files->first_node("level");
-			if (!level) { throw std::runtime_error("Game config invalid, <level> not found: " + path); }
-			{
-				auto* map = level->first_node("map");
-				if (!map) { throw std::runtime_error("Game config invalid, <map> not found: " + path); }
-				
-				auto* levelconfig = level->first_node("levelconfig");
-				if (!levelconfig) { throw std::runtime_error("Game config invalid, <levelconfig> not found: " + path); }
-
-				auto* msg = level->first_node("message");
-				if(!msg) { throw std::runtime_error("Game config invalid, <message> not found: " + path); }
-
-				const std::string path = "Assets/Maps/";
-
-				auto& lvl = mLevels[i];
-				lvl.loadFromFiles(path + map->value(),path + levelconfig->value());
-				lvl.start_message = msg->value();
-			
-			}
-			files->remove_node(level);
-		}
-		
-	}
+	load_levels_from_xml(mLevels, path);
+	m_level_amount = mLevels.size();
 }
 
 void Game::next_level()

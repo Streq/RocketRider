@@ -1,6 +1,10 @@
 #include "Level.h"
 #include <map>
 #include "Conversions.h"
+
+#include "xml_utils.h"
+
+#include "GameObject.h"
 void Level::load(sf::Image * tilemap, char* configuration)
 {
 	//Load the definitions map

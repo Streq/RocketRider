@@ -85,6 +85,7 @@ class Composite : public Node {
 			mChildren.erase(found);
 		}
 
+		std::vector<Node::ptr>& getChildren() { return mChildren; }
 
 		virtual sf::FloatRect getGlobalBounds()const override {
 			sf::FloatRect rect(getPosition(),sf::Vector2f(0.f,0.f));
@@ -193,15 +194,8 @@ class Button : public Node {
 		virtual sf::FloatRect getGlobalBounds()const override {
 			
 			auto rect = m_sprite.getGlobalBounds();
-			auto pos = getPosition();
-			auto scale = getScale();
-			
-			rect.left += pos.x;
-			rect.top += pos.y;
-			
-			rect.width *= scale.x;
-			rect.height *= scale.y;
-			return rect;
+
+			return this->getTransform().transformRect(rect);
 		};
 
 
@@ -237,10 +231,11 @@ class Button : public Node {
 };
 
 
-class TextBox :public Leaf {
+class TextBox :public Node {
 public:
-	TextBox(const AppContext& context,const std::string& content, size_t linewidth, size_t char_size = 20u) :
-		mText(
+	TextBox(const AppContext& context,const std::string& content, size_t linewidth, size_t char_size = 20u) 
+		: linewidth(linewidth)
+		, mText(
 			textWrap(content,linewidth),
 			context.resources->fonts.get(Font::consola),
 			char_size)
@@ -253,21 +248,28 @@ public:
 
 	virtual sf::FloatRect getGlobalBounds()const override {
 		auto rect = mText.getGlobalBounds();
-		auto pos = getPosition();
-		auto scale = getScale();
-
-		rect.left += pos.x;
-		rect.top += pos.y;
-
-		rect.width *= scale.x;
-		rect.height *= scale.y;
-
-		return rect;
+		return this->getTransform().transformRect(rect);
 	};
-
+	void setContent(std::string content) { mText.setString(textWrap(content, linewidth)); }
 private:	
 	sf::Text mText;
+	size_t linewidth;
 
+};
+
+class Sprite : public Node {
+public:
+	sf::Sprite mSprite;
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const override {
+		states.transform *= this->getTransform();
+		target.draw(mSprite, states);
+	};
+
+	virtual sf::FloatRect getGlobalBounds()const override {
+		auto rect = mSprite.getGlobalBounds();
+		
+		return this->getTransform().transformRect(rect);
+	};
 };
 
 }

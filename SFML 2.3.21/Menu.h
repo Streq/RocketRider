@@ -15,5 +15,5 @@ class Menu:public GameState{
 
 	protected:
 		GUI::Composite mElements;
-		void addElement(GUI::Node::ptr ptr, float x_offset, float y_offset);
+		void addElement(GUI::Node::ptr ptr, float x_offset, float y_offset, bool lineBreak=true);
 };

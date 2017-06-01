@@ -1,15 +1,14 @@
 #pragma once
-#include "GameObject.h"
 #include "GameObjectDefinition.h"
 #include <vector>
-#include "xml_utils.h"
 #include <string>
-#include "Tilemap.h"
+#include <SFML/Graphics/Image.hpp>
 struct Level {
 	std::vector<GameObjectDefinition::ptr>	mObjects;
 	std::string								start_message;
+	//vector of pixels
 	std::vector<uint8>						mTiles;
-	
+	//dimensions of the map
 	sf::Vector2u							size;
 
 

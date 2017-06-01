@@ -5,6 +5,7 @@
 #include "Resources.h"
 #include "Hook.h"
 #include "PlayerDefinition.h"
+#include "Controller.h"
 class Player: public GameObject{
 	public:
 	typedef	std::unique_ptr<Player> Ptr;
@@ -31,6 +32,10 @@ class Player: public GameObject{
 	bool getMira();
 	virtual void initBody(b2World& world) final;
 
+	void setController(const Controller& controller);
+	void updateControl(sf::Time dt);
+
+	void reactToController(const Controller& controller, sf::Time dt);
 
 	bool hasRope()const;
 	bool hasSteer()const;
@@ -68,10 +73,13 @@ class Player: public GameObject{
 	bool		m_dead;
 	bool		m_mira;
 
-	bool has_fuel;
-	bool has_rope;
-	bool has_steer;
+	bool		has_fuel;
+	bool		has_rope;
+	bool		has_steer;
 
 	b2Vec2		mAim;
+
+
+	const Controller*	mController;
 	//b2RopeJoint* mHook;
 };

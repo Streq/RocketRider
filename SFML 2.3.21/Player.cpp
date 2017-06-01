@@ -91,6 +91,45 @@ void Player::initBody(b2World & world){
 	mHook.init();
 
 }
+void Player::setController(const Controller & controller)
+{
+	mController = &controller;
+}
+void Player::updateControl(sf::Time dt) { reactToController(*mController,dt); }
+void Player::reactToController(const Controller & controller, sf::Time dt)
+{
+	if (controller.input[Input::Hook]) {
+		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
+		auto world_pos_sf = controller.getPositionOnWorld(controller.lastMouseClick);
+		//convertir las coordenadas sfml en b2
+
+		b2Vec2 world_pos_b2 = sf_to_b2_pos(world_pos_sf);
+		this->throwHookTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
+
+	}
+	if (controller.input[Input::Hookdown]) {
+		this->throwHookTowardsLocalDirection(0.f, -1.f);
+	}
+	if (controller.input[Input::Mira]) {
+		this->setMira(!this->getMira());
+		m_mira = this->getMira();
+	}
+	if (controller.input[Input::Hookup]) {
+		this->throwHookTowardsLocalDirection(0.f, 1.f);
+	}
+	if (controller.input[Input::ReleaseHook]) {
+		this->releaseHook();
+	}
+	if (controller.input[Input::Left])
+		this->rotateLeft(dt);
+	if (controller.input[Input::Right])
+		this->rotateRight(dt);
+	if (controller.input[Input::Accelerate])
+		this->accelerate(dt);
+	else this->decelerate();
+	if (controller.input[Input::Die])
+		this->explode();
+}
 
 bool Player::hasRope() const
 {
@@ -162,7 +201,7 @@ void Player::rotateRight(sf::Time dt){
 
 void Player::throwHookTowardsWorldPosition(float x, float y){
 	//Si ya está enganchado se libera
-	if (m_hooked) { releaseHook(); return; }
+	if (m_hooked) { return; }
 	if (!has_rope) return;
 	auto cast_point_global = this->getb2Position();
 	auto distance = getDirectionTowards(x, y);

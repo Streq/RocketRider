@@ -2,6 +2,7 @@
 #include "ObjectDefinitions.h"
 #include "Constants.h"
 #include "Conversions.h"
+#include "Level.h"
 #include <ios>
 GameObjectDefinition * def_from_xml(rapidxml::xml_node<>* node)
 {
@@ -137,5 +138,53 @@ rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool,
 		colornode->append_node(alphanode);
 	}
 	return colornode;
+}
+
+void load_levels_from_xml(std::vector<Level>& mLevels, std::string path)
+{
+	rapidxml::file<>file(&path[0]);
+
+	rapidxml::xml_document<> doc;
+	doc.parse<rapidxml::parse_default>(file.data());
+
+	auto* config = doc.first_node("config");
+	if (!config) { throw std::runtime_error("Game config invalid, <config> not found: " + path); }
+
+	auto* levels = config->first_node("levels");
+	unsigned m_level_amount;
+	{
+		auto* amount = levels->first_node("amount");
+		if (!amount) { throw std::runtime_error("Game config invalid, <amount> not found: " + path); }
+		m_level_amount = std::stoul(amount->value());
+		mLevels.resize(m_level_amount);
+	}
+	{
+		auto* files = levels->first_node("files");
+		if (!files) { throw std::runtime_error("Game config invalid, <files> not found: " + path); }
+		for (unsigned i = 0; i < m_level_amount; i++) {
+
+			auto* level = files->first_node("level");
+			if (!level) { throw std::runtime_error("Game config invalid, <level> not found: " + path); }
+			{
+				auto* map = level->first_node("map");
+				if (!map) { throw std::runtime_error("Game config invalid, <map> not found: " + path); }
+				//level config contains equivalences between pixels and objects, and the handicaps of the player
+				auto* levelconfig = level->first_node("levelconfig");
+				if (!levelconfig) { throw std::runtime_error("Game config invalid, <levelconfig> not found: " + path); }
+
+				auto* msg = level->first_node("message");
+				if (!msg) { throw std::runtime_error("Game config invalid, <message> not found: " + path); }
+
+				const std::string path = "Assets/Maps/";
+
+				auto& lvl = mLevels[i];
+				lvl.loadFromFiles(path + map->value(), path + levelconfig->value());
+				lvl.start_message = msg->value();
+
+			}
+			files->remove_node(level);
+		}
+
+	}
 }
 

@@ -38,3 +38,5 @@ sf::Color parse_color_from_xml(rapidxml::xml_node<>*node, bool maxed_alpha = fal
 
 rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool, bool include_alpha = false);
 
+struct Level;
+void load_levels_from_xml(std::vector<Level>& vec, std::string path);

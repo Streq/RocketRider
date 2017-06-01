@@ -35,7 +35,7 @@ namespace JoyButtons {
 
 
 struct InputData {
-	enum Type { keyboard, joy_button, joy_axis };
+	enum Type { keyboard, mouse, joy_button, joy_axis };
 	
 	//key code
 	unsigned code;
@@ -68,23 +68,28 @@ struct InputData {
 struct Controller{
 		std::array<bool,Input::size> input;
 	public:
-		Controller(AppContext context);
+		Controller(AppContext context,const sf::View& view);
 		typedef sf::Keyboard::Key Key;
 		typedef std::array<bool, Input::size> KeyBoolSet;
 		//typedef unsigned Key;
 	private:
-		std::array<bool,Input::size>	pressed_keys;
+		std::array<bool, Input::size>	pressed_keys;
 		std::array<bool, Input::size>	just_updated_keys;
+		//wether the input is considered just on the instant the key is pressed or the whole time it's down
+		std::array<bool, Input::size>	just_on_update;
 		InputData				keys[Input::size];
+		const sf::View*			mView;
 	public:
 		void					handleEvent(const sf::Event& e);
 		void					update_key(const InputData& data, bool pressed);
-		void					set_key(const InputData& key, Input::ID action);
+		void					set_key(const InputData& key, Input::ID action, bool just_on_update = true);
 		bool					check_pressed(Input::ID action)const;//check if currently pressed
 		bool					check_updated(Input::ID action)const;//check if just updated
-		void					clear_updated();
+		void					updateInput();
+		
 		const KeyBoolSet&		get_pressed() const;
 		const KeyBoolSet&		get_updated() const;
+		sf::Vector2f			getPositionOnWorld(sf::Vector2i pos)const;
 		sf::Vector2i lastMouseClick;
 		sf::Vector2i lastMousePosition;
 		AppContext mContext;

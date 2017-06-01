@@ -1,4 +1,6 @@
 -Con 'w' acelerás
 -Con 'a' y 'd' girás
--Con click derecho tirás la soga para agarrarte de las paredes
--COn click izquierdo soltás la soga
+
+-Con click izquierdo tirás la soga para agarrarte de las paredes
+
+-Con click derecho soltás la soga

@@ -36,6 +36,7 @@ class Game: public GameState{
 	void clear();
 	void loadLevel(const Level& level);
 
+	const sf::View& getView();
 
 
 	private:
