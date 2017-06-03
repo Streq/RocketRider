@@ -15,6 +15,8 @@ enum ID{
 	ReleaseHook,
 	Die,
 	Mira,
+	zoomin,
+	zoomout,
 	size
 };
 }
@@ -35,7 +37,7 @@ namespace JoyButtons {
 
 
 struct InputData {
-	enum Type { keyboard, mouse, joy_button, joy_axis };
+	enum Type {not_valid_mane, keyboard, mouse, joy_button, joy_axis };
 	
 	//key code
 	unsigned code;
@@ -68,7 +70,7 @@ struct InputData {
 struct Controller{
 		std::array<bool,Input::size> input;
 	public:
-		Controller(AppContext context,const sf::View& view);
+		Controller(AppContext context,sf::View& view);
 		typedef sf::Keyboard::Key Key;
 		typedef std::array<bool, Input::size> KeyBoolSet;
 		//typedef unsigned Key;
@@ -78,7 +80,10 @@ struct Controller{
 		//wether the input is considered just on the instant the key is pressed or the whole time it's down
 		std::array<bool, Input::size>	just_on_update;
 		InputData				keys[Input::size];
-		const sf::View*			mView;
+		sf::View*				mView;
+
+		void					zoom_in();
+		void					zoom_out();
 	public:
 		void					handleEvent(const sf::Event& e);
 		void					update_key(const InputData& data, bool pressed);
@@ -90,7 +95,7 @@ struct Controller{
 		const KeyBoolSet&		get_pressed() const;
 		const KeyBoolSet&		get_updated() const;
 		sf::Vector2f			getPositionOnWorld(sf::Vector2i pos)const;
-		sf::Vector2i lastMouseClick;
-		sf::Vector2i lastMousePosition;
-		AppContext mContext;
+		sf::Vector2i			lastMouseClick;
+		sf::Vector2i			lastMousePosition;
+		AppContext				mContext;
 };

@@ -11,7 +11,8 @@ Application::Application():
 		"Rocket Rider",
 		sf::Style::Default),
 	mScreen(),
-	mStack(AppContext(mScreen, mWindow, mDisplaySprite, mResources))
+	mStack(AppContext(mScreen, mWindow, mDisplaySprite, mResources)),
+	mAspectRatio(ASPECT_RATIO)
 {
 	mStack.register_state<Game>(GameState::ID::GAME);
 	mStack.register_state<MainMenu>(GameState::ID::MAIN_MENU);
@@ -99,11 +100,14 @@ void Application::run(){
 	mClock.restart();
 	while (mWindow.isOpen() && !mStack.is_empty()){
 		auto clocktime = mClock.restart();
+		//time for frames
 		delta_time += clocktime;
+		//do we update the frame this time?
 		frame_updated = (delta_time >= SF::TIME_STEP);
-		real_frames += frame_updated;
 	#ifndef NO_FPS_LIMIT
+		//consume the time for frames
 		while(delta_time >= SF::TIME_STEP){
+			//each consumed frame is an "ideal" frame
 			ideal_frames++;
 			if(ideal_frames == FPS){
 				mFPSText.setString("fps:" + std::to_string(real_frames));
@@ -117,6 +121,7 @@ void Application::run(){
 
 
 		}
+		real_frames += frame_updated;
 		if(frame_updated){
 			render();
 		}
@@ -154,27 +159,28 @@ void Application::handleEvents(){
 				float current_aspect_ratio = size.y / (float)size.x;
 				float xfact = 1.f, yfact = 1.f;
 				//greater aspect_ratio means x is the limiting factor
-				if (current_aspect_ratio > ASPECT_RATIO) {
+				if (current_aspect_ratio > mAspectRatio) {
 					/*
 					example:
 					ideal = 5:3
 					current = 4:7 -> (7/4)/(3/5) = 35/12 -> y is 35/12 times bigger than it should be
 					*/
-					yfact *=  ASPECT_RATIO / current_aspect_ratio;
+					yfact *= mAspectRatio / current_aspect_ratio;
 					
 				}
 				//lesser aspect_ratio means y is the limiting factor
-				else if (current_aspect_ratio < ASPECT_RATIO) {
+				else if (current_aspect_ratio < mAspectRatio) {
 					/*
 					example:
 					ideal = 5:3
 					current = 10:3 -> (3/10)/(3/5) = 1/2 -> x is twice as big as it should be
 					*/
-					xfact *= current_aspect_ratio / ASPECT_RATIO ;
+					xfact *= current_aspect_ratio / mAspectRatio;
 					
 				}
 				mDisplaySprite.setScale(xfact, yfact);
 			}break;
+			//Fix mouse position to screen
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:{
 				auto mappedPixel = windowToSpriteCoords(mWindow, mDisplaySprite, sf::Vector2i(e.mouseButton.x, e.mouseButton.y));

@@ -17,8 +17,9 @@ struct BackgroundLayer : public sf::Drawable, public sf::Transformable{
 		target.setView(auxview);
 	};
 	sf::View applyDepthToView(const sf::View& view)const {
-		sf::View ret(view.getCenter()*speed_factor, view.getSize());
-		ret.setRotation(view.getRotation());
+		sf::View ret(view);
+		ret.setCenter(view.getCenter()*speed_factor);
+		
 		return ret; 
 	}
 

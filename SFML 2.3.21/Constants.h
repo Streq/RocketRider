@@ -8,7 +8,7 @@
 
 
 
-const sf::Vector2u	ASPECT_RATIO_VEC = sf::Vector2u(10,7);
+const sf::Vector2u	ASPECT_RATIO_VEC = sf::Vector2u(12,6);
 const float			ASPECT_RATIO = ASPECT_RATIO_VEC.y / (float)ASPECT_RATIO_VEC.x;
 
 const sf::Vector2u	INIT_WINDOW_SIZE = ASPECT_RATIO_VEC * 24u * 4u;
@@ -33,7 +33,7 @@ const unsigned		POSITION_ITERATIONS=3;
 
 namespace SF{
 
-const sf::Time		TIME_STEP = sf::seconds(B2::TIME_STEP); 
+const sf::Time		TIME_STEP = sf::seconds(1.f/FPS); 
 const sf::Time		RENDER_FRAME_TIME = sf::seconds(1.f/FPS);
 const sf::Time		FPS_UPDATE_TIME = sf::seconds(1.f);
 const sf::Time		LEVEL_TITLE_TIME = sf::seconds(4.f);

@@ -26,13 +26,13 @@
 class Game: public GameState{
 	public:	
 	
-	Game(GameStack& s, AppContext context);
+	Game(GameStack& s, AppContext context, unsigned players=1);
 	
 	virtual bool handle_event(const sf::Event& e) override;
 	virtual bool update(sf::Time dt)override;
 	virtual void draw()const override;
 	
-	void init();
+	void init(int players);
 	void clear();
 	void loadLevel(const Level& level);
 
@@ -44,8 +44,12 @@ class Game: public GameState{
 	void goto_level(unsigned level);
 	void load_levels(const std::string& path);
 	void next_level();
-	Controller							mController;
-	
+	//these 3 mofos have same length which is the amount of players lmalo¡
+	std::vector<Controller>				mControllers;
+	std::vector<Player::Ptr>			mPlayers;
+	std::vector<sf::View>				mViews;
+
+
 	ScreenMessage						mMessage;
 
 
@@ -53,17 +57,16 @@ class Game: public GameState{
 	b2World								mWorld;
 	std::vector<GameObject::Ptr>		mObjects;
 
-	Player::Ptr							mPlayer;
 	HUD									mHUD;
-	sf::View							mView;
 	std::vector<BackgroundLayer>		background;
 	Tilemap								mTilemap;
 
 
+	unsigned							m_players_amount;
+
 	std::vector<Level>					mLevels;
 	int									m_level_index;
 	unsigned							m_level_amount;
-
 	bool								m_goto_next_level;
 	bool								m_restart_level;
 	bool								m_won;
@@ -71,3 +74,4 @@ class Game: public GameState{
 	bool								m_display_message;
 	bool								m_mira;
 };
+

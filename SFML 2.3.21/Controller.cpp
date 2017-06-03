@@ -1,6 +1,31 @@
 #include "Controller.h"
-Controller::Controller(AppContext context, const sf::View& view):mContext(std::move(context)),mView(&view)
+#include "Constants.h"
+Controller::Controller(AppContext context, sf::View& view)
+	: mContext(std::move(context))
+	, mView(&view)
+	, just_updated_keys()
+	, pressed_keys()
+	, just_on_update()
+	, input()
 {
+}
+void Controller::zoom_in()
+{
+
+	mView->setSize(mView->getSize() + static_cast<sf::Vector2f>(ASPECT_RATIO_VEC) * static_cast<float>(24 * -1));
+	if (mView->getSize().x > MAX_VIEW_SIZE)
+		mView->setSize(sf::Vector2f(1.f, ASPECT_RATIO)*(float)MAX_VIEW_SIZE);
+	if (mView->getSize().x < MIN_VIEW_SIZE)
+		mView->setSize(sf::Vector2f(1.f, ASPECT_RATIO)*(float)MIN_VIEW_SIZE);
+
+}
+void Controller::zoom_out()
+{
+	mView->setSize(mView->getSize() + static_cast<sf::Vector2f>(ASPECT_RATIO_VEC) * static_cast<float>(24 * 1));
+	if (mView->getSize().x > MAX_VIEW_SIZE)
+		mView->setSize(sf::Vector2f(1.f, ASPECT_RATIO)*(float)MAX_VIEW_SIZE);
+	if (mView->getSize().x < MIN_VIEW_SIZE)
+		mView->setSize(sf::Vector2f(1.f, ASPECT_RATIO)*(float)MIN_VIEW_SIZE);
 }
 void Controller::handleEvent(const sf::Event & e)
 {
@@ -46,6 +71,8 @@ void Controller::updateInput()
 	for (auto i = 0; i < Input::size; ++i) {
 		input[i] = pressed_keys[i] && (just_updated_keys[i] || !just_on_update[i]);
 	}
+	if (input[Input::zoomin]) zoom_in();
+	if (input[Input::zoomout]) zoom_out();
 	just_updated_keys.fill(false);
 }
 const Controller::KeyBoolSet& Controller::get_pressed() const{ return pressed_keys; };

@@ -3,19 +3,22 @@
 #include "GameStack.h"
 #include "Game.h"
 class Application{
-	public:
+	
+public:
 	Application();
 	void				run();
 
 	void				handleEvents();
 	void				update(sf::Time time);
 	void				render();
-	private:
+	
+private:
 	Resources			mResources;
 	sf::RenderWindow	mWindow;
 	sf::RenderTexture	mScreen;
 	sf::Sprite			mDisplaySprite;
-	
+	float				mAspectRatio;
+
 	GameStack			mStack;
 	sf::Text			mFPSText;
 	
