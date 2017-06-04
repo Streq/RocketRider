@@ -63,6 +63,7 @@ class Game: public GameState{
 
 
 	unsigned							m_players_amount;
+	unsigned							m_players_in_map;
 
 	std::vector<Level>					mLevels;
 	int									m_level_index;

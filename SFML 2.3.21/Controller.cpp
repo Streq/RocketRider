@@ -12,7 +12,7 @@ Controller::Controller(AppContext context, sf::View& view)
 void Controller::zoom_in()
 {
 
-	mView->setSize(mView->getSize() + static_cast<sf::Vector2f>(ASPECT_RATIO_VEC) * static_cast<float>(24 * -1));
+	mView->setSize(mView->getSize() + static_cast<sf::Vector2f>(ASPECT_RATIO_VEC) * static_cast<float>(24 * -ZOOM_FACTOR));
 	if (mView->getSize().x > MAX_VIEW_SIZE)
 		mView->setSize(sf::Vector2f(1.f, ASPECT_RATIO)*(float)MAX_VIEW_SIZE);
 	if (mView->getSize().x < MIN_VIEW_SIZE)
@@ -21,7 +21,7 @@ void Controller::zoom_in()
 }
 void Controller::zoom_out()
 {
-	mView->setSize(mView->getSize() + static_cast<sf::Vector2f>(ASPECT_RATIO_VEC) * static_cast<float>(24 * 1));
+	mView->setSize(mView->getSize() + static_cast<sf::Vector2f>(ASPECT_RATIO_VEC) * static_cast<float>(24 * ZOOM_FACTOR));
 	if (mView->getSize().x > MAX_VIEW_SIZE)
 		mView->setSize(sf::Vector2f(1.f, ASPECT_RATIO)*(float)MAX_VIEW_SIZE);
 	if (mView->getSize().x < MIN_VIEW_SIZE)

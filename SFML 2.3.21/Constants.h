@@ -13,14 +13,14 @@ const float			ASPECT_RATIO = ASPECT_RATIO_VEC.y / (float)ASPECT_RATIO_VEC.x;
 
 const sf::Vector2u	INIT_WINDOW_SIZE = ASPECT_RATIO_VEC * 24u * 4u;
 const unsigned		INIT_VIEW_SIZE = ASPECT_RATIO_VEC.x * 24u * 4u;
-const unsigned		MIN_VIEW_SIZE = ASPECT_RATIO_VEC.x * 24u * 1u;
+const unsigned		MIN_VIEW_SIZE = ASPECT_RATIO_VEC.x * 24u * 2u;
 const unsigned		MAX_VIEW_SIZE = ASPECT_RATIO_VEC.x * 24u * 24u;
 
 const size_t		FPS = 60;
 const unsigned		PIXELS_PER_METER = 32;
 const float			METERS_PER_PIXEL = 1.f/PIXELS_PER_METER;		
 
-const int			MOUSE_SCROLL_ZOOM = 1;
+const int			ZOOM_FACTOR = 2;
 
 namespace B2{
 
