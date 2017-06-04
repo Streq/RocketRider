@@ -9,18 +9,17 @@ class GameObject: public sf::Drawable{
 
 	public:
 	~GameObject();
-	
 	typedef	std::unique_ptr<GameObject> Ptr;
 
-
-	const b2Vec2& getb2Position()const;
+	virtual sf::FloatRect	getGlobalBounds() const;
+	const b2Vec2&			getb2Position()const;
 	//in radians
-	float getb2Rotation()const;
+	float					getb2Rotation()const;
 
-	virtual void		initBody(b2World& world)=0;
-	b2Body*				getBody()const;
-	b2World*			getWorld()const;
-	virtual ObjectType	getType()const=0;
+	virtual void			initBody(b2World& world)=0;
+	b2Body*					getBody()const;
+	b2World*				getWorld()const;
+	virtual ObjectType		getType()const=0;
 
 	public:
 	//contact handling (cool stuff!!)
@@ -35,6 +34,7 @@ class GameObject: public sf::Drawable{
 
 	protected:
 	
+	sf::Sprite				 mSprite;
 	b2Body*					 mBody;
 	b2World*				 mWorld;
 	b2BodyDef				 mBodyDef;

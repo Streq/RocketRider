@@ -28,11 +28,11 @@ void DeathBlock::draw(sf::RenderTarget & target, sf::RenderStates states) const
 }
 
 DeathBlock::DeathBlock(const Resources& res, const b2Vec2& size, const b2Vec2& position) :
-	mSize(size),
-	mSprite(res.textures.get(Texture::LAVA),
-			sf::IntRect(0, 0, static_cast<int>(size.x*PIXELS_PER_METER), static_cast<int>(size.y*PIXELS_PER_METER))
-	)
+	mSize(size)
 {
+	mSprite.setTexture(res.textures.get(Texture::LAVA));
+	mSprite.setTextureRect(sf::IntRect(0, 0, static_cast<int>(size.x*PIXELS_PER_METER), static_cast<int>(size.y*PIXELS_PER_METER)));
+
 	auto bounds = mSprite.getLocalBounds();
 	sf::Vector2f center(bounds.width / 2.f, bounds.height / 2.f);
 	mSprite.setOrigin(center);

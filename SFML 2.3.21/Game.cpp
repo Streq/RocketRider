@@ -20,7 +20,6 @@ Game::Game(GameStack& s, AppContext context, unsigned players)
 	, m_level_index(-1)
 	, m_players_in_map(0u)
 {
-	
 	init(4);
 }
 
@@ -67,11 +66,11 @@ bool Game::update(sf::Time dt){
 		if (player->isDead())
 			goto_level(m_level_index);
 	}
-	for(auto i = 0; i < m_players_amount; ++i){
+	for(auto i = 0u; i < m_players_amount; ++i){
 		mViews[i].setCenter(b2_to_sf_pos(mPlayers[i]->getb2Position()));
 	}
 
-	for (auto i = 0; i < m_players_amount; ++i)
+	for (auto i = 0u; i < m_players_amount; ++i)
 	{
 		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
 		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mControllers[i].lastMousePosition, mViews[i]);
@@ -97,7 +96,9 @@ void Game::draw() const{
 
 		mContext.screen->draw(mTilemap);
 		for (const auto& object : mObjects) {
-			mContext.screen->draw(*object);
+			if(object->getGlobalBounds().intersects(viewRect(view))){
+				mContext.screen->draw(*object);
+			}
 		}
 
 
@@ -150,7 +151,7 @@ void Game::init(int players) {
 			mViews[3].setViewport(sf::FloatRect(0.5f, 0.5f, 0.5f, 0.5f));
 		}
 	}
-	for (auto i = 0; i < m_players_amount; ++i) {
+	for (auto i = 0u; i < m_players_amount; ++i) {
 		mControllers.push_back(Controller(mContext, mViews[i]));
 	}
 	
@@ -301,7 +302,7 @@ void Game::loadLevel(const Level & level)
 	for(auto& ptr : mObjects){
 		ptr->initBody(mWorld);
 	}
-	for(auto i = 0; i < mPlayers.size(); i++){
+	for(auto i = 0u; i < mPlayers.size(); i++){
 		mPlayers[i]->initBody(mWorld);
 		mPlayers[i]->setMira(m_mira);
 		mPlayers[i]->setController(mControllers[i]);

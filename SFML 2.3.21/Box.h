@@ -11,10 +11,11 @@ class Box : public GameObject {
 
 	virtual void		initBody(b2World& world);
 	
-	
+
+	//virtual sf::FloatRect	getGlobalBounds() const;
 	private:
 	virtual void		draw(sf::RenderTarget& target, sf::RenderStates states)const final;
-	sf::Sprite			mSprite;
+	//sf::Sprite			mSprite;
 	b2Vec2				mSize;
 
 

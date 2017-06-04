@@ -5,11 +5,11 @@ ObjectType Box::getType() const
 	return ObjectType::Box;
 }
 Box::Box(const Resources& res, const b2Vec2& size, const b2Vec2& position) :
-	mSize(size),
-	mSprite(res.textures.get(Texture::BOX),
-			sf::IntRect(0, 0, static_cast<int>(size.x*PIXELS_PER_METER), static_cast<int>(size.y*PIXELS_PER_METER))
-	)
+	mSize(size)
+	
 {
+	mSprite.setTexture(res.textures.get(Texture::BOX));
+	mSprite.setTextureRect(sf::IntRect(0, 0, static_cast<int>(size.x*PIXELS_PER_METER), static_cast<int>(size.y*PIXELS_PER_METER)));
 	auto bounds = mSprite.getLocalBounds();
 	sf::Vector2f center(bounds.width / 2.f, bounds.height / 2.f);
 	mSprite.setOrigin(center);

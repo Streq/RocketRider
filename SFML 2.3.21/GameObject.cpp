@@ -9,6 +9,14 @@ GameObject::~GameObject()
 
 
 
+sf::FloatRect GameObject::getGlobalBounds() const
+{
+	sf::Transform transform;
+	transform.translate(b2_to_sf_pos(getb2Position()));
+	transform.rotate(-rad_to_deg(getb2Rotation()));
+	return transform.transformRect(mSprite.getGlobalBounds());
+}
+
 const b2Vec2& GameObject::getb2Position()const{
 	return mBody->GetPosition();
 }

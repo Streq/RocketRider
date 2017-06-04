@@ -9,11 +9,12 @@ class Block: public GameObject{
 	Block(const Resources& res,BlockDefinition* def);
 	void		initBody(b2World& world) final;
 	ObjectType	getType()const final;
-	
+
+	//virtual sf::FloatRect	getGlobalBounds() const;
 	
 	private:
 	virtual void		draw(sf::RenderTarget& target, sf::RenderStates states)const;
-	sf::Sprite			mSprite;
+	//sf::Sprite			mSprite;
 	b2Vec2				mSize;
 
 

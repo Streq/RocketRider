@@ -15,6 +15,10 @@ class Player: public GameObject{
 	Player(const Resources& res, const b2Vec2& position = b2Vec2(0.f, 0.f), float mAcceleration=30.f, float mAngularAcc=1.f, float mRopeLength=15.f, float mMaxFuel=20.f, float mFuel=20.f, float mExplosionImpulse=20.f, float mMaxSpeed = 200.f, bool m_always_accelerating = false, bool has_fuel = true, bool has_rope = true, bool has_steer = true);
 	Player(const Resources& res, PlayerDefinition* def);
 	
+
+	//virtual sf::FloatRect	getGlobalBounds() const;
+
+
 	void accelerate(sf::Time dt);
 	void decelerate();
 	void rotateLeft(sf::Time dt);
@@ -47,7 +51,7 @@ class Player: public GameObject{
 
 
 	private:
-	sf::Sprite		mSprite;
+	//sf::Sprite		mSprite;
 	sf::Sprite		mExplosionSprite;
 	sf::Sprite		mFire;
 	mutable sf::VertexArray aimLine;
