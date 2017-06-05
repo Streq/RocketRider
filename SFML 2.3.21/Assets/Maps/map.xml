@@ -13,6 +13,7 @@
 		</color>
 		<GameObject>
 			<type>Player</type>
+      <explosion_impulse>1000000000.f</explosion_impulse>  
 		</GameObject>
 	</equivalence>
 	<equivalence>	

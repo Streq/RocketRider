@@ -34,10 +34,10 @@ class GameObject: public sf::Drawable{
 
 	protected:
 	
-	sf::Sprite				 mSprite;
-	b2Body*					 mBody;
-	b2World*				 mWorld;
-	b2BodyDef				 mBodyDef;
-	b2FixtureDef			 mFixtureDef;
-	std::unique_ptr<b2Shape> mShape;
+	sf::Sprite								mSprite;
+	b2Body*									mBody;
+	b2World*								mWorld;
+	b2BodyDef								mBodyDef;
+	b2FixtureDef							mFixtureDef;
+	std::unique_ptr<b2Shape>				mShape;
 };

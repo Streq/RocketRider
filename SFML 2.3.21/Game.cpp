@@ -20,7 +20,7 @@ Game::Game(GameStack& s, AppContext context, unsigned players)
 	, m_level_index(-1)
 	, m_players_in_map(0u)
 {
-	init(4);
+	init(1);
 }
 
 

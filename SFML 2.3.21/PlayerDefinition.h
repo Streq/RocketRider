@@ -5,7 +5,7 @@
 struct PlayerDefinition : public GameObjectDefinition{
 	PlayerDefinition() :
 		acceleration(30.f),
-		angular_acceleration(1.f),
+		angular_acceleration(1.5f),
 		rope_length(15.f),
 		max_fuel(20.f),
 		fuel(20.f),

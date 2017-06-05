@@ -31,21 +31,21 @@ Player::Player(const Resources& res, const b2Vec2& position, float mAcceleration
 	mBodyDef.position = position;
 	mBodyDef.allowSleep = false;
 	mBodyDef.type = b2BodyType::b2_dynamicBody;
-	mBodyDef.angularDamping = 1.5f;
+	mBodyDef.angularDamping = 2.0f;
 	mBodyDef.linearDamping = 0.1f;
 	mBodyDef.userData = this;
 
 
-
-	mFixtureDef.friction = 1.f;
-	mFixtureDef.density = 1.3f;
+	mFixtureDef.friction = 1.0f;
+	mFixtureDef.density = 1.6f;
 	mFixtureDef.restitution = 0.2f;
+	
 	//shape definition
 	b2PolygonShape* bodyShape(new b2PolygonShape);
 	mShape.reset(bodyShape);
 
-	bodyShape->SetAsBox(0.5f, 0.25f);
-
+	bodyShape->SetAsBox(4.f/3.f * 0.5f, 5.f/16.f * 0.5f);
+	
 
 	mFixtureDef.shape = bodyShape;
 	
@@ -87,7 +87,31 @@ void Player::initBody(b2World & world){
 	mBody=world.CreateBody(&mBodyDef);
 	//mWorld->getC
 	//fixture definition	
+	//shape definition
+	b2PolygonShape Torso;
+	b2CircleShape Tip;
+	b2CircleShape LeftLeg;
+	b2CircleShape RightLeg;
+
+	Torso.SetAsBox(3.f / 4.f * 0.5f, 4.9f / 32.f, b2Vec2(-1.f/32.f, 0), 0.f);
+	
+	Tip.m_radius = 5.f / 32.f;
+	Tip.m_p = b2Vec2(11.f / 32.f, 0.f);
+
+	LeftLeg.m_radius = RightLeg.m_radius = 3.f / 32.f;
+	LeftLeg.m_p = b2Vec2(-13.f / 32.f, -6.f / 32.f);
+	RightLeg.m_p = b2Vec2(-13.f / 32.f, +6.f / 32.f);
+	
+	mFixtureDef.shape = &Torso;
 	mBody->CreateFixture(&mFixtureDef);
+	mFixtureDef.density *= 0.5f;
+	mFixtureDef.shape = &Tip;
+	mBody->CreateFixture(&mFixtureDef);
+	mFixtureDef.shape = &LeftLeg;
+	mBody->CreateFixture(&mFixtureDef);
+	mFixtureDef.shape = &RightLeg;
+	mBody->CreateFixture(&mFixtureDef);
+
 	mHook.init();
 
 }
