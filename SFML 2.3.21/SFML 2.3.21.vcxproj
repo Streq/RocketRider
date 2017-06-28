@@ -161,9 +161,11 @@
     <ClCompile Include="DeathBlock.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Block.cpp" />
+    <ClCompile Include="GameMultiplayer.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectDefinition.cpp" />
     <ClCompile Include="GameObjectDefinition.h" />
+    <ClCompile Include="GameSingle.cpp" />
     <ClCompile Include="GameStack.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Goal.cpp" />
@@ -180,10 +182,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerDefinition.cpp" />
     <ClCompile Include="ScreenMessage.cpp" />
+    <ClCompile Include="ScreenMessenger.cpp" />
     <ClCompile Include="TextHolder.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="TileTexture.cpp" />
-    <ClCompile Include="TwoPlayerMenu.cpp" />
+    <ClCompile Include="MenuMultiPlayer.cpp" />
     <ClCompile Include="xml_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -197,8 +200,11 @@
     <ClInclude Include="Circle.h" />
     <ClInclude Include="ConsoleOut.h" />
     <ClInclude Include="DeathBlock.h" />
+    <ClInclude Include="GameMultiplayer.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="FontHolder.h" />
+    <ClInclude Include="GameSettings.h" />
+    <ClInclude Include="GameSingle.h" />
     <ClInclude Include="Goal.h" />
     <ClInclude Include="GoalDefinition.h" />
     <ClInclude Include="Hook.h" />
@@ -228,12 +234,13 @@
     <ClInclude Include="rrmath.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ScreenMessage.h" />
+    <ClInclude Include="ScreenMessenger.h" />
     <ClInclude Include="TextHolder.h" />
     <ClInclude Include="TextureHolder.h" />
     <ClInclude Include="text_utils.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="TileTexture.h" />
-    <ClInclude Include="TwoPlayerMenu.h" />
+    <ClInclude Include="MenuMultiPlayer.h" />
     <ClInclude Include="xml_utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

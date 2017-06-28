@@ -15,9 +15,9 @@ class ScreenMessage : public sf::Drawable, public sf::Transformable {
 	void updateText();
 	void updateBox();
 	void update() { updateText(); updateBox(); };
-	sf::Vector2f m_size;
-	std::string m_string;
-	sf::Text	m_text;
-	bool		m_has_Rect;
-	unsigned	m_line_width;
+	sf::Vector2f	m_size;
+	std::string		m_string;
+	sf::Text		m_text;
+	bool			m_has_Rect;
+	unsigned		m_line_width;
 };

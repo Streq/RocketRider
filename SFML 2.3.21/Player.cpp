@@ -119,7 +119,7 @@ void Player::setController(const Controller & controller)
 {
 	mController = &controller;
 }
-void Player::updateControl(sf::Time dt) { reactToController(*mController,dt); }
+void Player::updateFromController(sf::Time dt) { reactToController(*mController,dt); }
 void Player::reactToController(const Controller & controller, sf::Time dt)
 {
 	if (controller.input[Input::Hook]) {
@@ -295,6 +295,10 @@ void Player::updateAimTowardsWorldPosition(float x, float y)
 	HookCallback callback(*mBody);
 	auto pos = this->getb2Position();
 	b2Vec2 direction{ getDirectionTowards(x,y) };
+	if (abs(direction.x) < b2_epsilon && abs(direction.y) < b2_epsilon){
+		direction.x = 0.f;
+		direction.y = 1.f;
+	}
 	mWorld->RayCast(&callback, pos, pos + mRopeLength * direction);
 
 	targetBody = callback.getTargetBody();

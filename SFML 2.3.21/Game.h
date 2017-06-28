@@ -5,7 +5,6 @@
 #include "Controller.h"
 #include "GameObject.h"
 #include "Player.h"
-#include "AppContext.h"
 #include "GameObjectDefinition.h"
 #include "Level.h"
 #include "ScreenMessage.h"
@@ -13,8 +12,10 @@
 #include "Tilemap.h"
 #include "GameState.h"
 #include "HUD.h"
-
 #include "BackgroundLayer.h"
+#include "ScreenMessenger.h"
+#include "GameSettings.h"
+#include <functional>
 #define rightKey sf::Keyboard::D
 #define leftKey sf::Keyboard::A
 #define accelerateKey sf::Keyboard::W
@@ -22,36 +23,37 @@
 #define shootupKey sf::Keyboard::F
 #define shootdownKey sf::Keyboard::G
 #define miraKey sf::Keyboard::M
-
+struct AppContext;
 class Game: public GameState{
 	public:	
-	
-	Game(GameStack& s, AppContext context, unsigned players=1);
+		
+
+
+	Game(GameStack& s, AppContext context);
 	
 	virtual bool handle_event(const sf::Event& e) override;
 	virtual bool update(sf::Time dt)override;
 	virtual void draw()const override;
 	
-	void init(int players);
+	virtual void init();
 	void clear();
-	void loadLevel(const Level& level);
+	virtual void loadLevel(const Level& level);
 
 	const sf::View& getView();
 
 
-	private:
+	protected:
 	void createObject(GameObjectDefinition* def);
-	void goto_level(unsigned level);
-	void load_levels(const std::string& path);
-	void next_level();
+	
 	//these 3 mofos have same length which is the amount of players lmalo¡
 	std::vector<Controller>				mControllers;
 	std::vector<Player::Ptr>			mPlayers;
 	std::vector<sf::View>				mViews;
+	std::vector<ScreenMessenger>		mMessengers;
 
+	std::string							mConfigFilePath;
 
-	ScreenMessage						mMessage;
-
+	const  GameSettings*				mSettings;
 
 	std::unique_ptr<b2ContactListener>	mContactListener;
 	b2World								mWorld;
@@ -60,19 +62,17 @@ class Game: public GameState{
 	HUD									mHUD;
 	std::vector<BackgroundLayer>		background;
 	Tilemap								mTilemap;
+	
 
-
-	unsigned							m_players_amount;
 	unsigned							m_players_in_map;
 
-	std::vector<Level>					mLevels;
-	int									m_level_index;
-	unsigned							m_level_amount;
-	bool								m_goto_next_level;
-	bool								m_restart_level;
-	bool								m_won;
-	sf::Time							m_message_display_time;
-	bool								m_display_message;
-	bool								m_mira;
+	virtual void						handle_win_lose()=0;
+	
+	//1 Player stuff
+	ScreenMessage						mMessage;
+
+	
+
+
 };
 

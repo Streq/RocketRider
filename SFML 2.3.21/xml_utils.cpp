@@ -140,51 +140,105 @@ rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool,
 	return colornode;
 }
 
-void load_levels_from_xml(std::vector<Level>& mLevels, std::string path)
-{
-	rapidxml::file<>file(&path[0]);
 
-	rapidxml::xml_document<> doc;
-	doc.parse<rapidxml::parse_default>(file.data());
+static void load_lvl_from_node(Level& lvl, const rapidxml::xml_node<>& node) {
+	auto* map = node.first_node("map");
+	if (!map) { throw std::exception("Game config invalid, <map> not found: "); }
+	//node config contains equivalences between pixels and objects, and the handicaps of the player
+	auto* levelconfig = node.first_node("levelconfig");
+	if (!levelconfig) { throw std::exception("Game config invalid, <levelconfig> not found: "); }
 
+	auto* msg = node.first_node("message");
+	if (!msg) { throw std::exception("Game config invalid, <message> not found: "); }
+
+	const std::string path = "Assets/Maps/";
+
+	lvl.loadFromFiles(path + map->value(), path + levelconfig->value());
+	lvl.start_message = msg->value();
+
+}
+
+static rapidxml::xml_node<>* getFilesNode(rapidxml::xml_document<> &doc) {
+	
+	
 	auto* config = doc.first_node("config");
-	if (!config) { throw std::runtime_error("Game config invalid, <config> not found: " + path); }
+	if (!config) { throw std::exception("Game config invalid, <config> not found: "); }
 
 	auto* levels = config->first_node("levels");
-	unsigned m_level_amount;
+
+	auto* files = levels->first_node("files");
+
+	if (!files) { throw std::exception("Game config invalid, <files> not found: "); }
+	
+	return files;
+}
+
+void load_levels_from_xml(std::vector<Level>& mLevels, const std::string& path)
+{
+	rapidxml::file<>file{ &path[0] };
+	rapidxml::xml_document<> doc;
+	doc.parse<rapidxml::parse_default>(file.data());
+	rapidxml::xml_node<>* files;
+	try {
+		files = getFilesNode(doc);
+	}
+	catch (std::exception e) 
 	{
-		auto* amount = levels->first_node("amount");
-		if (!amount) { throw std::runtime_error("Game config invalid, <amount> not found: " + path); }
-		m_level_amount = std::stoul(amount->value());
-		mLevels.resize(m_level_amount);
+		throw std::runtime_error(std::string(e.what()) + path);
 	}
 	{
-		auto* files = levels->first_node("files");
-		if (!files) { throw std::runtime_error("Game config invalid, <files> not found: " + path); }
+		unsigned m_level_amount{ 0 };
+		//primer pasada para saber la cantidad de niveles y reservar memoria de entrada
+		for (auto index = files->first_node("level"); index; index = index->next_sibling("level")) {
+			++m_level_amount;
+		}
+		mLevels.resize(m_level_amount);
+		auto* level = files->first_node("level");
 		for (unsigned i = 0; i < m_level_amount; i++) {
-
-			auto* level = files->first_node("level");
 			if (!level) { throw std::runtime_error("Game config invalid, <level> not found: " + path); }
 			{
-				auto* map = level->first_node("map");
-				if (!map) { throw std::runtime_error("Game config invalid, <map> not found: " + path); }
-				//level config contains equivalences between pixels and objects, and the handicaps of the player
-				auto* levelconfig = level->first_node("levelconfig");
-				if (!levelconfig) { throw std::runtime_error("Game config invalid, <levelconfig> not found: " + path); }
-
-				auto* msg = level->first_node("message");
-				if (!msg) { throw std::runtime_error("Game config invalid, <message> not found: " + path); }
-
-				const std::string path = "Assets/Maps/";
-
-				auto& lvl = mLevels[i];
-				lvl.loadFromFiles(path + map->value(), path + levelconfig->value());
-				lvl.start_message = msg->value();
-
+				try{
+					load_lvl_from_node(mLevels[i], *level);
+				}
+				catch (std::exception e) {
+					throw std::runtime_error(std::string(e.what()) + path);
+				}
 			}
-			files->remove_node(level);
+			level = level->next_sibling("level");
 		}
 
 	}
 }
 
+void load_level_from_xml(Level & lvl, int index, const std::string & path)
+{
+	rapidxml::file<>file{ &path[0] };
+	rapidxml::xml_document<> doc;
+	doc.parse<rapidxml::parse_default>(file.data());
+	rapidxml::xml_node<>* files;
+	try {
+		files = getFilesNode(doc);
+		auto* level = find_node_indexed(*files, index, "level");
+		load_lvl_from_node(lvl, *level);
+	}
+	catch (std::exception e) {
+		throw std::runtime_error(std::string(e.what()) + path);
+	}
+}
+
+unsigned int count_nodes(const rapidxml::xml_node<>& node, const char * name)
+{
+	unsigned ret = 0;
+	for (auto index = node.first_node(name); index; index = index->next_sibling(name)) {
+		++ret;
+	}
+	return ret;
+}
+
+rapidxml::xml_node<>* find_node_indexed(const rapidxml::xml_node<>& node, int index, const char * name)
+{
+	auto in = node.first_node(name);
+	for (int i = 0; i < index && in; ++i)
+		in = in->next_sibling(name);
+	return in;
+}

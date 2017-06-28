@@ -77,7 +77,7 @@ struct Controller{
 	private:
 		std::array<bool, Input::size>	pressed_keys;
 		std::array<bool, Input::size>	just_updated_keys;
-		//wether the input is considered just on the instant the key is pressed or the whole time it's down
+		//wether the input is considered just on the instant the key is pressed or the whole duration it's down
 		std::array<bool, Input::size>	just_on_update;
 		InputData				keys[Input::size];
 		sf::View*				mView;

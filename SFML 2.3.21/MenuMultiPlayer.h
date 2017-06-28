@@ -18,9 +18,9 @@
 		-El primero en llegar al final triggerea una pantallita diciendo quién ganó.
 		-Tocar el spawn_point de un jugador cuando este muere triggerea la muerte del otro jugador
 */
-class TwoPlayerMenu: public Menu {
+class MenuMultiPlayer: public Menu {
 public:
-	TwoPlayerMenu(GameStack& s, AppContext c);
+	MenuMultiPlayer(GameStack& s, AppContext c);
 //	bool handle_event(const sf::Event& e) override;
 //	void draw() const override;
 private:

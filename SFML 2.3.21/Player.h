@@ -37,7 +37,7 @@ class Player: public GameObject{
 	virtual void initBody(b2World& world) final;
 
 	void setController(const Controller& controller);
-	void updateControl(sf::Time dt);
+	void updateFromController(sf::Time dt);
 
 	void reactToController(const Controller& controller, sf::Time dt);
 

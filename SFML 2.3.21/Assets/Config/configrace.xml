@@ -1,0 +1,16 @@
+<config>
+	<levels>
+		<files>
+			<level>
+				<message>Cable Telefonicoico</message>
+				<map>2cable_telefonico.png</map>
+				<levelconfig>map.xml</levelconfig>
+			</level>
+			<level>
+				<message>La que termina con un cuadrado</message>
+				<map>2cuadradocualca.png</map>
+				<levelconfig>map.xml</levelconfig>
+			</level>
+		</files>
+	</levels>
+</config>

@@ -20,6 +20,7 @@ private:
 	float				mAspectRatio;
 
 	GameStack			mStack;
+	GameSettings		mSettings;
 	sf::Text			mFPSText;
 	
 };

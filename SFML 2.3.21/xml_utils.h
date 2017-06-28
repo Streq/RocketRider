@@ -39,4 +39,21 @@ sf::Color parse_color_from_xml(rapidxml::xml_node<>*node, bool maxed_alpha = fal
 rapidxml::xml_node<>* color_to_xml(sf::Color col, rapidxml::memory_pool<>* pool, bool include_alpha = false);
 
 struct Level;
-void load_levels_from_xml(std::vector<Level>& vec, std::string path);
+/**
+Loads a vector of levels from a configuration file
+@param vec the mLevel vector to be filled with the new data
+@param path the path to the configuration file
+*/
+void load_levels_from_xml(std::vector<Level>& vec, const std::string& path);
+
+/**
+Loads a certain indexed mLevel from a configuration file
+@param lvl the mLevel to be filled with the new data
+@param index the mLevel to be filled with the new data
+@param path the path to the configuration file
+*/
+void load_level_from_xml(Level& lvl, int index, const std::string& path);
+
+unsigned int count_nodes(const rapidxml::xml_node<>& node, const char* name = (const char*)0);
+
+rapidxml::xml_node<>* find_node_indexed(const rapidxml::xml_node<>& node, int index, const char* name = (const char*)0);

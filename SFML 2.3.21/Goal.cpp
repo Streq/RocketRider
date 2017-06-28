@@ -52,8 +52,8 @@ ObjectType Goal::getType() const
 
 void Goal::Step(sf::Time dt)
 {
-	if (m_activate)mCallback(nullptr);
-	m_activate = false;
+	//if (m_activate)mCallback(nullptr);
+	//m_activate = false;
 	
 }
 
@@ -64,8 +64,8 @@ void Goal::BeginContact(b2Contact * contact, bool id)
 	ObjectType type = obj->getType();
 	switch (type) {
 		case ObjectType::Player: {
-			//mCallback(static_cast<Player*>(obj));
-			m_activate = true;
+			mCallback(static_cast<Player*>(obj));
+			//m_activate = true;
 		}break;
 	}
 }

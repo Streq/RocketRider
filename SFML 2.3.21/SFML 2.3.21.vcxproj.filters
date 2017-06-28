@@ -117,7 +117,16 @@
     <ClCompile Include="HUD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TwoPlayerMenu.cpp">
+    <ClCompile Include="GameSingle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMultiplayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenMessenger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuMultiPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -263,7 +272,19 @@
     <ClInclude Include="HUD.h">
       <Filter>Application</Filter>
     </ClInclude>
-    <ClInclude Include="TwoPlayerMenu.h">
+    <ClInclude Include="GameSingle.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMultiplayer.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenMessenger.h">
+      <Filter>TextRender</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuMultiPlayer.h">
       <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>

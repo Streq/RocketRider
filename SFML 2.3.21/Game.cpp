@@ -9,18 +9,23 @@
 #include "PlayerContactListener.h"
 #include "xml_utils.h"
 #include "TileTexture.h"
-Game::Game(GameStack& s, AppContext context, unsigned players) 
+#include "AppContext.h"
+
+
+Game::Game(GameStack& s, AppContext context)
 	: GameState(s, context)
 	, mWorld(b2Vec2(0,-10.f))
 	, mViews()
 	, mControllers()
 	, mPlayers()
 	, mContactListener(new GameContactListener())
-	, mLevels()
-	, m_level_index(-1)
+//	, mLevels()
+//	, m_level_index(-1)
 	, m_players_in_map(0u)
+	, mSettings(context.settings)
 {
-	init(1);
+
+	//init();
 }
 
 
@@ -40,14 +45,14 @@ bool Game::handle_event(const sf::Event & e){
 }
 
 bool Game::update(sf::Time dt){
-	m_message_display_time -= dt;
+//	m_message_display_time -= dt;
 
-	if (m_message_display_time <= sf::Time::Zero)
-		m_display_message = false;
+//	if (m_message_display_time <= sf::Time::Zero)
+//		m_display_message = false;
 	for(auto& controller: mControllers)
 		controller.updateInput();
 	for (auto& player : mPlayers)
-		player->updateControl(dt);
+		player->updateFromController(dt);
 	float b2time = dt.asSeconds();
 
 	while (b2time > 0.f) {
@@ -59,18 +64,18 @@ bool Game::update(sf::Time dt){
 	
 	std::for_each(mObjects.begin(), mObjects.end(), [&dt](GameObject::Ptr& ptr) {ptr->Step(dt);});
 
-	if (m_goto_next_level) {
-		next_level();
+	for (auto& messenger : mMessengers) {
+		messenger.update(dt);
 	}
-	for(auto& player: mPlayers){
-		if (player->isDead())
-			goto_level(m_level_index);
-	}
-	for(auto i = 0u; i < m_players_amount; ++i){
+	
+	
+
+	
+	for(auto i = 0u; i < mSettings->players; ++i){
 		mViews[i].setCenter(b2_to_sf_pos(mPlayers[i]->getb2Position()));
 	}
 
-	for (auto i = 0u; i < m_players_amount; ++i)
+	for (auto i = 0u; i < mSettings->players; ++i)
 	{
 		//mapear el pixel clickeado en pantalla a las coordenadas del mundo en sfml
 		sf::Vector2f world_pos_sf = mContext.window->mapPixelToCoords(mControllers[i].lastMousePosition, mViews[i]);
@@ -80,6 +85,8 @@ bool Game::update(sf::Time dt){
 		mPlayers[i]->updateAimTowardsWorldPosition(world_pos_b2.x, world_pos_b2.y);
 	}
 	mHUD.update(dt);
+
+	handle_win_lose();
 	return false;
 }
 
@@ -87,48 +94,54 @@ const sf::View& Game::getView() { return mViews[0]; }
 
 
 void Game::draw() const{
-	for (auto& view : mViews) {
+	//for each view
+	for (decltype(mSettings->players) i = 0; i < mSettings->players; ++i){
+		auto& view = mViews[i];
+		//set the view
 		mContext.screen->setView(view);
+		//draw background
 		for (const BackgroundLayer& lay : background) {
 			mContext.screen->draw(lay);
 		}
-
-
+		
+		//draw background tiles
 		mContext.screen->draw(mTilemap);
+		
+		//draw non-player objects
 		for (const auto& object : mObjects) {
 			if(object->getGlobalBounds().intersects(viewRect(view))){
 				mContext.screen->draw(*object);
 			}
 		}
-
-
+		//draw players
 		for (auto& player : mPlayers) {
 			mContext.screen->draw(*player);
 		}
-		if (m_display_message) {
-			mContext.screen->setView(mContext.screen->getDefaultView());
-			mContext.screen->draw(mMessage);
-		}
 
-		mContext.screen->setView(mContext.screen->getDefaultView());
-		mContext.screen->draw(mHUD);
+		//draw corresponding messages in each player screen
+		auto gui_view = mContext.screen->getDefaultView();
+		gui_view.setViewport(view.getViewport());
+		mContext.screen->setView(gui_view);
+		mContext.screen->draw(mMessengers[i]);
+		
 	}
 	
 }
 
-void Game::init(int players) {
-	m_players_amount = players;
-	mViews.reserve(players);
-	mPlayers.resize(players);
-	mControllers.reserve(players);
-	if (players == 1) {
+void Game::init() {
+	auto& pjs = mSettings->players;
+	mViews.reserve(pjs);
+	mPlayers.resize(pjs);
+	mControllers.reserve(pjs);
+	mMessengers.resize(pjs);
+	if (pjs == 1) {
 		mViews.push_back(sf::View(
 			sf::Vector2f(0.f, 0.f),
 			sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE)*1.f, static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO)*1.0f)));
 		mViews[0].setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
-
+		
 	}
-	if (players > 1) {
+	if (pjs > 1) {
 		mViews.push_back(sf::View(
 			sf::Vector2f(0.f, 0.f),
 			sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE)*0.5f, static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO)*0.5f)));
@@ -138,20 +151,20 @@ void Game::init(int players) {
 			sf::Vector2f(0.f, 0.f),
 			sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE)*0.5f, static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO)*0.5f)));
 		mViews[1].setViewport(sf::FloatRect(0.5f, 0.f, 0.5f, 0.5f));
-		if (players > 2) {
+		if (pjs > 2) {
 			mViews.push_back(sf::View(
 				sf::Vector2f(0.f, 0.f),
 				sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE)*0.5f, static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO)*0.5f)));
 			mViews[2].setViewport(sf::FloatRect(0.f, 0.5f, 0.5f, 0.5f));
 		}
-		if (players > 3) {
+		if (pjs > 3) {
 			mViews.push_back(sf::View(
 				sf::Vector2f(0.f, 0.f),
 				sf::Vector2f(static_cast<float>(INIT_VIEW_SIZE)*0.5f, static_cast<float>(INIT_VIEW_SIZE*ASPECT_RATIO)*0.5f)));
 			mViews[3].setViewport(sf::FloatRect(0.5f, 0.5f, 0.5f, 0.5f));
 		}
 	}
-	for (auto i = 0u; i < m_players_amount; ++i) {
+	for (auto i = 0u; i < mSettings->players; ++i) {
 		mControllers.push_back(Controller(mContext, mViews[i]));
 	}
 	
@@ -166,7 +179,7 @@ void Game::init(int players) {
 	mControllers[0].set_key(InputData(sf::Mouse::Button::Right, InputData::Type::mouse), Input::ID::ReleaseHook, true);
 	mControllers[0].set_key(InputData(sf::Keyboard::LShift, InputData::Type::keyboard), Input::ID::zoomin, true);
 	mControllers[0].set_key(InputData(sf::Keyboard::LControl, InputData::Type::keyboard), Input::ID::zoomout, true);
-	if (players > 1){
+	if (pjs > 1){
 		mControllers[1].set_key(InputData(sf::Keyboard::Left, InputData::Type::keyboard), Input::ID::Left, false);
 		mControllers[1].set_key(InputData(sf::Keyboard::Up, InputData::Type::keyboard), Input::ID::Accelerate, false);
 		mControllers[1].set_key(InputData(sf::Keyboard::Right, InputData::Type::keyboard), Input::ID::Right, false);
@@ -269,23 +282,26 @@ void Game::init(int players) {
 	auto screenview = mContext.screen->getDefaultView();
 	mHUD.setPosition(screenview.getCenter()+sf::Vector2f(-96.f , screenview.getSize().y/2.f-96.f));
 	
-	sf::Text text("", mContext.resources->fonts.get(Font::consola), 20u);
-	mMessage.setText(std::move(text));
-	mMessage.setLineWidth(40);
 	auto view = mContext.screen->getDefaultView();
-	mMessage.setPosition(view.getCenter()+sf::Vector2f(0.f,-100.f));
-	
-	m_mira = true;
+	mMessage.setText(sf::Text("", mContext.resources->fonts.get(Font::consola), 20u));
+	mMessage.setLineWidth(40);
+	mMessage.setPosition(sf::Vector2f(0.f, -100.f)+view.getCenter());
 
-	load_levels("Assets/Config/config.xml");
+	
+//	m_mira = true;
+
+//	load_levels(config_file);
 	mWorld.SetContactListener(mContactListener.get());
-	next_level();
+//	next_level();
 
 
 }
 
 void Game::clear(){
 	mObjects.clear();
+	for (auto& messenger : mMessengers) {
+		messenger.clear();
+	}
 	for(auto& player: mPlayers)
 		player.reset();
 	m_players_in_map = 0;
@@ -295,23 +311,24 @@ void Game::clear(){
 void Game::loadLevel(const Level & level)
 {
 	mMessage.setString(level.start_message);
+	for (auto& messenger : mMessengers) {
+		messenger.pushMessage(mMessage, sf::seconds(5.f));
+	}
 	for (auto& ptr : level.mObjects) {
 		createObject(ptr.get());
-		
 	}
 	for(auto& ptr : mObjects){
 		ptr->initBody(mWorld);
 	}
 	for(auto i = 0u; i < mPlayers.size(); i++){
 		mPlayers[i]->initBody(mWorld);
-		mPlayers[i]->setMira(m_mira);
+		mPlayers[i]->setMira(true);
 		mPlayers[i]->setController(mControllers[i]);
 	}
 	
 	mTilemap.setOrigin(16.f, 16.f);
 	mTilemap.load(mContext.resources->textures.get(Texture::TILESET), sf::Vector2u(32u, 32u),&level.mTiles[0],level.size.x,level.size.y);
 	mHUD.setPlayer(*mPlayers[0]);
-	
 
 }
 
@@ -326,12 +343,12 @@ void Game::createObject(GameObjectDefinition *def)
 			obj = new Box(*mContext.resources, static_cast<BoxDefinition*>(def));
 		}break;
 		case ObjectType::Player: {
-			if(m_players_in_map<m_players_amount)
+			if(m_players_in_map<mSettings->players)
 				mPlayers[m_players_in_map++].reset(new Player(*mContext.resources, static_cast<PlayerDefinition*>(def)));
 			return;
 		}break;
 		case ObjectType::Goal: {
-			obj = new Goal(*mContext.resources, [this](Player*) {this->m_goto_next_level = true; }, static_cast<GoalDefinition*>(def));
+			obj = new Goal(*mContext.resources, [](Player* player) {player->setGoalCompleted(true); }, static_cast<GoalDefinition*>(def));
 		}break;
 		case ObjectType::DeathBlock: {
 			obj = new DeathBlock(*mContext.resources, static_cast<BlockDefinition*>(def));
@@ -340,29 +357,4 @@ void Game::createObject(GameObjectDefinition *def)
 	mObjects.push_back(std::unique_ptr<GameObject>(obj));
 
 
-}
-
-void Game::goto_level(unsigned level)
-{
-	clear();
-	loadLevel(mLevels[m_level_index=level]);
-}
-
-void Game::load_levels(const std::string& path)
-{
-	load_levels_from_xml(mLevels, path);
-	m_level_amount = mLevels.size();
-}
-
-void Game::next_level()
-{
-	if (++m_level_index < static_cast<int>(m_level_amount)) {
-		goto_level(m_level_index);
-		m_goto_next_level = false;
-		m_display_message = true;
-		m_message_display_time = SF::LEVEL_TITLE_TIME;
-	}
-	else {
-		m_won = true;
-	}
 }

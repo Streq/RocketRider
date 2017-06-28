@@ -4,21 +4,27 @@
 #include "MainMenu.h"
 #include "MenuHowToPlay.h"
 #include "MenuModo.h"
+#include "MenuMultiPlayer.h"
 #include "PauseMenu.h"
+#include "GameSingle.h"
+#include "GameMultiplayer.h"
 Application::Application():
 	mWindow(
 		sf::VideoMode(INIT_WINDOW_SIZE.x,INIT_WINDOW_SIZE.y),
 		"Rocket Rider",
 		sf::Style::Default),
 	mScreen(),
-	mStack(AppContext(mScreen, mWindow, mDisplaySprite, mResources)),
+	mStack(AppContext(mScreen, mWindow, mDisplaySprite, mResources, mSettings)),
 	mAspectRatio(ASPECT_RATIO)
 {
-	mStack.register_state<Game>(GameState::ID::GAME);
+	mStack.register_state<GameSingle>(GameState::ID::GAME_SINGLE);
+	mStack.register_state<GameMultiplayer>(GameState::ID::GAME_RACE);
+	
 	mStack.register_state<MainMenu>(GameState::ID::MAIN_MENU);
 	mStack.register_state<MenuHowToPlay>(GameState::ID::HOW_TO_PLAY);
 	mStack.register_state<MenuModo>(GameState::ID::GAME_MODE);
 	mStack.register_state<PauseMenu>(GameState::ID::PAUSE);
+	mStack.register_state<MenuMultiPlayer>(GameState::ID::MULTI_PLAYER_MENU);
 	mStack.push_state(GameState::ID::MAIN_MENU);
 	
 	mScreen.setSmooth(false);
@@ -100,12 +106,12 @@ void Application::run(){
 	mClock.restart();
 	while (mWindow.isOpen() && !mStack.is_empty()){
 		auto clocktime = mClock.restart();
-		//time for frames
+		//duration for frames
 		delta_time += clocktime;
-		//do we update the frame this time?
+		//do we update the frame this duration?
 		frame_updated = (delta_time >= SF::TIME_STEP);
 	#ifndef NO_FPS_LIMIT
-		//consume the time for frames
+		//consume the duration for frames
 		while(delta_time >= SF::TIME_STEP){
 			//each consumed frame is an "ideal" frame
 			ideal_frames++;

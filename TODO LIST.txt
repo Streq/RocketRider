@@ -11,7 +11,7 @@ Grabar una partida
 	-almacenar estado del controller por frame
 	-almacenar nivel
 
--Dos jugadores SPLIT SCREEN
+-Multi jugador SPLIT SCREEN
 	-Pantalla de selección de mapa(es un menu más)(ver imagen de diseño)
 		-Se cargan los niveles en un array de niveles
 		-Y la imagen aparte
