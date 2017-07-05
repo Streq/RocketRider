@@ -10,7 +10,7 @@
 #include "xml_utils.h"
 #include "TileTexture.h"
 #include "AppContext.h"
-
+#include "SFML\Graphics\Shader.hpp"
 
 Game::Game(GameStack& s, AppContext context)
 	: GameState(s, context)
@@ -114,8 +114,14 @@ void Game::draw() const{
 			}
 		}
 		//draw players
+		sf::Shader shader;
+		
+		if (!shader.loadFromFile("Assets/Shaders/shad.frag", sf::Shader::Type::Fragment)) { std::cerr << "no se pudo cargar el shader\n"; };
+		shader.setUniform("texture", sf::Shader::CurrentTexture);
+		sf::RenderStates states;
+		states.shader = &shader;
 		for (auto& player : mPlayers) {
-			mContext.screen->draw(*player);
+			mContext.screen->draw(*player,states);
 		}
 
 		//draw corresponding messages in each player screen
